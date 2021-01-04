@@ -1,11 +1,11 @@
-import React, {Component, useImperativeHandle} from 'react';  
+import React from 'react';
 
-function ReSubmitJob() {
+function ResubmitJob() {
     return (
       <div>
-        <h2>Re Submit Job</h2>
+        <h2>Resubmit Job</h2>
       </div>
     );
 }
 
-export default ReSubmitJob;
+export default ResubmitJob;

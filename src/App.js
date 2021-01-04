@@ -1,54 +1,42 @@
 import React from 'react';
-import { 
+import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link,
-  useParams } from "react-router-dom";
+  Route
+} from "react-router-dom";
 
-
-import logo from './logo.svg';
 import './App.css';
-import ListQueue from './Queue/ListQueue.js';
-import DetailQueue from './Queue/DetailQueue.js';
-import AddJob from './Queue/AddJob.js';
-import ReSubmitJob from './Queue/ReSubmitJob.js';
+import JobList from './Queue/JobList.js';
+import JobDetail from './Queue/JobDetail.js';
+import CreateJob from './Queue/CreateJob.js';
+import ResubmitJob from './Queue/ResubmitJob.js';
 
 
 function App() {
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
-      <a className="navbar-brand" href="#">Job Manager</a>
+      <a className="navbar-brand" href="/">Job Manager</a>
       <div className="ml-auto order-lg-last">
         <ul className="navbar-nav flex-row">
           <li className="nav-item pr-3 pr-lg-0">
-              <a className="nav-link" href="/">Home</a>
-          </li>
-          <li className="nav-item pr-3 pr-lg-0">
-              <a className="nav-link" href="/detailqueue">Detail</a>
-          </li>
-          <li className="nav-item pr-3 pr-lg-0">
-              <a className="nav-link" href="/addjob">Add</a>
-          </li>
-          <li className="nav-item pr-3 pr-lg-0">
-            <a className="nav-link" href="/resubmitjob">Resubmit</a>
+              <a className="nav-link" href="/new">+</a>
           </li>
         </ul>
       </div>
     </header>
     <Switch>
       <Route exact path="/">
-          <ListQueue />
+          <JobList />
       </Route>
-      <Route path="/detailqueue/:id">
-          <DetailQueue />
+      <Route path="/new">
+          <CreateJob />
       </Route>
-      <Route path="/addjob">
-          <AddJob />
+      <Route path="/resubmit">
+          <ResubmitJob />
       </Route>
-      <Route path="/resubmitjob">
-          <ReSubmitJob />
+      <Route path="/:id">
+          <JobDetail />
       </Route>
     </Switch>
   </Router>

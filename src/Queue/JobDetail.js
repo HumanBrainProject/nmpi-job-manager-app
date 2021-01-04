@@ -1,15 +1,11 @@
-import React, {Component, useImperativeHandle, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
   useParams
 } from "react-router-dom";
 
-function DetailQueue() {
-  let { id } = useParams(); //impossible with class component
+function JobDetail() {
+  let { id } = useParams();
   const[jobs, setJobs] = useState({objects : []});
 
   useEffect(() => {
@@ -28,7 +24,7 @@ function DetailQueue() {
         {jobs.objects.map(job => (
           <div>
             <p>
-              <span className={job.status == 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span>
+              <span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span>
             </p>
             <p>
               <small class="ng-binding">Submitted {job.timestamp_submission}
@@ -50,4 +46,4 @@ function DetailQueue() {
   );
 }
 
-export default DetailQueue;
+export default JobDetail;

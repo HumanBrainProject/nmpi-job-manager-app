@@ -1,15 +1,10 @@
-import React, {Component, useImperativeHandle} from 'react';
+import React from 'react';
 import axios from 'axios';
-//import 'react-icons/fa';
 import {MdSearch, MdAddCircle} from 'react-icons/md';
 
-import { 
-    BrowserRouter as Router,
-    Switch,
-    Route, 
-    Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-class ListQueue extends Component {
+class JobList extends React.Component {
 
   constructor(props) {
     super(props)
@@ -40,30 +35,28 @@ class ListQueue extends Component {
     //const { jobs } = this.state
     return (
       <div>
-        <h2>List Queue of jobs</h2>
         <div className="row-fluid">
           <div className="col-md-12">
             <table className="table table-striped table-condensed">
               <thead>
                   <tr>
                       <th>
-                          <a aria-hidden="true" href="/addjob" ><MdAddCircle /></a>
-                          <a aria-hidden="true" href="" onClick="alert('You have to be within an HBP Collaboratory to submit a new job.')"></a>
+                          <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
                       </th>
                       <th>ID</th>
                       <th>Status</th>
                       <th>System</th>
                       <th>Code</th>
-                      <th ng-show="!with_ctx">Collab</th>
+                      <th>Collab</th>
                       <th>Submitted on</th>
                       <th>Submitted by</th>
                   </tr>
               </thead>
               <tbody>
                 {
-                  this.state.jobs.map(job => 
+                  this.state.jobs.map(job =>
                   <tr>
-                    <td><Link to={'/detailqueue/' + job.id}><MdSearch /></Link></td>
+                    <td><Link to={'/' + job.id}><MdSearch /></Link></td>
                     <td>{job.id}</td>
                     <td><span className={job.status == 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span></td>
                     <td>{job.hardware_platform}</td>
@@ -84,4 +77,4 @@ class ListQueue extends Component {
 
 
 
-export default ListQueue;
+export default JobList;

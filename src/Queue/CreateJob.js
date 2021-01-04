@@ -1,8 +1,6 @@
-import React, {Component, useImperativeHandle} from 'react';
-import axios from 'axios';
+import React, {Component} from 'react';
 
-
-class AddJob extends Component {
+class CreateJob extends Component {
     constructor(){
       super();
       this.state = {
@@ -20,10 +18,10 @@ class AddJob extends Component {
     render() {
       return (
         <div>
-          <h2>Add Job</h2>
+          <h2>Create new job</h2>
         </div>
       );
     }
 }
 
-export default AddJob;
+export default CreateJob;
