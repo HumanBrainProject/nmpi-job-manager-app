@@ -12,7 +12,8 @@ import CreateJob from './Queue/CreateJob.js';
 import ResubmitJob from './Queue/ResubmitJob.js';
 
 
-function App() {
+function App(props) {
+  console.log(props.auth.tokenParsed);
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
