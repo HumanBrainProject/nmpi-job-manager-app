@@ -28,16 +28,16 @@ function App(props) {
     </header>
     <Switch>
       <Route exact path="/">
-          <JobList />
+          <JobList auth={props.auth} />
       </Route>
       <Route path="/new">
-          <CreateJob />
+          <CreateJob auth={props.auth} />
       </Route>
       <Route path="/resubmit">
-          <ResubmitJob />
+          <ResubmitJob auth={props.auth} />
       </Route>
       <Route path="/:id">
-          <JobDetail />
+          <JobDetail auth={props.auth} />
       </Route>
     </Switch>
   </Router>

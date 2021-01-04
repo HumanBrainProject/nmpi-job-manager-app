@@ -4,6 +4,11 @@ import {MdSearch, MdAddCircle} from 'react-icons/md';
 
 import { Link } from "react-router-dom";
 
+
+//const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
+const resultsUrl = 'https://nmpi-staging.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-system-user-creation-workfl'
+
+
 class JobList extends React.Component {
 
   constructor(props) {
@@ -12,10 +17,15 @@ class JobList extends React.Component {
       jobs: [],
       error: '',
     }
-    //console.log("job.code : " + this.state.jobs.code);
   }
+
   componentDidMount(){
-    axios.get('https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json')
+    let config = {
+      headers: {
+        'Authorization': 'Bearer ' + this.props.auth.token,
+      }
+    }
+    axios.get(resultsUrl, config)
     .then(response => {
       console.log(response);
       this.setState({jobs: response.data.objects});
@@ -30,9 +40,7 @@ class JobList extends React.Component {
     })
   }
 
-
   render() {
-    //const { jobs } = this.state
     return (
       <div>
         <div className="row-fluid">
@@ -58,7 +66,7 @@ class JobList extends React.Component {
                   <tr>
                     <td><Link to={'/' + job.id}><MdSearch /></Link></td>
                     <td>{job.id}</td>
-                    <td><span className={job.status == 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span></td>
+                    <td><span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span></td>
                     <td>{job.hardware_platform}</td>
                     <td><code>{job.code.substring(0,77) + "..."}</code></td>
                     <td>{job.collab_id}</td>
