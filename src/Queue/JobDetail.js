@@ -16,7 +16,7 @@ function JobDetail(props) {
       }
     }
     // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = `https://nmpi-staging.hbpneuromorphic.eu/api/v2/results/${id}/?collab_id=neuromorphic-system-user-creation-workfl`;
+    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}/?collab_id=neuromorphic-testing-private`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);

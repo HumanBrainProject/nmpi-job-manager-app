@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
-const resultsUrl = 'https://nmpi-staging.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-system-user-creation-workfl'
+const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 
 
 class JobList extends React.Component {
