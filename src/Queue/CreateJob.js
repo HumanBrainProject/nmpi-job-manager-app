@@ -1,27 +1,56 @@
 import React, {Component} from 'react';
 
-class CreateJob extends Component {
-    constructor(){
-      super();
-      this.state = {
-        curPage: 0,
-        pageSize: 20,
-        with_ctx: true,
-        tags_list: {},
-        status_list: {},
-        hardware_list: {},
-        hardware_choices: ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"],
-        status_choices:  ["submitted", "running", "finished", "error"],
-      }
-    }
+const hw_options = [
+  {
+    label: "BrainScaleS",
+    value: "bss",
+  },
+  {
+    label: "SpiNNaker",
+    value: "spnn",
+  },
+  {
+    label: "BrainScaleS-ESS",
+    value: "ess",
+  },
+  {
+    label: "Spikey",
+    value: "spikey",
+  },
+];
 
+class CreateJob extends Component {
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        hw: null,
+      };
+  
+      this.handleChange = this.handleChange.bind(this);
+    }
+  
+    handleChange(e) {
+      console.log("Hardware Selected");
+      this.setState({ hw: e.target.value });
+    }
+  
     render() {
       return (
-        <div>
-          <h2>Create new job</h2>
+        <div id="App">
+          <h5>Hardware Platform</h5>
+          <div className="select-container">
+            <select onChange={this.handleChange}>
+            <option disabled selected value> -- Please choose a simulation platform -- </option>
+              {hw_options.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+          <h5>Code</h5>
         </div>
       );
     }
-}
+  }
 
 export default CreateJob;
