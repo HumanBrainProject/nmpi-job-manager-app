@@ -3,7 +3,10 @@ import axios from 'axios';
 import {
   useParams
 } from "react-router-dom";
-
+//import { Button } from '@material-ui/core';
+import * as Mui from '@material-ui/core';
+// import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 function JobDetail(props) {
   let { id } = useParams();
@@ -35,19 +38,52 @@ function JobDetail(props) {
             </p>
             <p>
               <small class="ng-binding">
-                Submitted {job.timestamp_submission} by {job.user_id} to <strong class="ng-binding">{job.hardware_platform}</strong>
+                Submitted on {job.timestamp_submission} by {job.user_id} to <strong class="ng-binding">{job.hardware_platform}</strong>
+              </small>
+              <br></br>
+              <small class="ng-binding">
+                Completed on {job.timestamp_completion}
               </small>
             </p>
-            <div class="row-fluid">
-              <div class="panel panel-default">
-                <div class="panel-heading">Code</div>
-                <div class="panel-body ng-pristine ng-untouched ng-binding ng-scope ng-valid ng-valid-required">
-                  <pre>
-                    {job.code}
-                  </pre>
-                </div>
-              </div>
-            </div>
+
+
+            <Mui.Box component="span" boxShadow={3} display="block">Code</Mui.Box>
+            
+            <pre>
+            <code>
+            
+            {job.code}
+            </code>
+          </pre>
+            <Mui.Box component="span" boxShadow={3} display="block">Command</Mui.Box>
+            <pre>
+            <code>
+            {job.command}
+            </code>
+          </pre>
+
+
+          <Mui.Box component="span" boxShadow={3} display="block">Hardware Platform</Mui.Box>
+          <pre>
+          <code>
+          {job.hardware_platform}
+          </code>
+        </pre>
+        <Mui.Box component="span" boxShadow={3} display="block">Log</Mui.Box>
+        <pre>
+        <code>
+        {job.log}
+        </code>
+      </pre>
+
+      <Mui.Box component="span" boxShadow={3} display="block">Provenance</Mui.Box>
+      <pre>
+      <code>
+      {job.Provenance}
+      </code>
+    </pre>
+
+
           </div>
     </div>
   );
