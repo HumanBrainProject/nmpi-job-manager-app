@@ -3,13 +3,40 @@ import axios from 'axios';
 import {
   useParams
 } from "react-router-dom";
-//import { Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import * as Mui from '@material-ui/core';
-import Prism from "prismjs";
-import hljs from 'highlight.js';
+// import Prism, { highlight } from "prismjs";
+// import hljs from 'highlight.js';
+// https://openbase.com/js/react-syntax-highlighter
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 // import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" />
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,6 +49,16 @@ const useStyles = makeStyles((theme) => ({
 
   textAlign: "left",
 
+
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular,
+
+    
+  },
+  root1: {
+    width: '100%',
   },
 }));
 function JobDetail(props) {
@@ -45,6 +82,7 @@ function JobDetail(props) {
     fetchData();
   }, []);
   const classes = useStyles();
+ const isDefined = job.output_data;
   return(
     <div>
       <h2>Job {id}</h2>
@@ -53,65 +91,100 @@ function JobDetail(props) {
           <span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span>
         </p>
         <p>
-          <small class="ng-binding">
-            Submitted on {job.timestamp_submission} by {job.user_id} to <strong class="ng-binding">{job.hardware_platform}</strong>
+          <small >
+            Submitted on {job.timestamp_submission} by {job.user_id} to <strong >{job.hardware_platform}</strong>
           </small>
           <br></br>
-          <small class="ng-binding">
-            ompleted on {job.timestamp_completion}
+          <small >
+            Completed on {job.timestamp_completion}
           </small>
         </p>
 
 
-
-            <Mui.Button component="span"className={classes.root}   variant="contained" color="primary">Code</Mui.Button>
-            <Mui.Box component="span"className={classes.boxStyle}  boxShadow={0} display="block">
-            <pre>
-            <code  class="Python">
-            
-            {job.code}
-            </code>
-          </pre>
-          </Mui.Box>
-            <Mui.Box component="span" boxShadow={3} display="block">Command</Mui.Box>
-            <pre>
-            <code>
-            {job.command}
-            </code>
-          </pre>
+        <ExpansionPanel defaultExpanded='true' color='red'>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+          <Typography className={classes.heading} color='red'>Code</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails  color='red'>
+          <Typography>
+          <SyntaxHighlighter language="Python" style={docco}>
+          {String(job.code)}
+        </SyntaxHighlighter>
+          </Typography>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
 
 
-          <Mui.Box component="span" boxShadow={3} display="block">Hardware Platform</Mui.Box>
-          <pre>
-          <code>
-          {job.hardware_platform}
-          </code>
-        </pre>
-        <Mui.Box component="span" boxShadow={3} display="block">Log</Mui.Box>
-        <pre>
-        <code>
+      <ExpansionPanel defaultExpanded='true' color='red'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <Typography className={classes.heading} color='red'>Command</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails  color='red'>
+        <Typography>
+        <SyntaxHighlighter language="Shell" style={docco}>
+        {String(job.command)}
+      </SyntaxHighlighter>
+        </Typography>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+
+    <ExpansionPanel defaultExpanded='true' color='red'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <Typography className={classes.heading} color='red'>Hardware Platform</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails  color='red'>
+        <Typography>
+
+        {String(job.hardware_platform)}
+
+        </Typography>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+    <ExpansionPanel defaultExpanded='true' color='red'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <Typography className={classes.heading} color='red'>Log</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails  color='red'>
+
+
         {job.log}
-        </code>
-      </pre>
 
-      <Mui.Box component="span" boxShadow={3} display="block">Provenance</Mui.Box>
-      <pre>
-      <code>
-      {job.Provenance}
-      </code>
-    </pre>
 
-    <Mui.Grid container  spacing={2}>
-    <Mui.Grid item xs={12}>
-      <Mui.Grid container justify="center" >
-        {[0, 1, 2].map((value) => (
-          <Mui.Grid key={value} item>
-            <Mui.Paper  />
-          </Mui.Grid>
-        ))}
-      </Mui.Grid>
-    </Mui.Grid>
-    </Mui.Grid>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+
+
+    <ExpansionPanel defaultExpanded='true' color='red'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <Typography className={classes.heading} color='red'>Provenance</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails  color='red'>
+
+
+        {job.Provenance}
+
+
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+    <ExpansionPanel defaultExpanded='true' color='red'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <Typography className={classes.heading} color='red'>Output files</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails  color='red'>
+      {isDefined!=='undefined'? (
+      <a href= {String(job.output_data[0].url)} > {String(job.output_data[0].url)} </a> ) : ('undefined')}
+      
+
+
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+
+
 
       </div>
     </div>
