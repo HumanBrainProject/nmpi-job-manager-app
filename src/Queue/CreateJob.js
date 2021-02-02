@@ -1,18 +1,18 @@
 
 
-//     constructor(props) {
-//       super(props);
-//       this.state = {
-//         hw: null,
-//       };
+// //     constructor(props) {
+// //       super(props);
+// //       this.state = {
+// //         hw: null,
+// //       };
   
-//       this.handleChange = this.handleChange.bind(this);
-//     }
+// //       this.handleChange = this.handleChange.bind(this);
+// //     }
   
-//     handleChange(e) {
-//       console.log("Hardware Selected");
-//       this.setState({ hw: e.target.value });
-//     }
+// //     handleChange(e) {
+// //       console.log("Hardware Selected");
+// //       this.setState({ hw: e.target.value });
+// //     }
   
 
 
@@ -37,7 +37,18 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import Editor from "@monaco-editor/react";
-// import files from "./files";
+import { useState, useEffect, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { DropzoneDialogBase } from 'material-ui-dropzone';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+// import dialogTitle from './dialog.js';
+
+
+
+
+// // import files from "./files";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -143,6 +154,8 @@ const hw_options = [
     // markers.forEach(marker => console.log('onValidate:', marker.message));
   }
 
+
+
 export default function CreateJob() {
   const classes = useStyles();
 
@@ -178,6 +191,25 @@ export default function CreateJob() {
   };
 
   const file = files[fileName];
+
+  const [open, setOpen] = React.useState(false);
+  const [fileObjects, setFileObjects] = React.useState([]);
+
+  const dialogTitle = () => {
+
+  // const [open, setOpen] = React.useState(false);
+
+  return ( 
+  <>
+    <span>Upload file</span>
+    <IconButton
+      style={{right: '12px', top: '8px', position: 'absolute'}}
+      onClick={() => setOpen(false)}>
+      <CloseIcon />
+    </IconButton>
+  </>
+);
+  }
 
   return (
     <div className={classes.root}>
@@ -322,20 +354,96 @@ export default function CreateJob() {
                 
       <h5>Input Files</h5>
       <div>
-        <TextField
-          id="input-files"
-          label="input to do"
-          style={{ margin: 8 }}
-          placeholder="Input Files: to do"
-          helperText="to do"
-          fullWidth
-          margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
-      </div>
+      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+        Add Files
+      </Button>
+
+      <DropzoneDialogBase
+        dialogTitle={dialogTitle()}
+        acceptedFiles={['image/*']}
+        fileObjects={fileObjects}
+        cancelButtonText={"cancel"}
+        submitButtonText={"submit"}
+        maxFileSize={5000000}
+        open={open}
+        onAdd={newFileObjs => {
+          console.log('onAdd', newFileObjs);
+          setFileObjects([].concat(fileObjects, newFileObjs));
+        }}
+        onDelete={deleteFileObj => {
+          console.log('onDelete', deleteFileObj);
+        }}
+        onClose={() => dialogTitle.setOpen(false)}
+        onSave={() => {
+          console.log('onSave', fileObjects);
+          dialogTitle.setOpen(false);
+        }}
+        showPreviews={true}
+        showFileNamesInPreview={true}
+      />
+    </div>
     </div>
   );
 }
+
+
+
+// const [open, setOpen] = React.useState(false);
+// const [fileObjects, setFileObjects] = React.useState([]);
+
+// function dialogTitle() {
+
+//   const [open, setOpen] = React.useState(false);
+
+//   return ( 
+//   <>
+//     {/* <span>Upload file</span>
+//     <IconButton
+//       style={{right: '12px', top: '8px', position: 'absolute'}}
+//       onClick={() => setOpen(false)}>
+//       <CloseIcon />
+//     </IconButton> */}
+//   </>
+// );
+//   }
+
+// const CreateJob = () => (
+// export default function CreateJob() {
+
+  
+
+//   return (
+
+// <div>
+//   <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+//     Add Files
+//   </Button>
+
+//   <DropzoneDialogBase
+//     dialogTitle={dialogTitle()}
+//     acceptedFiles={['image/*']}
+//     fileObjects={fileObjects}
+//     cancelButtonText={"cancel"}
+//     submitButtonText={"submit"}
+//     maxFileSize={5000000}
+//     open={open}
+//     onAdd={newFileObjs => {
+//       console.log('onAdd', newFileObjs);
+//       setFileObjects([].concat(fileObjects, newFileObjs));
+//     }}
+//     onDelete={deleteFileObj => {
+//       console.log('onDelete', deleteFileObj);
+//     }}
+//     onClose={() => dialogTitle.setOpen(false)}
+//     onSave={() => {
+//       console.log('onSave', fileObjects);
+//       dialogTitle.setOpen(false);
+//     }}
+//     showPreviews={true}
+//     showFileNamesInPreview={true}
+//   />
+// </div>
+//   );
+// }
+
+// export default CreateJob
