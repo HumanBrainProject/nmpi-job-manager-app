@@ -3,9 +3,9 @@ import axios from 'axios';
 import {
   useParams
 } from "react-router-dom";
-import { Button } from '@material-ui/core';
+//import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
-import * as Mui from '@material-ui/core';
+//import * as Mui from '@material-ui/core';
 // import Prism, { highlight } from "prismjs";
 // import hljs from 'highlight.js';
 // https://openbase.com/js/react-syntax-highlighter
@@ -20,6 +20,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme } from '@material-ui/core/styles';
+import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 
 const theme = createMuiTheme({
   palette: {
@@ -53,9 +54,25 @@ const useStyles = makeStyles((theme) => ({
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
+    //fontWeight: theme.typography.fontWeightRegular,
+    fontWeight: 'bold',
+    
 
     
+  },
+  expansion_panel_details:{
+   
+    backgroundColor:'#f8f8ff',
+    fontFamily:'Futura',
+    'font-size': '16px',
+
+  },
+  expansion_panel_summary:{
+    margin: {right:2},
+    fontStyle: 'bold',
+    fontFamily:'Helvetica',
+    backgroundColor:'#ebe3ed',
+
   },
   root1: {
     width: '100%',
@@ -82,32 +99,48 @@ function JobDetail(props) {
     fetchData();
   }, []);
   const classes = useStyles();
- const isDefined = job.output_data;
+
   return(
     <div>
-      <h2>Job {id}</h2>
+      <h2> Job {id} </h2>
         <div>
         <p>
           <span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span>
         </p>
         <p>
           <small >
-            Submitted on {job.timestamp_submission} by {job.user_id} to <strong >{job.hardware_platform}</strong>
+            Submitted on <strong >{String(job.timestamp_submission).slice(0,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
           </small>
           <br></br>
           <small >
-            Completed on {job.timestamp_completion}
+            Completed on <strong> {String(job.timestamp_completion).slice(0,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong>
           </small>
         </p>
 
 
-        <ExpansionPanel defaultExpanded='true' color='red'>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+        <ExpansionPanel defaultExpanded='true' >
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+          <Typography className={classes.heading}>Output files</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.expansion_panel_details}>
+        {(job.output_data && job.output_data.length>0)? (<a href= {String(job.output_data[0].url)} > {String(job.output_data[0].url)} </a>)
+          : ('No files available')}
+  
+  
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+
+
+
+
+
+        <ExpansionPanel defaultExpanded='true' >
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading} color='red'>Code</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails  color='red'>
+        <ExpansionPanelDetails  color='red' className={classes.expansion_panel_details}>
           <Typography>
-          <SyntaxHighlighter language="Python" style={docco}>
+          <SyntaxHighlighter language="python" style={docco}>
           {String(job.code)}
         </SyntaxHighlighter>
           </Typography>
@@ -115,13 +148,13 @@ function JobDetail(props) {
       </ExpansionPanel>
 
 
-      <ExpansionPanel defaultExpanded='true' color='red'>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+      <ExpansionPanel defaultExpanded='true' >
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} color='red'>Command</Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails  color='red'>
+      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
         <Typography>
-        <SyntaxHighlighter language="Shell" style={docco}>
+        <SyntaxHighlighter language="bash" style={docco}>
         {String(job.command)}
       </SyntaxHighlighter>
         </Typography>
@@ -129,60 +162,51 @@ function JobDetail(props) {
     </ExpansionPanel>
 
 
-    <ExpansionPanel defaultExpanded='true' color='red'>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
-        <Typography className={classes.heading} color='red'>Hardware Platform</Typography>
+    <ExpansionPanel defaultExpanded='true'>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+        <Typography className={classes.heading} color='red'>Hardware Config</Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails  color='red'>
-        <Typography>
+      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+        
 
-        {String(job.hardware_platform)}
+        {"Platform: "+job.hardware_platform}
+        <br></br>
+        {"Ressource allocation ID: "}
+        {(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")}
 
-        </Typography>
+        
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
-    <ExpansionPanel defaultExpanded='true' color='red'>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
-        <Typography className={classes.heading} color='red'>Log</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  color='red'>
+    
 
 
-        {job.log}
-
-
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-
-
-
-    <ExpansionPanel defaultExpanded='true' color='red'>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
+    <ExpansionPanel defaultExpanded='true' >
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} color='red'>Provenance</Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails  color='red'>
-
-
-        {job.Provenance}
-
-
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-
-    <ExpansionPanel defaultExpanded='true' color='red'>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} color='red'>
-        <Typography className={classes.heading} color='red'>Output files</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  color='red'>
-      {isDefined!=='undefined'? (
-      <a href= {String(job.output_data[0].url)} > {String(job.output_data[0].url)} </a> ) : ('undefined')}
+      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
       
+      {(job.provenance) ?
+        ("Machine's IP : "+job.provenance.spinnaker_machine) : ("No details")
+      }
 
 
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
+    <ExpansionPanel defaultExpanded='true' >
+    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
+      <Typography className={classes.heading} color='red'>Log</Typography>
+    </ExpansionPanelSummary>
+    <ExpansionPanelDetails className={classes.expansion_panel_details}>
+
+
+      {job.log}
+
+
+    </ExpansionPanelDetails>
+  </ExpansionPanel>
 
 
 
