@@ -22,36 +22,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme } from '@material-ui/core/styles';
 import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      light: '#757ce8',
-      main: '#3f50b5',
-      dark: '#002884',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
-      contrastText: '#000',
-    },
-  },
-});
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    maxWidth: '100%',
-    textAlign: "left",
-    //backgroundColor: theme.palette.background.paper,
-  },
-  boxStyle: {
 
-  textAlign: "left",
-
-
-  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
@@ -71,12 +44,10 @@ const useStyles = makeStyles((theme) => ({
     margin: {right:2},
     fontStyle: 'bold',
     fontFamily:'Helvetica',
-    backgroundColor:'#ebe3ed',
+    backgroundColor:'#f2f2f2',
 
   },
-  root1: {
-    width: '100%',
-  },
+
 }));
 function JobDetail(props) {
   let { id } = useParams();
@@ -105,7 +76,7 @@ function JobDetail(props) {
       <h2> Job {id} </h2>
         <div>
         <p>
-          <span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span>
+          <span className={job.status === 'finished' ? ('badge badge-success') : 'badge badge-danger'}>{job.status}</span>
         </p>
         <p>
           <small >
@@ -123,7 +94,7 @@ function JobDetail(props) {
           <Typography className={classes.heading}>Output files</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? (<a href= {String(job.output_data[0].url)} > {String(job.output_data[0].url)} </a>)
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file => <a href= {String(out_file.url)} > {String(out_file.url)} </a>))
           : ('No files available')}
   
   
@@ -136,9 +107,9 @@ function JobDetail(props) {
 
         <ExpansionPanel defaultExpanded='true' >
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading} color='red'>Code</Typography>
+          <Typography className={classes.heading} >Code</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails  color='red' className={classes.expansion_panel_details}>
+        <ExpansionPanelDetails   className={classes.expansion_panel_details}>
           <Typography>
           <SyntaxHighlighter language="python" style={docco}>
           {String(job.code)}
@@ -150,7 +121,7 @@ function JobDetail(props) {
 
       <ExpansionPanel defaultExpanded='true' >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} color='red'>Command</Typography>
+        <Typography className={classes.heading} >Command</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
         <Typography>
@@ -164,11 +135,11 @@ function JobDetail(props) {
 
     <ExpansionPanel defaultExpanded='true'>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} color='red'>Hardware Config</Typography>
+        <Typography className={classes.heading} >Hardware Config</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
         
-
+      
         {"Platform: "+job.hardware_platform}
         <br></br>
         {"Ressource allocation ID: "}
@@ -183,7 +154,7 @@ function JobDetail(props) {
 
     <ExpansionPanel defaultExpanded='true' >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} color='red'>Provenance</Typography>
+        <Typography className={classes.heading} >Provenance</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
       
@@ -197,7 +168,7 @@ function JobDetail(props) {
 
     <ExpansionPanel defaultExpanded='true' >
     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
-      <Typography className={classes.heading} color='red'>Log</Typography>
+      <Typography className={classes.heading} >Log</Typography>
     </ExpansionPanelSummary>
     <ExpansionPanelDetails className={classes.expansion_panel_details}>
 
