@@ -61,6 +61,7 @@ class JobList extends React.Component {
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
       this.setState({date: date});
+      console.log(this.state.date)
       this.setState({refreshState:false});
       this.setState({refreshDate:fetchDataDate})
     })
@@ -89,7 +90,7 @@ class JobList extends React.Component {
                         
                           <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
  
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="blue" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
                            </Button>
    
                       </th>
