@@ -1,30 +1,58 @@
 import React from 'react';
 import axios from 'axios';
-import {MdSearch, MdAddCircle} from 'react-icons/md';
-
+import {MdSearch, MdAddCircle,MdRefresh} from 'react-icons/md';
+import Button from '@material-ui/core/Button';
 import { Link } from "react-router-dom";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRedo } from '@fortawesome/free-solid-svg-icons'
+import { makeStyles } from '@material-ui/core';
 
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
 const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
+/*const useStyles = makeStyles((theme) => ({
 
+  spinIcon: { spin: false,
 
+  },
+
+}));
+*/
 class JobList extends React.Component {
 
   constructor(props) {
+    
+    
     super(props)
     this.state = {
       jobs: [],
       error: '',
+      authToken: props.auth.token,
+      refreshState: false,
+      refreshDate :'',
     }
+    
   }
 
-  componentDidMount(){
+  // fetchData is a class method either bind it in constructor or use arrow functions
+  fetchData=()=>{
+
     let config = {
       headers: {
-        'Authorization': 'Bearer ' + this.props.auth.token,
+        'Authorization': 'Bearer ' + this.state.authToken,
       }
     }
+
+ 
+    let currentdate = new Date();
+    let fetchDataDate = "Last Sync on : " + currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/" 
+    + currentdate.getFullYear() + " @ "  
+    + currentdate.getHours() + ":"  
+    + currentdate.getMinutes() + ":" 
+    + currentdate.getSeconds();
+
     axios.get(resultsUrl, config)
     .then(response => {
       console.log(response);
@@ -33,24 +61,39 @@ class JobList extends React.Component {
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
       this.setState({date: date});
+      this.setState({refreshState:false});
+      this.setState({refreshDate:fetchDataDate})
     })
     .catch(error => {
       console.log(error)
       this.setState({errorMsg: 'Error retreiving data'})
     })
-  }
 
+  }
+  componentDidMount(){
+    //this.setState({authToken: this.props.auth.token});
+
+    this.fetchData();
+    
+  }
+  
   render() {
     return (
-      <div>
-        <div className="row-fluid">
+      <div >
+        <div className="row-fluid" >
           <div className="col-md-12">
             <table className="table table-striped table-condensed">
               <thead>
                   <tr>
-                      <th>
+                      <th  width="120 px">
+                        
                           <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
+ 
+                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="blue" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+                           </Button>
+   
                       </th>
+
                       <th>ID</th>
                       <th>Status</th>
                       <th>System</th>
@@ -78,7 +121,13 @@ class JobList extends React.Component {
             </table>
           </div>
         </div>
+
+        <div color="gray" style={{position: "absolute", bottom:0, paddingLeft:"20px", paddingBottom:"20px"}}  >
+        {this.state.refreshDate}
+        </div>
       </div>
+
+      
     )
   };
 }
