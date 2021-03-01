@@ -7,10 +7,16 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
 import { makeStyles } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
-const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
+//const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
+const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
+const collabList=[{id:'neuromorphic-testing-private'},{id:'collab2'}];
+
+
 /*const useStyles = makeStyles((theme) => ({
 
   spinIcon: { spin: false,
@@ -31,11 +37,39 @@ class JobList extends React.Component {
       authToken: props.auth.token,
       refreshState: false,
       refreshDate :'',
+      currentCollab:'neuromorphic-testing-private',
+      collabList:[],
     }
     
   }
 
   // fetchData is a class method either bind it in constructor or use arrow functions
+
+
+  getCollabList() {
+    const url = baseUrl + "/projects";
+    const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
+    axios.get(url, config)
+        .then(res => {
+            let editableProjects = [];
+            res.data.forEach(proj => {
+                if (proj.permissions.UPDATE) {
+                    editableProjects.push(proj.project_id);
+                }
+            });
+            editableProjects.sort();
+            this.setState({
+              collabList: editableProjects
+            });
+            
+        })
+        .catch(err => {
+            console.log('Error: ', err.message);
+        });
+
+        console.log(this.state.collabList);
+}
+
   fetchData=()=>{
 
     let config = {
@@ -43,6 +77,7 @@ class JobList extends React.Component {
         'Authorization': 'Bearer ' + this.state.authToken,
       }
     }
+    let resultsUrl = baseUrl+this.state.currentCollab;
 
  
     let currentdate = new Date();
@@ -75,12 +110,24 @@ class JobList extends React.Component {
     //this.setState({authToken: this.props.auth.token});
 
     this.fetchData();
+    this.getCollabList();
     
   }
   
   render() {
     return (
       <div >
+
+
+      <Autocomplete
+      id="Collab-list"
+      options={collabList}
+      getOptionLabel={(option) => option.id}
+      style={{ width: 300 }}
+      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+    />
+
+
         <div className="row-fluid" >
           <div className="col-md-12">
             <table className="table table-striped table-condensed">
@@ -126,6 +173,10 @@ class JobList extends React.Component {
         <div color="gray" style={{position: "absolute", bottom:0, paddingLeft:"20px", paddingBottom:"20px"}}  >
         {this.state.refreshDate}
         </div>
+
+
+
+
       </div>
 
       
