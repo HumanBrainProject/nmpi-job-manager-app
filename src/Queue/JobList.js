@@ -9,12 +9,14 @@ import { faRedo } from '@fortawesome/free-solid-svg-icons'
 import { makeStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
-const collabList=[{id:'neuromorphic-testing-private'},{id:'collab2'}];
+// url used to get collabs' ids 
+const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 
 
 /*const useStyles = makeStyles((theme) => ({
@@ -46,10 +48,10 @@ class JobList extends React.Component {
   // fetchData is a class method either bind it in constructor or use arrow functions
 
 
-  getCollabList() {
-    const url = baseUrl + "/projects";
+   getCollabList= async()=> {
+    const url = baseGlobalUrl + "/projects";
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
-    axios.get(url, config)
+    await axios.get(url, config)
         .then(res => {
             let editableProjects = [];
             res.data.forEach(proj => {
@@ -59,15 +61,14 @@ class JobList extends React.Component {
             });
             editableProjects.sort();
             this.setState({
-              collabList: editableProjects
+              collabList: editableProjects.map(String)
             });
-            
         })
         .catch(err => {
             console.log('Error: ', err.message);
         });
 
-        console.log(this.state.collabList);
+
 }
 
   fetchData=()=>{
@@ -106,11 +107,23 @@ class JobList extends React.Component {
     })
 
   }
-  componentDidMount(){
-    //this.setState({authToken: this.props.auth.token});
 
+
+onCollabChange= async (newValue)=>{
+// setState is asynchronous, i added await 
+  await this.setState({currentCollab:newValue});
+console.log(this.state.currentCollab);
+ this.fetchData();
+
+}
+
+  async componentDidMount(){
+    //this.setState({authToken: this.props.auth.token});
+    await this.getCollabList();
     this.fetchData();
-    this.getCollabList();
+    
+    console.log(this.state.collabList);
+
     
   }
   
@@ -118,16 +131,23 @@ class JobList extends React.Component {
     return (
       <div >
 
-
+<div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
       <Autocomplete
       id="Collab-list"
-      options={collabList}
-      getOptionLabel={(option) => option.id}
-      style={{ width: 300 }}
+      options={this.state.collabList}
+      getOptionLabel={(option) => option}
+      defaultValue={this.state.currentCollab}
+      onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+      style={{ width: 300 ,display:"inline-block"}}
       renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
     />
-
-
+    <Tooltip title="Reload Jobs">
+    <Button style={{ marginLeft :"1%" ,height: "60%" ,     position: "absolute",
+    bottom: 30,
+     display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+    </Button>
+    </Tooltip>
+    </div>
         <div className="row-fluid" >
           <div className="col-md-12">
             <table className="table table-striped table-condensed">
@@ -136,10 +156,10 @@ class JobList extends React.Component {
                       <th  width="120 px">
                         
                           <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
- 
+                          <Tooltip title="Reload Jobs">
                           <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
                            </Button>
-   
+                           </Tooltip>
                       </th>
 
                       <th>ID</th>
@@ -170,7 +190,7 @@ class JobList extends React.Component {
           </div>
         </div>
 
-        <div color="gray" style={{position: "absolute", bottom:0, paddingLeft:"20px", paddingBottom:"20px"}}  >
+        <div color="gray" style={{position: "relative", bottom:0, paddingLeft:"20px", paddingBottom:"20px"}}  >
         {this.state.refreshDate}
         </div>
 

@@ -94,7 +94,7 @@ function JobDetail(props) {
           <Typography className={classes.heading}>Output files</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file => <a href= {String(out_file.url)} > {String(out_file.url)} </a>))
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file =><div><p> <a href= {String(out_file.url)} > {String(out_file.url)} </a> {'\n'} </p></div>))
           : ('No files available')}
   
   
