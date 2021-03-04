@@ -38,6 +38,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import axios from 'axios';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
 import Editor from "@monaco-editor/react";
@@ -58,6 +59,10 @@ import useProgressPercentage from './../Components/Progress';
 
 
 // // import files from "./files";
+
+const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
+// const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -166,9 +171,8 @@ export default function CreateJob(props) {
   // constructor(props) {
   //   super(props)
   //   this.state = {
-  //     // jobs: [],
-  //     // error: ''
-  //     hw
+  //     currentCollab:'neuromorphic-testing-private',
+  //     collabList:[]
   //   }
   // }
 
@@ -180,9 +184,30 @@ export default function CreateJob(props) {
   //   this.handleSubmit = this.handleSubmit.bind(this)
   // }
 
-  
+    const url = ebrainsCollabUrl + "projects";
+    // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
+    const conf = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
+    // await 
+    axios.get(url, conf)
+        .then(res => {
+            let editableProjects = [];
+            res.data.forEach(proj => {
+                if (proj.permissions.UPDATE) {
+                    editableProjects.push(proj.project_id);
+                }
+            });
+            editableProjects.sort();
+            setCollabList(editableProjects.map(String))
+        })
+        .catch(err => {
+            console.log('Error: ', err.message);
+        });
 
   const classes = useStyles();
+
+  const [currentCollab, setcurrentCollab] = React.useState('neuromorphic-testing-private')
+  const [collabList, setCollabList] = React.useState([])
+
 
   const [hw, set_hw] = React.useState('');
   const [hwIsSelected, set_hwIsSelected] = React.useState(false);
@@ -197,6 +222,7 @@ export default function CreateJob(props) {
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
+
 
   useEffect(() => {
     if(hwIsSelected) setExample(config_example[hw].example);
@@ -254,48 +280,6 @@ export default function CreateJob(props) {
     setTab(newValue);
   };
 
-  const [fileName, setFileName] = React.useState("run.py");
-
-  // const files = {
-  //   "run.py": {
-  //     name: "run.py",
-  //     language: "javascript",
-  //     value: 'someJSCodeExample'
-  //   },
-  //   "style.css": {
-  //     name: "style.css",
-  //     language: "css",
-  //     value: 'someCSSCodeExample'
-  //   },
-  //   "index.html": {
-  //     name: "index.html",
-  //     language: "html",
-  //     value: 'someHTMLCodeExample'
-  //   }
-  // };
-
-
-//   const file = files[fileName];
-
-//   const [open, setOpen] = React.useState(false);
-//   const [fileObjects, setFileObjects] = React.useState([]);
-
-//   const dialogTitle = () => {
-
-//   // const [open, setOpen] = React.useState(false);
-
-//   return ( 
-//   <>
-//     <span>Upload file</span>
-//     <IconButton
-//       style={{right: '12px', top: '8px', position: 'absolute'}}
-//       onClick={() => setOpen(false)}>
-//       <CloseIcon />
-//     </IconButton>
-//   </>
-// );
-//   }
-
 function handleSubmit(){
     const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
   
@@ -314,7 +298,7 @@ function handleSubmit(){
     // command : "run.py",
     hardware_config : {},
     hardware_platform : hw,
-    collab_id: 'neuromorphic-testing-private',
+    collab_id: currentCollab,
 
     // job.selected_tab = "code_editor";
     // job.tags = [];
@@ -338,6 +322,23 @@ function handleSubmit(){
 
   return (
     <div id="container" >
+
+    <h5>Collab</h5>     
+    {/* <br/> */}
+
+    <div>
+    <Autocomplete
+      id="Collab-list"
+      options={collabList}
+      getOptionLabel={(option) => option}
+      defaultValue={currentCollab}
+      // onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+      style={{ width: 300 ,display:"inline-block"}}
+      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+    />
+    </div>
+      <br/>
+
     {/* */}
       <h5>Hardware Platform</h5>
 
@@ -429,7 +430,7 @@ function handleSubmit(){
       <div>
         <TextField
           id="command-field"
-          label="Command: to do"
+          label="Command:"
           style={{ margin: 8 }}
           placeholder="The command "
           helperText="helper for command"
@@ -550,3 +551,4 @@ function handleSubmit(){
   );
 }
 
+// export default CreateJob;
