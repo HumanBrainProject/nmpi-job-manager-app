@@ -121,7 +121,7 @@ class JobList extends React.Component {
               </thead>
               <tbody>
                 {
-                  this.state.jobs.map(job =>{
+                  this.state.jobs.map(job =>
                   // if(this.state.jobs.tags==this.selectedTag){
                   <tr>
                     <td><Link to={'/' + job.id}><MdSearch /></Link></td>
