@@ -1,21 +1,3 @@
-
-
-// // // //     constructor(props) {
-// // // //       super(props);
-// // // //       this.state = {
-// // // //         hw: null,
-// // // //       };
-  
-// // // //       this.handleChange = this.handleChange.bind(this);
-// // // //     }
-  
-// // // //     handleChange(e) {
-// // // //       console.log("Hardware Selected");
-// // // //       this.setState({ hw: e.target.value });
-// // // //     }
-  
-
-
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -160,6 +142,21 @@ const config_example = {
 }
 };
 
+const command_example = {
+  "SpiNNaker": {
+      example: `run.py spinnaker --option1=42`
+  },
+  "BrainScaleS": {
+      example : `run.py brainscales --option1=42`
+  },
+  "BrainScaleS-ESS": {
+    example: ``
+},
+  "Spikey": {
+    example : ``
+}
+};
+
 const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
   const thetext = ''
@@ -168,21 +165,6 @@ const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 export default function CreateJob(props) {
 // class CreateJob extends React.Component {
 
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     currentCollab:'neuromorphic-testing-private',
-  //     collabList:[]
-  //   }
-  // }
-
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {value: ''}
-
-  //   this.handleChange = this.handleChange.bind(this)
-  //   this.handleSubmit = this.handleSubmit.bind(this)
-  // }
 
     const url = ebrainsCollabUrl + "projects";
     // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
@@ -217,7 +199,8 @@ export default function CreateJob(props) {
 
   const [code, setCode] = React.useState("# write your code here");
 
-  const [example, setExample] = React.useState('');
+  const [configExample, setConfigExample] = React.useState('');
+  const [commExample, setCommExample] = React.useState('');
   const [config, setConfig] = React.useState('');
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
@@ -226,8 +209,11 @@ export default function CreateJob(props) {
 
 
   useEffect(() => {
-    if(hwIsSelected) setExample(config_example[hw].example);
-  }, [hw]);
+    if(hwIsSelected) {
+      setConfigExample(config_example[hw].example);
+      setCommExample(command_example[hw].example);
+    }
+    }, [hw]);
 
   useEffect(() => {
     if(tab == 0) setModel(code);
@@ -241,16 +227,16 @@ export default function CreateJob(props) {
     setCode(value);
   }
   
-  const [index, setindex] = React.useState('');
+  // const [index, setindex] = React.useState('');
 
-  const [value2, setValue2] = useState("");
+  // const [value2, setValue2] = useState("");
 
 
-  async function handlesetHW(event){
-    setValue2(event.target.value)
-    console.log('----------- state -------- ', event.target.value, value2)
+  // async function handlesetHW(event){
+  //   setValue2(event.target.value)
+  //   console.log('----------- state -------- ', event.target.value, value2)
    
-  }
+  // }
   
   function handleConfig(event){
     setConfig(event.target.value)
@@ -447,8 +433,8 @@ function handleSubmit(){
           id="command-field"
           label="Command:"
           style={{ margin: 8 }}
-          placeholder="The command "
-          helperText="helper for command"
+          placeholder={commExample}
+          helperText="oOptional: specify the path to the main Python script, with any command-line arguments."
           fullWidth
           margin="normal"
           InputLabelProps={{
@@ -468,7 +454,7 @@ function handleSubmit(){
           id="hw-config-field"
           label="Hardware config"
           style={{ margin: 8 }}
-          placeholder = {example}
+          placeholder = {configExample}
           helperText="Please type a JSON-formatted object. See the Guidebook for more details"
           fullWidth
           margin="normal"
@@ -493,8 +479,8 @@ function handleSubmit(){
           id="tag"
           label="tags"
           style={{ margin: 8 }}
-          placeholder= "Tags"
-          helperText="helper for tags - to do"
+          placeholder= "Tag1,Tag2;This is Tag3"
+          helperText="Please type job tags, separated by a comma, or semicolon. Tags can have spaces."
           fullWidth
           margin="normal"
           InputLabelProps={{
