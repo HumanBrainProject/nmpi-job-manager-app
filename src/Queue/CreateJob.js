@@ -35,7 +35,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
-import useProgressPercentage from './../Components/Progress';
 
 
 
@@ -227,16 +226,6 @@ export default function CreateJob(props) {
     setCode(value);
   }
   
-  // const [index, setindex] = React.useState('');
-
-  // const [value2, setValue2] = useState("");
-
-
-  // async function handlesetHW(event){
-  //   setValue2(event.target.value)
-  //   console.log('----------- state -------- ', event.target.value, value2)
-   
-  // }
   
   function handleConfig(event){
     setConfig(event.target.value)
