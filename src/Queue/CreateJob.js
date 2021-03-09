@@ -222,6 +222,7 @@ export default function CreateJob(props) {
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
+  const [tags, setTags] = React.useState([])
 
 
   useEffect(() => {
@@ -266,11 +267,25 @@ export default function CreateJob(props) {
     console.log(event.target.value)
   }
 
+  function handleTags(event){
+    // setGit(event.target.value)
+    console.log(event.target.value)
+    let string = event.target.value
+    // let separators = [',', ';']
+    // var numbers = x.split(new RegExp(separators.join('|'),'g'));
+    let array = string.split(/[,;]+/)
+    console.log(array)
+    console.log(currentCollab)
+    setTags(array)
+    // array.forEach((t) => {
+    //       tags.push(t)
+    //   })
+    // console.log('tags', tags)
+  }
+
   function handleHW(event) {
     set_hwIsSelected(true)
-    console.log('1 -',hw);
     set_hw(event.target.value)
-    console.log('2 -',hw);
 }
 
  
@@ -295,11 +310,11 @@ function handleSubmit(){
     // job.log = " ";
     status : 'submitted',
     code : mymodel,
-    // command : "run.py",
-    hardware_config : {},
+    command : command,
+    hardware_config : config,
     hardware_platform : hw,
     collab_id: currentCollab,
-
+    tags : tags
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
@@ -332,7 +347,7 @@ function handleSubmit(){
       options={collabList}
       getOptionLabel={(option) => option}
       defaultValue={currentCollab}
-      // onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+      onChange={(event, newValue)=> { setcurrentCollab(newValue);}}
       style={{ width: 300 ,display:"inline-block"}}
       renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
     />
@@ -383,7 +398,7 @@ function handleSubmit(){
         >
           <Tab label="Editor" icon={<CodeIcon />} {...a11yProps(0)} />
           <Tab label="From Git repository or zip archive" icon={<GitHubIcon />} {...a11yProps(1)} />
-          <Tab label="From the Drive" icon={<StorageIcon />} {...a11yProps(2)} />
+          <Tab label="From the Drive" disabled icon={<StorageIcon />} {...a11yProps(2)} />
           <Tab label="Graphical model builder" disabled icon={<CreateIcon />} {...a11yProps(3)} />
         </Tabs>
       {/* </AppBar> */}
@@ -420,7 +435,7 @@ function handleSubmit(){
           />
       </TabPanel>
       <TabPanel value={tab} index={2}>
-        to do...
+        Coming soon...
       </TabPanel>
       <TabPanel value={tab} index={3}>
         Coming soon...
@@ -486,7 +501,7 @@ function handleSubmit(){
             shrink: true,
           }}
           variant="outlined"
-          onChange={handleCommand}
+          onChange={handleTags}
         />
       </div>
 
