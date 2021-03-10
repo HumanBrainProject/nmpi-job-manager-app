@@ -143,10 +143,10 @@ const config_example = {
 
 const command_example = {
   "SpiNNaker": {
-      example: `run.py spinnaker --option1=42`
+      example: `run.py {system} --option1=42`
   },
   "BrainScaleS": {
-      example : `run.py brainscales --option1=42`
+      example : `run.py {system} --option1=42`
   },
   "BrainScaleS-ESS": {
     example: ``
