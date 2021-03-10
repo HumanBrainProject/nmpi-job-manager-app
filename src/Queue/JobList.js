@@ -74,8 +74,8 @@ class JobList extends React.Component {
         console.log('---taglist?---', this.tagList)
 }
 
-  async componentDidMount(){
-    await this.getTagsList();
+  // async componentDidMount(){
+  //   await this.getTagsList();
   // fetchData is a class method either bind it in constructor or use arrow functions
 
 
