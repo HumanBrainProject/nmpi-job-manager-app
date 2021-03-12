@@ -35,6 +35,7 @@ class JobList extends React.Component {
     super(props)
     this.state = {
       jobs: [],
+      tagList:[], 
       error: '',
       authToken: props.auth.token,
       refreshState: false,
@@ -45,6 +46,36 @@ class JobList extends React.Component {
     
   }
 
+  getTagsList = async()=> {
+    const tagsUrl = baseUrl + 'tags/?collab_id=neuromorphic-testing-private';
+    const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
+    await axios.get(tagsUrl, config)
+        .then(res => {
+          console.log(res);
+          // this.setState({jobs: response.data.objects});
+          let availableTags = [];
+          res.data.objects.forEach(tag => {
+              console.log(tag.name);
+              availableTags.push(tag.name);
+              }
+          );
+          availableTags.sort();
+          console.log(availableTags);
+          this.setState({
+            tagList: availableTags.map(String)
+          });
+            }
+            )
+        .catch(error => {
+          console.log(error)
+          this.setState({errorMsg: 'Error retreiving data'})
+        })
+    
+        console.log('---taglist?---', this.tagList)
+}
+
+  // async componentDidMount(){
+  //   await this.getTagsList();
   // fetchData is a class method either bind it in constructor or use arrow functions
 
 
@@ -97,6 +128,9 @@ class JobList extends React.Component {
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
       this.setState({date: date});
+      // this.state.jobs.map(job => {
+      //   handleTags(job, this.tagList)
+      // })
       console.log(this.state.date)
       this.setState({refreshState:false});
       this.setState({refreshDate:fetchDataDate})
@@ -174,6 +208,7 @@ console.log(this.state.currentCollab);
               <tbody>
                 {
                   this.state.jobs.map(job =>
+                  // if(this.state.jobs.tags==this.selectedTag){
                   <tr>
                     <td><Link to={'/' + job.id}><MdSearch /></Link></td>
                     <td>{job.id}</td>
@@ -184,6 +219,7 @@ console.log(this.state.currentCollab);
                     <td>{job.timestamp_submission}</td>
                     <td>{job.user_id}</td>
                   </tr>)
+                  // }
                 }
               </tbody>
             </table>

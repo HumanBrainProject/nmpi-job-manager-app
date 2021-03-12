@@ -1,21 +1,3 @@
-
-
-// // // //     constructor(props) {
-// // // //       super(props);
-// // // //       this.state = {
-// // // //         hw: null,
-// // // //       };
-  
-// // // //       this.handleChange = this.handleChange.bind(this);
-// // // //     }
-  
-// // // //     handleChange(e) {
-// // // //       console.log("Hardware Selected");
-// // // //       this.setState({ hw: e.target.value });
-// // // //     }
-  
-
-
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -53,7 +35,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
-import useProgressPercentage from './../Components/Progress';
 
 
 
@@ -160,6 +141,21 @@ const config_example = {
 }
 };
 
+const command_example = {
+  "SpiNNaker": {
+      example: `run.py {system} --option1=42`
+  },
+  "BrainScaleS": {
+      example : `run.py {system} --option1=42`
+  },
+  "BrainScaleS-ESS": {
+    example: ``
+},
+  "Spikey": {
+    example : ``
+}
+};
+
 const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
   const thetext = ''
@@ -168,21 +164,6 @@ const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 export default function CreateJob(props) {
 // class CreateJob extends React.Component {
 
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     currentCollab:'neuromorphic-testing-private',
-  //     collabList:[]
-  //   }
-  // }
-
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {value: ''}
-
-  //   this.handleChange = this.handleChange.bind(this)
-  //   this.handleSubmit = this.handleSubmit.bind(this)
-  // }
 
     const url = ebrainsCollabUrl + "projects";
     // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
@@ -217,16 +198,21 @@ export default function CreateJob(props) {
 
   const [code, setCode] = React.useState("# write your code here");
 
-  const [example, setExample] = React.useState('');
+  const [configExample, setConfigExample] = React.useState('');
+  const [commExample, setCommExample] = React.useState('');
   const [config, setConfig] = React.useState('');
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
+  const [tags, setTags] = React.useState([])
 
 
   useEffect(() => {
-    if(hwIsSelected) setExample(config_example[hw].example);
-  }, [hw]);
+    if(hwIsSelected) {
+      setConfigExample(config_example[hw].example);
+      setCommExample(command_example[hw].example);
+    }
+    }, [hw]);
 
   useEffect(() => {
     if(tab == 0) setModel(code);
@@ -240,16 +226,6 @@ export default function CreateJob(props) {
     setCode(value);
   }
   
-  const [index, setindex] = React.useState('');
-
-  const [value2, setValue2] = useState("");
-
-
-  async function handlesetHW(event){
-    setValue2(event.target.value)
-    console.log('----------- state -------- ', event.target.value, value2)
-   
-  }
   
   function handleConfig(event){
     setConfig(event.target.value)
@@ -266,11 +242,25 @@ export default function CreateJob(props) {
     console.log(event.target.value)
   }
 
+  function handleTags(event){
+    // setGit(event.target.value)
+    console.log(event.target.value)
+    let string = event.target.value
+    // let separators = [',', ';']
+    // var numbers = x.split(new RegExp(separators.join('|'),'g'));
+    let array = string.split(/[,;]+/)
+    console.log(array)
+    console.log(currentCollab)
+    setTags(array)
+    // array.forEach((t) => {
+    //       tags.push(t)
+    //   })
+    // console.log('tags', tags)
+  }
+
   function handleHW(event) {
     set_hwIsSelected(true)
-    console.log('1 -',hw);
     set_hw(event.target.value)
-    console.log('2 -',hw);
 }
 
  
@@ -295,11 +285,11 @@ function handleSubmit(){
     // job.log = " ";
     status : 'submitted',
     code : mymodel,
-    // command : "run.py",
-    hardware_config : {},
+    command : command,
+    hardware_config : config,
     hardware_platform : hw,
     collab_id: currentCollab,
-
+    tags : tags
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
@@ -332,7 +322,7 @@ function handleSubmit(){
       options={collabList}
       getOptionLabel={(option) => option}
       defaultValue={currentCollab}
-      // onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+      onChange={(event, newValue)=> { setcurrentCollab(newValue);}}
       style={{ width: 300 ,display:"inline-block"}}
       renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
     />
@@ -383,7 +373,7 @@ function handleSubmit(){
         >
           <Tab label="Editor" icon={<CodeIcon />} {...a11yProps(0)} />
           <Tab label="From Git repository or zip archive" icon={<GitHubIcon />} {...a11yProps(1)} />
-          <Tab label="From the Drive" icon={<StorageIcon />} {...a11yProps(2)} />
+          <Tab label="From the Drive" disabled icon={<StorageIcon />} {...a11yProps(2)} />
           <Tab label="Graphical model builder" disabled icon={<CreateIcon />} {...a11yProps(3)} />
         </Tabs>
       {/* </AppBar> */}
@@ -420,7 +410,7 @@ function handleSubmit(){
           />
       </TabPanel>
       <TabPanel value={tab} index={2}>
-        to do...
+        Coming soon...
       </TabPanel>
       <TabPanel value={tab} index={3}>
         Coming soon...
@@ -432,8 +422,8 @@ function handleSubmit(){
           id="command-field"
           label="Command:"
           style={{ margin: 8 }}
-          placeholder="The command "
-          helperText="helper for command"
+          placeholder={commExample}
+          helperText="oOptional: specify the path to the main Python script, with any command-line arguments."
           fullWidth
           margin="normal"
           InputLabelProps={{
@@ -453,7 +443,7 @@ function handleSubmit(){
           id="hw-config-field"
           label="Hardware config"
           style={{ margin: 8 }}
-          placeholder = {example}
+          placeholder = {configExample}
           helperText="Please type a JSON-formatted object. See the Guidebook for more details"
           fullWidth
           margin="normal"
@@ -478,15 +468,15 @@ function handleSubmit(){
           id="tag"
           label="tags"
           style={{ margin: 8 }}
-          placeholder= "Tags"
-          helperText="helper for tags - to do"
+          placeholder= "Tag1,Tag2;This is Tag3"
+          helperText="Please type job tags, separated by a comma, or semicolon. Tags can have spaces."
           fullWidth
           margin="normal"
           InputLabelProps={{
             shrink: true,
           }}
           variant="outlined"
-          onChange={handleCommand}
+          onChange={handleTags}
         />
       </div>
 
