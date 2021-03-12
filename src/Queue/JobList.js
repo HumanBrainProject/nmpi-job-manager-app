@@ -154,8 +154,9 @@ class JobList extends React.Component {
 
     await axios.get(resultsUrl, config)
     .then(response => {
+      let initial_list = []
       console.log(response);
-      this.setState({jobs: this.state.jobs.concat(response.data.objects)});
+      this.setState({jobs: initial_list.concat(response.data.objects)});
       var mydate = new Date(response.data.objects.date);
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
@@ -177,13 +178,6 @@ class JobList extends React.Component {
       console.log(response);
       console.log("queue response");
       this.setState({jobs: this.state.jobs.concat(response.data.objects)});
-      // var mydate = new Date(response.data.objects.date);
-      // var date = mydate.toString("jj/MM/yyyy");
-      // console.log("date : " + date);
-      // this.setState({date: date});
-      // console.log(this.state.date)
-      //this.setState({refreshState:false});
-      //this.setState({refreshDate:fetchDataDate})
     })
     .catch(error => {
       console.log(error)
