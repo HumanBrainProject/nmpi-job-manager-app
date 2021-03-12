@@ -4,7 +4,6 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-// import { useFormContext, Controller } from "react-hook-form";
 import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -35,11 +34,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
-
-
-
-
-// // import files from "./files";
 
 const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
 // const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
@@ -81,14 +75,7 @@ function a11yProps(index) {
 
 
 const useStyles = makeStyles((theme) => ({
-  // root: {
-  //   display: 'flex',
-  //   flexWrap: 'wrap',
-  // },
   root: {
-    // display: 'flex',
-    // flexWrap: 'wrap',
-    // flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
@@ -96,8 +83,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     width: 'auto',
-    // width: {width},
-    // height: {height}
   },
   formControl: {
     margin: theme.spacing(1),
@@ -168,7 +153,7 @@ export default function CreateJob(props) {
     const url = ebrainsCollabUrl + "projects";
     // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
     const conf = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
-    // await 
+
     axios.get(url, conf)
         .then(res => {
             let editableProjects = [];
@@ -226,7 +211,6 @@ export default function CreateJob(props) {
     setCode(value);
   }
   
-  
   function handleConfig(event){
     setConfig(event.target.value)
     console.log(event.target.value)
@@ -239,31 +223,18 @@ export default function CreateJob(props) {
 
   function handleGit(event){
     setGit(event.target.value)
-    console.log(event.target.value)
   }
 
   function handleTags(event){
-    // setGit(event.target.value)
-    console.log(event.target.value)
     let string = event.target.value
-    // let separators = [',', ';']
-    // var numbers = x.split(new RegExp(separators.join('|'),'g'));
     let array = string.split(/[,;]+/)
-    console.log(array)
-    console.log(currentCollab)
     setTags(array)
-    // array.forEach((t) => {
-    //       tags.push(t)
-    //   })
-    // console.log('tags', tags)
   }
 
   function handleHW(event) {
     set_hwIsSelected(true)
     set_hw(event.target.value)
-}
-
- 
+  }
 
   const handleChangeTab = (event, newValue) => {
     console.log(newValue)
@@ -300,7 +271,6 @@ function handleSubmit(){
     console.log(job.hardware_platform)
   
     axios.post(Url, job, config)
-    // axios.get(Url, config)
     .then(response => {
       console.log(response);
     })
@@ -352,10 +322,6 @@ function handleSubmit(){
       </FormControl>
       </div>
       <br/>
-
-      {/* <button onClick={handleShowValue} disabled={!isEditorReady}>
-        Show value
-      </button> */}
 
       <h5>Code</h5>
 
@@ -533,12 +499,8 @@ function handleSubmit(){
         Submit
       </Button>
 
-        {/* <button type="submit"  onClick={handleSubmit}>Submit</button>
-        <button type="button" >Cancel</button> */}
       </div>
 
     </div>
   );
 }
-
-// export default CreateJob;

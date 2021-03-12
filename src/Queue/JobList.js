@@ -214,7 +214,7 @@ console.log(this.state.currentCollab);
                     <td><span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span></td>
                     <td>{job.hardware_platform}</td>
                     <td><code>{job.code.substring(0,50) + "..."}</code></td>
-                    <td>{String(job.timestamp_submission).slice(11,19)+" "+String(job.timestamp_submission).slice(8,10)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(0,4)}</td>
+                    <td>{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</td>
                     <td>{job.user_id}</td>
                   </tr>)
                   // }
