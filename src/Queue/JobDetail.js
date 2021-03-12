@@ -80,11 +80,11 @@ function JobDetail(props) {
         </p>
         <p>
           <small >
-            Submitted on <strong >{String(job.timestamp_submission).slice(0,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
+            Submitted on <strong >{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
           </small>
           <br></br>
           <small >
-            Completed on <strong> {String(job.timestamp_completion).slice(0,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong>
+            Completed on <strong> {String(job.timestamp_completion).slice(0,4)+"/"+String(job.timestamp_completion).slice(5,7)+"/"+String(job.timestamp_completion).slice(8,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong>
           </small>
         </p>
 
