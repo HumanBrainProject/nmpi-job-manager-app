@@ -64,10 +64,10 @@ function JobDetail(props) {
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
-      setJob(result.data);
+      await setJob(result.data);
       console.log(result.data);
     };
-    fetchData();
+     fetchData();
   }, []);
   const classes = useStyles();
 

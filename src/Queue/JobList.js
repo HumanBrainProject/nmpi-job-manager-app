@@ -200,7 +200,6 @@ console.log(this.state.currentCollab);
                       <th>Status</th>
                       <th>System</th>
                       <th>Code</th>
-                      <th>Collab</th>
                       <th>Submitted on</th>
                       <th>Submitted by</th>
                   </tr>
@@ -214,9 +213,8 @@ console.log(this.state.currentCollab);
                     <td>{job.id}</td>
                     <td><span className={job.status === 'finished' ? 'badge badge-success' : 'badge badge-danger'}>{job.status}</span></td>
                     <td>{job.hardware_platform}</td>
-                    <td><code>{job.code.substring(0,77) + "..."}</code></td>
-                    <td>{job.collab_id}</td>
-                    <td>{job.timestamp_submission}</td>
+                    <td><code>{job.code.substring(0,50) + "..."}</code></td>
+                    <td>{String(job.timestamp_submission).slice(11,19)+" "+String(job.timestamp_submission).slice(8,10)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(0,4)}</td>
                     <td>{job.user_id}</td>
                   </tr>)
                   // }
