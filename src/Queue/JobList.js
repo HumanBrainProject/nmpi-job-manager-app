@@ -66,6 +66,7 @@ class JobList extends React.Component {
     super(props)
     this.state = {
       jobs: [],
+      provJobList: [],
       tagList:[], 
       error: '',
       authToken: props.auth.token,
@@ -104,10 +105,6 @@ class JobList extends React.Component {
     
         console.log('---taglist?---', this.tagList)
 }
-
-  // async componentDidMount(){
-  //   await this.getTagsList();
-  // fetchData is a class method either bind it in constructor or use arrow functions
 
 
    getCollabList= async()=> {
@@ -156,7 +153,7 @@ class JobList extends React.Component {
     .then(response => {
       let initial_list = []
       console.log(response);
-      this.setState({jobs: initial_list.concat(response.data.objects)});
+      this.setState({provJobList: initial_list.concat(response.data.objects)});
       var mydate = new Date(response.data.objects.date);
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
@@ -177,14 +174,15 @@ class JobList extends React.Component {
     .then(response => {
       console.log(response);
       console.log("queue response");
-      this.setState({jobs: this.state.jobs.concat(response.data.objects)});
+      this.setState({provJobList: this.state.provJobList.concat(response.data.objects)});
     })
     .catch(error => {
       console.log(error)
       this.setState({errorMsg: 'Error retreiving data'})
     })
     console.log(this.state.jobs);
-    const sortedJobs = [].concat(this.state.jobs)
+    console.log(this.state.provJobList);
+    const sortedJobs = [].concat(this.state.provJobList)
     .sort((a, b) => parseFloat(b.id) - parseFloat(a.id) );
 
     this.setState({jobs: sortedJobs});
