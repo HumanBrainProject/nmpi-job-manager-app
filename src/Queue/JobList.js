@@ -360,15 +360,15 @@ console.log(this.state.currentCollab);
 
     </div>
 
+      <div>
 
-
-    <div  style={{ position: "relative", bottom:0, marginLeft:"1%", marginTop:"3%" ,float:"left"}}  >
+    <div  style={{ position: "relative", bottom:0, marginLeft:"1%", marginTop:"3%" ,float:"left",display:"inline-block"}}  >
     <WatchLaterIcon />  { this.state.refreshDate}
     </div>
 
-    <div Style={{position: "relative", bottom:0,marginBottom:"1%",float:"left", marginTop:"3%" }}>
+    <div Style={{position: "relative", marginTop:"5%", marginRight:"1%"}}>
     <TablePagination
-
+    
     component="div"
     rowsPerPageOptions={[10,15,20,50]}
     count={this.state.jobs.length}
@@ -378,6 +378,7 @@ console.log(this.state.currentCollab);
     onChangeRowsPerPage={ (e)=>this.handleChangeRowsPerPage(e)}
 
   />
+  </div>
   </div>
       </div>
       </ThemeProvider>
