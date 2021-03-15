@@ -14,7 +14,7 @@ import Chip from '@material-ui/core/Chip';
 import FaceIcon from '@material-ui/icons/Face';
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, makeStyles, ThemeProvider,withStyles } from '@material-ui/core/styles';
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
@@ -27,6 +27,17 @@ import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import StorageIcon from '@material-ui/icons/Storage';
 
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Paper from '@material-ui/core/Paper';
+import { withRouter } from 'react-router-dom';
+import WatchLaterIcon from '@material-ui/icons/WatchLater';
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
@@ -45,6 +56,9 @@ const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 }));
 */
 
+
+
+
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -56,8 +70,35 @@ const theme = createMuiTheme({
     running: {
       main: yellow[500],
     },
+    
   },
+  tableRow: {
+    hover: {
+       /// your styles...
+      },
+    },
+  
 });
+
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    fontSize: 16,
+    fontWeight:"bold"
+  },
+  body: {
+    fontSize: 16,
+  },
+}))(TableCell);
+
+// const StyledTableRow = withStyles((theme) => ({
+//   root: {
+//     '&:nth-of-type(odd)': {
+//       backgroundColor: theme.palette.action.hover,
+//     },
+//   },
+// }))(TableRow);
+
 class JobList extends React.Component {
 
   constructor(props) {
@@ -74,8 +115,10 @@ class JobList extends React.Component {
       refreshDate :'',
       currentCollab:'neuromorphic-testing-private',
       collabList:[],
+      page :0,
+      rowsPerPage:10,
     }
-    
+    this.routeChange = this.routeChange.bind(this);
   }
 
   getTagsList = async()=> {
@@ -106,6 +149,11 @@ class JobList extends React.Component {
         console.log('---taglist?---', this.tagList)
 }
 
+routeChange(id) {
+  let path = '/'+String(id); 
+  this.props.history.push(path);
+}
+
 
    getCollabList= async()=> {
     const url = baseGlobalUrl + "/projects";
@@ -129,6 +177,19 @@ class JobList extends React.Component {
 
 
 }
+ handleChangePage = async (event, newPage) => {
+   console.log(this.state.page);
+   console.log("page num");
+  await this.setState({page:newPage});
+};
+
+ handleChangeRowsPerPage = (event) => {
+  let nextRowsPerPage =parseInt(event.target.value, 10);
+  this.setState({rowsPerPage:nextRowsPerPage});
+  this.setState({page:0});
+  //let currEmptyRows = this.state.rowsPerPage - Math.min(this.state.rowsPerPage, rows.length - page * rowsPerPage);
+};
+
 
   fetchData=async ()=>{
 
@@ -214,86 +275,110 @@ console.log(this.state.currentCollab);
       <ThemeProvider theme={theme}>
       <div >
 
-<div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
-      <Autocomplete
-      id="Collab-list"
-      options={this.state.collabList}
-      getOptionLabel={(option) => option}
-      defaultValue={this.state.currentCollab}
-      onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
-      style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
-    />
+        <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
+              <Autocomplete
+              id="Collab-list"
+              options={this.state.collabList}
+              getOptionLabel={(option) => option}
+              defaultValue={this.state.currentCollab}
+              onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+              style={{ width: 300 ,display:"inline-block"}}
+              renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+              />
 
 
 
-    <Tooltip title="Reload Jobs">
-    <Button style={{ marginLeft :"1%" ,height: "60%" ,     position: "absolute",
-    bottom: 30,
-     display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
-    </Button>
-    </Tooltip>
-    </div>
-        <div className="row-fluid" >
-          <div className="col-md-12">
-            <table className="table table-striped table-condensed">
-              <thead>
-                  <tr>
-                      <th  width="120 px">
-                        <Tooltip title="Create job">
-                          <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
-                          </Tooltip>
-                          <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
-                           </Button>
-                           </Tooltip>
-                      </th>
-
-                      <th><FingerprintIcon /> ID</th>
-                      <th><DoneAllIcon /> Status</th>
-                      <th><StorageIcon /> System</th>
-                      <th> <CodeIcon /> Code </th>
-                      <th> <ScheduleIcon /> Submitted on </th>
-                      <th> <AccountCircleIcon /> Submitted by </th>
-                  </tr>
-              </thead>
-              <tbody>
-                {
-                  this.state.jobs.map(job =>
-                  // if(this.state.jobs.tags==this.selectedTag){
-                  <tr>
-                    <td> <Link to={'/' + job.id}> <MdSearch /></Link></td>
-                    <td>{job.id}</td>
-                    
-                    <td>
-                      <div>
-                        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
-                          color="primary"  /> :job.status === 'error' 
-                        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
-                          color="secondary" /> ) :
-                          (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
-                             style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
-                      </div>
-                    </td>  
-                    <td>{job.hardware_platform}</td>
-                    <td><code>{job.code.substring(0,50) + "..."}</code></td>
-                    <td>{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</td>
-                    <td>{job.user_id}</td>
-                  </tr>)
-                  // }
-                }
-              </tbody>
-            </table>
+            <Tooltip title="Reload Jobs">
+            <Button style={{ marginLeft :"1%" ,height: "60%" ,     position: "absolute",
+            bottom: 30,
+            display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+            </Button>
+            </Tooltip>
           </div>
-        </div>
-
-        <div color="gray" style={{position: "relative", bottom:0, paddingLeft:"20px", paddingBottom:"20px"}}  >
-        {this.state.refreshDate}
-        </div>
 
 
 
+    <div style={{fontSize: '40 px'  ,marginLeft:"1%", marginRight:"2%" }} >
+    <TableContainer component={Paper} >
+      <Table  aria-label="Job list" style={{fontSize: "40px"}}>
+        <TableHead>
+          <TableRow  style={{ height: 'auto !important' }} >
+          <StyledTableCell width="120 px" >
+              <Tooltip title="Create job">
+                <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
+              </Tooltip>
+              <Tooltip title="Reload Jobs">
+                <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+              </Button>
+          </Tooltip>
+          
+          </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}> <FingerprintIcon /> ID </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><DoneAllIcon /> Status </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><StorageIcon /> System </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><CodeIcon /> Code  </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}> <ScheduleIcon /> Submitted on</StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><AccountCircleIcon /> Submitted by </StyledTableCell>
+          
+          </TableRow>
+        </TableHead>
+        <TableBody  >
 
+        {
+          this.state.jobs.slice(this.state.page * this.state.rowsPerPage,this.state.page * this.state.rowsPerPage +this.state.rowsPerPage ).map((job,index) =>
+          // if(this.state.jobs.tags==this.selectedTag){
+            // used striped rows shading 
+            <TableRow key={job.id} hover='false' style ={ index % 2? { background : "#f2f2f2" }:{ background : "white" }}>
+            
+            <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <MdSearch /></Link></StyledTableCell>
+            <StyledTableCell   component="td" scope="row" sortDirection='desc' >{job.id}</StyledTableCell>
+            
+            <StyledTableCell  component="td" scope="row">
+              <div>
+                {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
+                  color="primary"  /> :job.status === 'error' 
+                ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+                  color="secondary" /> ) :
+                  (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
+                     style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
+              </div>
+            </StyledTableCell> 
+            <StyledTableCell  component="td" scope="row">{job.hardware_platform}</StyledTableCell> 
+            <StyledTableCell  component="td" scope="row"><code>{job.code.substring(0,50) + "..."}</code></StyledTableCell> 
+            <StyledTableCell  component="th" scope="row">{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</StyledTableCell> 
+            <StyledTableCell  component="td" scope="row">{job.user_id}</StyledTableCell> 
+            </TableRow>)
+          // }
+        }
+
+
+
+
+        </TableBody>
+       </Table>
+        </TableContainer>
+
+    </div>
+
+
+
+    <div  style={{ position: "relative", bottom:0, marginLeft:"1%", marginTop:"3%" ,float:"left"}}  >
+    <WatchLaterIcon />  { this.state.refreshDate}
+    </div>
+
+    <div Style={{position: "relative", bottom:0,marginBottom:"1%",float:"left", marginTop:"3%" }}>
+    <TablePagination
+
+    component="div"
+    rowsPerPageOptions={[10,15,20,50]}
+    count={this.state.jobs.length}
+    rowsPerPage={this.state.rowsPerPage}
+    page={this.state.page}
+    onChangePage={(e,n)=>this.handleChangePage(e,n) }
+    onChangeRowsPerPage={ (e)=>this.handleChangeRowsPerPage(e)}
+
+  />
+  </div>
       </div>
       </ThemeProvider>
       
