@@ -91,6 +91,15 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
+const StyledTableRow = withStyles((theme) => ({
+  head: {
+
+  },
+  body: {
+
+  },
+}))(TableRow);
+
 // const StyledTableRow = withStyles((theme) => ({
 //   root: {
 //     '&:nth-of-type(odd)': {
@@ -108,6 +117,7 @@ class JobList extends React.Component {
     this.state = {
       jobs: [],
       provJobList: [],
+      filteredJobs:[],
       tagList:[], 
       error: '',
       authToken: props.auth.token,
@@ -117,6 +127,9 @@ class JobList extends React.Component {
       collabList:[],
       page :0,
       rowsPerPage:10,
+      orderBy:'jobID',
+      order:'desc',
+      filterBy:'',
     }
     this.routeChange = this.routeChange.bind(this);
   }
@@ -147,6 +160,33 @@ class JobList extends React.Component {
         })
     
         console.log('---taglist?---', this.tagList)
+}
+
+filterJobs(filterCond){
+  
+  function isStatus(x) {
+    return x.status===filterCond;
+}
+console.log("clear value");
+console.log(filterCond);
+if (filterCond==="all" ||filterCond===null ||filterCond==="reset")  
+{this.setState({
+
+  filteredJobs: this.state.jobs,
+});
+
+
+}
+else {
+
+var filteredJobs;
+filteredJobs = this.state.jobs.filter(isStatus);
+this.setState({
+  filterBy: "status",
+  filteredJobs: filteredJobs,
+});
+
+}
 }
 
 routeChange(id) {
@@ -189,6 +229,66 @@ routeChange(id) {
   this.setState({page:0});
   //let currEmptyRows = this.state.rowsPerPage - Math.min(this.state.rowsPerPage, rows.length - page * rowsPerPage);
 };
+
+sortData = (sortBy, sortOrder) => {
+  var itemsToSort = this.state.jobs;
+  var sortedItems = [];
+  var compareFn = null;
+  switch (sortBy) {
+    case "jobID":
+      compareFn = (i, j) => {
+        if (i.id < j.id) {
+          return sortOrder === "asc" ? -1 : 1;
+        } else {
+          if (i.id > j.id) {
+            return sortOrder === "asc" ? 1 : -1;
+          } else {
+            return 0;
+          }
+        }
+      };
+      break;
+/*     case "creator":
+      compareFn = (i, j) => {
+        var indexOfI = monthMap.indexOf(i.bmonth);
+        var indexOfJ = monthMap.indexOf(j.bmonth);
+        if (indexOfI < indexOfJ) {
+          return sortOrder === "asc" ? -1 : 1;
+        } else {
+          if (indexOfI > indexOfJ) {
+            return sortOrder === "asc" ? 1 : -1;
+          } else {
+            return 0;
+          }
+        }
+      };
+      break; */
+    default:
+      break;
+  }
+  sortedItems = itemsToSort.sort(compareFn);
+  return sortedItems;
+};
+
+requestSort(pSortBy) {
+  var sortBy = this.state.sortBy;
+  var sortOrder = this.state.sortOrder;
+  return event => {
+    if (pSortBy === this.state.sortBy) {
+      sortOrder = sortOrder === "asc" ? "desc" : "asc";
+    } else {
+      sortBy = pSortBy;
+      sortOrder = "desc";
+    }
+    var sortedItems = this.sortData(sortBy, sortOrder);
+    this.setState({
+      sortOrder: sortOrder,
+      sortBy: sortBy,
+      jobs:sortedItems
+    });
+  };
+}
+
 
 
   fetchData=async ()=>{
@@ -247,6 +347,7 @@ routeChange(id) {
     .sort((a, b) => parseFloat(b.id) - parseFloat(a.id) );
 
     this.setState({jobs: sortedJobs});
+    this.setState({filteredJobs: sortedJobs});
 
 
   }
@@ -258,7 +359,7 @@ onCollabChange= async (newValue)=>{
 console.log(this.state.currentCollab);
  this.fetchData();
 
-}
+};
 
   async componentDidMount(){
     //this.setState({authToken: this.props.auth.token});
@@ -294,6 +395,19 @@ console.log(this.state.currentCollab);
             display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
             </Button>
             </Tooltip>
+
+            <Autocomplete
+            id="Filter by status"
+            options={["finished","error","submitted","running"]}
+            getOptionLabel={(option) => option}
+            defaultValue={""}
+            onChange={(event, newValue)=> { this.filterJobs(newValue);}}
+            style={{ width: 300 ,display:"inline-block"}}
+            renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
+            />
+
+
+
           </div>
 
 
@@ -313,7 +427,20 @@ console.log(this.state.currentCollab);
           </Tooltip>
           
           </StyledTableCell>
-          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}> <FingerprintIcon /> ID </StyledTableCell>
+          <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}>
+          <TableSortLabel
+          active={this.state.sortBy === "jobID"}
+          direction={this.state.sortOrder}
+          onClick={this.requestSort("jobID")}
+        >
+
+        <FingerprintIcon /> ID 
+
+
+        </TableSortLabel>
+          </StyledTableCell>
+
+
           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><DoneAllIcon /> Status </StyledTableCell>
           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><StorageIcon /> System </StyledTableCell>
           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><CodeIcon /> Code  </StyledTableCell>
@@ -325,13 +452,19 @@ console.log(this.state.currentCollab);
         <TableBody  >
 
         {
-          this.state.jobs.slice(this.state.page * this.state.rowsPerPage,this.state.page * this.state.rowsPerPage +this.state.rowsPerPage ).map((job,index) =>
+          this.state.filteredJobs.slice(this.state.page * this.state.rowsPerPage,this.state.page * this.state.rowsPerPage +this.state.rowsPerPage ).map((job,index) =>
           // if(this.state.jobs.tags==this.selectedTag){
             // used striped rows shading 
-            <TableRow key={job.id} hover='false' style ={ index % 2? { background : "#f2f2f2" }:{ background : "white" }}>
+            <TableRow  component={Link}to={'/' + job.id}  key={job.id} hover='true' style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
             
             <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <MdSearch /></Link></StyledTableCell>
-            <StyledTableCell   component="td" scope="row" sortDirection='desc' >{job.id}</StyledTableCell>
+            <StyledTableCell   component="td" scope="row"  >
+
+            {job.id}
+            
+
+            
+            </StyledTableCell>
             
             <StyledTableCell  component="td" scope="row">
               <div>
@@ -356,17 +489,17 @@ console.log(this.state.currentCollab);
 
         </TableBody>
        </Table>
+       
         </TableContainer>
 
     </div>
 
-      <div>
+<div >
 
-    <div  style={{ position: "relative", bottom:0, marginLeft:"1%", marginTop:"3%" ,float:"left",display:"inline-block"}}  >
+    <div  style={{ float:"left", paddingBottom:"2%",paddingLeft:"2%",paddingTop:"2%" }}  >
     <WatchLaterIcon />  { this.state.refreshDate}
     </div>
-
-    <div Style={{position: "relative", marginTop:"5%", marginRight:"1%"}}>
+    <div Style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
     <TablePagination
     
     component="div"
@@ -380,6 +513,7 @@ console.log(this.state.currentCollab);
   />
   </div>
   </div>
+
       </div>
       </ThemeProvider>
       
