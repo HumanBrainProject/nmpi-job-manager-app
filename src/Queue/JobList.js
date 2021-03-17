@@ -39,6 +39,7 @@ import Paper from '@material-ui/core/Paper';
 import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 
+
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
@@ -76,6 +77,13 @@ const theme = createMuiTheme({
     hover: {
        /// your styles...
       },
+    },
+    flexBox:{
+
+      display: "flex",
+    
+    flexDirection:"row",
+
     },
   
 });
@@ -130,6 +138,8 @@ class JobList extends React.Component {
       orderBy:'jobID',
       order:'desc',
       filterBy:'',
+      statusFilter:null,
+      hardwareSystemFilter:null,
     }
     this.routeChange = this.routeChange.bind(this);
   }
@@ -162,29 +172,79 @@ class JobList extends React.Component {
         console.log('---taglist?---', this.tagList)
 }
 
-filterJobs(filterCond){
-  
+async filterJobs(statusFilter,hardwareSystemFilter){
+console.log("hardware is "+hardwareSystemFilter+"status is "+statusFilter)
   function isStatus(x) {
-    return x.status===filterCond;
+
+    return x.status===statusFilter;
 }
-console.log("clear value");
-console.log(filterCond);
-if (filterCond==="all" ||filterCond===null ||filterCond==="reset")  
-{this.setState({
+function isHardware(x) {
+
+  return String(x.hardware_platform)===hardwareSystemFilter;
+  
+}
+
+if ((statusFilter===null )  && (hardwareSystemFilter===null ))
+{
+  
+  
+  
+  await this.setState({
 
   filteredJobs: this.state.jobs,
+  hardwareSystemFilter:null,
+  statusFilter:null,
 });
 
 
 }
 else {
 
-var filteredJobs;
-filteredJobs = this.state.jobs.filter(isStatus);
-this.setState({
+  if (statusFilter===null ) {
+    console.log("here null status")
+    await this.setState({
+      statusFilter:null,
+      filteredJobs: this.state.jobs,
+    });
+
+
+   }
+
+   if (hardwareSystemFilter===null ) {
+    console.log("here null hardware")
+    await this.setState({
+      hardwareSystemFilter:null,
+      filteredJobs: this.state.jobs,
+    });
+
+
+   }
+  if (statusFilter!==null )
+{var filteredJobs1;
+filteredJobs1 = this.state.filteredJobs.filter(isStatus);
+await this.setState({
   filterBy: "status",
-  filteredJobs: filteredJobs,
+  filteredJobs: filteredJobs1,
+  statusFilter:statusFilter,
+
 });
+console.log(this.state.statusFilter)
+}
+
+if (hardwareSystemFilter!==null )
+{var filteredJobs2;
+  console.log("here not null hardware")
+
+filteredJobs2 = this.state.filteredJobs.filter(isHardware);
+await this.setState({
+  filterBy: "hardware",
+  filteredJobs: filteredJobs2,
+  hardwareSystemFilter:hardwareSystemFilter,
+
+});
+console.log(this.state.hardwareSystemFilter)
+}
+
 
 }
 }
@@ -231,7 +291,7 @@ routeChange(id) {
 };
 
 sortData = (sortBy, sortOrder) => {
-  var itemsToSort = this.state.jobs;
+  var itemsToSort = this.state.filteredJobs;
   var sortedItems = [];
   var compareFn = null;
   switch (sortBy) {
@@ -284,7 +344,7 @@ requestSort(pSortBy) {
     this.setState({
       sortOrder: sortOrder,
       sortBy: sortBy,
-      jobs:sortedItems
+      filteredJobs:sortedItems
     });
   };
 }
@@ -375,42 +435,59 @@ console.log(this.state.currentCollab);
     return (
       <ThemeProvider theme={theme}>
       <div >
+      <Paper elevation={1} style={{marginTop:"1%",paddingTop:"0.5%" ,marginBottom:"1%", marginLeft:"1%", marginRight:"2%"}} >
+        <div style={{position:"relative",}} >
+          <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",paddingRight:"1%",   position: "relative"}}>
+                <Autocomplete
+                id="Collab-list"
+                options={this.state.collabList}
+                getOptionLabel={(option) => option}
+                defaultValue={this.state.currentCollab}
+                onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
+                style={{ width: 300 ,display:"inline-block"}}
+                renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+                />
 
-        <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
+
+              <div style={{ marginLeft :"1%" ,height: "60%" ,
+              display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
+              <Tooltip title="Reload Jobs">
+              <Button style={{ marginLeft :"1%" ,height: "100%" ,
+              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+              </Button>
+              </Tooltip>
+              </div>
+
+              <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
               <Autocomplete
-              id="Collab-list"
-              options={this.state.collabList}
+              id="Filter by hardware"
+              options={["BrainScaleS","SpiNNaker"]}
               getOptionLabel={(option) => option}
-              defaultValue={this.state.currentCollab}
-              onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
-              style={{ width: 300 ,display:"inline-block"}}
-              renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+              defaultValue={null}
+              onChange={(event, newValue)=> { console.log("the new value is "+newValue);this.filterJobs(this.state.statusFilter,newValue);}}
+              
+              renderInput={(params) => <TextField {...params} label="Filter by Hardware" variant="outlined" />}
               />
 
+              </div>
 
+              <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
+              <Autocomplete
+              id="Filter by status"
+              options={["finished","error","submitted","running"]}
+              getOptionLabel={(option) => option}
+              defaultValue={null}
+              onChange={(event, newValue)=> { this.filterJobs(newValue,this.state.hardwareSystemFilter);}}
+              
+              renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
+              />
 
-            <Tooltip title="Reload Jobs">
-            <Button style={{ marginLeft :"1%" ,height: "60%" ,     position: "absolute",
-            bottom: 30,
-            display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
-            </Button>
-            </Tooltip>
-
-            <Autocomplete
-            id="Filter by status"
-            options={["finished","error","submitted","running"]}
-            getOptionLabel={(option) => option}
-            defaultValue={""}
-            onChange={(event, newValue)=> { this.filterJobs(newValue);}}
-            style={{ width: 300 ,display:"inline-block"}}
-            renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
-            />
-
-
-
+              </div>
+              
+            </div>
           </div>
 
-
+          </Paper>
 
     <div style={{fontSize: '40 px'  ,marginLeft:"1%", marginRight:"2%" }} >
     <TableContainer component={Paper} >
@@ -493,18 +570,21 @@ console.log(this.state.currentCollab);
         </TableContainer>
 
     </div>
-
+    <Paper elevation={1} style={{marginTop:"1%",paddingTop:"0.5%" ,marginBottom:"1%", marginLeft:"1%", marginRight:"2%"}} >
 <div >
 
-    <div  style={{ float:"left", paddingBottom:"2%",paddingLeft:"2%",paddingTop:"2%" }}  >
+    <div  style={{ float:"left", paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%" }}  >
     <WatchLaterIcon />  { this.state.refreshDate}
     </div>
+
+
+
     <div Style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
     <TablePagination
     
     component="div"
     rowsPerPageOptions={[10,15,20,50]}
-    count={this.state.jobs.length}
+    count={this.state.filteredJobs.length}
     rowsPerPage={this.state.rowsPerPage}
     page={this.state.page}
     onChangePage={(e,n)=>this.handleChangePage(e,n) }
@@ -513,7 +593,7 @@ console.log(this.state.currentCollab);
   />
   </div>
   </div>
-
+  </Paper>
       </div>
       </ThemeProvider>
       
