@@ -72,14 +72,13 @@ class JobList extends React.Component {
       authToken: props.auth.token,
       refreshState: false,
       refreshDate :'',
-      currentCollab:'neuromorphic-testing-private',
       collabList:[],
     }
     
   }
 
   getTagsList = async()=> {
-    const tagsUrl = baseUrl + 'tags/?collab_id=neuromorphic-testing-private';
+    const tagsUrl = baseUrl + 'tags/?collab_id=' + this.props.collab;
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
     await axios.get(tagsUrl, config)
         .then(res => {
@@ -137,10 +136,10 @@ class JobList extends React.Component {
         'Authorization': 'Bearer ' + this.state.authToken,
       }
     }
-    let resultsUrl = baseUrl+this.state.currentCollab;
-    let queueUrl = baseQueueUrl +this.state.currentCollab;
+    let resultsUrl = baseUrl+this.props.collab;
+    let queueUrl = baseQueueUrl +this.props.collab;
 
- 
+
     let currentdate = new Date();
     let fetchDataDate = "Last updated: " + currentdate.getDate() + "/"
     + (currentdate.getMonth()+1)  + "/"
@@ -192,23 +191,25 @@ class JobList extends React.Component {
 
 
 onCollabChange= async (newValue)=>{
-// setState is asynchronous, i added await 
-  await this.setState({currentCollab:newValue});
-console.log(this.state.currentCollab);
- this.fetchData();
-
+// setState is asynchronous, i added await
+  await this.props.setCollab(newValue);
+  if (newValue) {
+    this.fetchData();
+  }
 }
 
   async componentDidMount(){
     //this.setState({authToken: this.props.auth.token});
     await this.getCollabList();
-    await this.fetchData();
-    
+    if (this.props.collab) {
+      await this.fetchData();
+    }
+
     console.log(this.state.collabList);
 
-    
+
   }
-  
+
   render() {
     return (
       <ThemeProvider theme={theme}>
@@ -219,10 +220,10 @@ console.log(this.state.currentCollab);
       id="Collab-list"
       options={this.state.collabList}
       getOptionLabel={(option) => option}
-      defaultValue={this.state.currentCollab}
+      defaultValue={this.props.collab}
       onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
       style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+      renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
     />
 
 

@@ -150,31 +150,7 @@ const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 export default function CreateJob(props) {
 // class CreateJob extends React.Component {
 
-
-    const url = ebrainsCollabUrl + "projects";
-    // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
-    const conf = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
-
-    axios.get(url, conf)
-        .then(res => {
-            let editableProjects = [];
-            res.data.forEach(proj => {
-                if (proj.permissions.UPDATE) {
-                    editableProjects.push(proj.project_id);
-                }
-            });
-            editableProjects.sort();
-            setCollabList(editableProjects.map(String))
-        })
-        .catch(err => {
-            console.log('Error: ', err.message);
-        });
-
   const classes = useStyles();
-
-  const [currentCollab, setcurrentCollab] = React.useState('neuromorphic-testing-private')
-  const [collabList, setCollabList] = React.useState([])
-
 
   const [hw, set_hw] = React.useState('');
   const [hwIsSelected, set_hwIsSelected] = React.useState(false);
@@ -260,8 +236,8 @@ function handleSubmit(){
     command : command,
     hardware_config : hardwareConfig,
     hardware_platform : hw,
-    collab_id: currentCollab,
-    tags : tags
+    collab_id: props.collab,
+    tags : tags,
     user_id: props.auth.tokenParsed["preferred_username"]
     // job.selected_tab = "code_editor";
     // job.tags = [];
@@ -285,21 +261,6 @@ function handleSubmit(){
   return (
     <div id="container" >
 
-    <h5>Collab</h5>     
-    {/* <br/> */}
-
-    <div>
-    <Autocomplete
-      id="Collab-list"
-      options={collabList}
-      getOptionLabel={(option) => option}
-      defaultValue={currentCollab}
-      onChange={(event, newValue)=> { setcurrentCollab(newValue);}}
-      style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
-    />
-    </div>
-      <br/>
     <h2>New job</h2>
 
     {/* */}

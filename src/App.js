@@ -25,6 +25,8 @@ function App(props) {
   //console.log(props.auth.tokenParsed);
   const classes = useStyles();
 
+  const [currentCollab, setCurrentCollab] = React.useState(null);
+
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
@@ -39,10 +41,10 @@ function App(props) {
     </header>
     <Switch>
       <Route exact path="/">
-          <JobList auth={props.auth} />
+          <JobList auth={props.auth} collab={currentCollab} setCollab={setCurrentCollab} />
       </Route>
       <Route path="/new">
-          <CreateJob auth={props.auth} />
+          <CreateJob auth={props.auth} collab={currentCollab}  setCollab={setCurrentCollab} />
       </Route>
       <Route path="/resubmit">
           <ResubmitJob auth={props.auth} />
