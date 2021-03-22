@@ -262,6 +262,7 @@ function handleSubmit(){
     hardware_platform : hw,
     collab_id: currentCollab,
     tags : tags
+    user_id: props.auth.tokenParsed["preferred_username"]
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
