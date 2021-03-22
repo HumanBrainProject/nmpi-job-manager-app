@@ -142,11 +142,11 @@ class JobList extends React.Component {
 
  
     let currentdate = new Date();
-    let fetchDataDate = "Last Sync on : " + currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/" 
-    + currentdate.getFullYear() + " @ "  
-    + currentdate.getHours() + ":"  
-    + currentdate.getMinutes() + ":" 
+    let fetchDataDate = "Last updated: " + currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/"
+    + currentdate.getFullYear() + " @ "
+    + currentdate.getHours() + ":"
+    + currentdate.getMinutes() + ":"
     + currentdate.getSeconds();
 
     await axios.get(resultsUrl, config)
@@ -241,7 +241,7 @@ console.log(this.state.currentCollab);
                   <tr>
                       <th  width="120 px">
                         <Tooltip title="Create job">
-                          <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
+                          <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
                           <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
@@ -249,7 +249,7 @@ console.log(this.state.currentCollab);
                            </Tooltip>
                       </th>
 
-                      <th><FingerprintIcon /> ID</th>
+                      <th>ID</th>
                       <th><DoneAllIcon /> Status</th>
                       <th><StorageIcon /> System</th>
                       <th> <CodeIcon /> Code </th>
@@ -267,9 +267,9 @@ console.log(this.state.currentCollab);
                     
                     <td>
                       <div>
-                        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
-                          color="primary"  /> :job.status === 'error' 
-                        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+                        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label={job.status}
+                          color="primary"  /> :job.status === 'error'
+                        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status}
                           color="secondary" /> ) :
                           (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
                              style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }

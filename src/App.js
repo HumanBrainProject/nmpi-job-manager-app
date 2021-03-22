@@ -2,8 +2,10 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Link
 } from "react-router-dom";
+import { makeStyles } from '@material-ui/core';
 
 import './App.css';
 import JobList from './Queue/JobList.js';
@@ -12,16 +14,25 @@ import CreateJob from './Queue/CreateJob.js';
 import ResubmitJob from './Queue/ResubmitJob.js';
 
 
+const useStyles = makeStyles((theme) => ({
+  plainLink: {
+    color: 'white'
+  }
+}));
+
+
 function App(props) {
-  console.log(props.auth.tokenParsed);
+  //console.log(props.auth.tokenParsed);
+  const classes = useStyles();
+
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
-      <a className="navbar-brand" href="/">Job Manager</a>
+      <div className="navbar-brand"><Link to="/" className={classes.plainLink}>EBRAINS Neuromorphic Computing Service: Job Manager</Link></div>
       <div className="ml-auto order-lg-last">
         <ul className="navbar-nav flex-row">
           <li className="nav-item pr-3 pr-lg-0">
-              <a className="nav-link" href="/new">+</a>
+            <div className="nav-link"><Link to="/new" className={classes.plainLink}>+</Link></div>
           </li>
         </ul>
       </div>

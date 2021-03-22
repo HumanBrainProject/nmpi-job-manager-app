@@ -25,6 +25,9 @@ import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 
 const useStyles = makeStyles((theme) => ({
 
+  root: {
+    margin: theme.spacing(2)
+  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
@@ -72,7 +75,8 @@ function JobDetail(props) {
   const classes = useStyles();
 
   return(
-    <div>
+
+    <div className={classes.root}>
       <h2> Job {id} </h2>
         <div>
         <p>

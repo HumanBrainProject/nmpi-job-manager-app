@@ -77,6 +77,7 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+    margin: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
   },
   textField: {
@@ -221,7 +222,7 @@ export default function CreateJob(props) {
     console.log(event.target.value)
   }
 
-  function handleGit(event){
+  function handleCodeURL(event){
     setGit(event.target.value)
   }
 
@@ -298,6 +299,7 @@ function handleSubmit(){
     />
     </div>
       <br/>
+    <h2>New job</h2>
 
     {/* */}
       <h5>Hardware Platform</h5>
@@ -361,8 +363,8 @@ function handleSubmit(){
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <TextField
-            id="github-url"
-            label="Github link"
+            id="code-location-url"
+            label="URL"
             style={{ margin: 8 }}
             placeholder="https://github.com/MyGitAccount/my_git_repository.git"
             helperText="Please type the URL of a version control repository"
@@ -372,7 +374,7 @@ function handleSubmit(){
               shrink: true,
             }}
             variant="outlined"
-            onChange={handleGit}
+            onChange={handleCodeURL}
           />
       </TabPanel>
       <TabPanel value={tab} index={2}>
@@ -389,7 +391,7 @@ function handleSubmit(){
           label="Command:"
           style={{ margin: 8 }}
           placeholder={commExample}
-          helperText="oOptional: specify the path to the main Python script, with any command-line arguments."
+          helperText="Optional: specify the path to the main Python script, with any command-line arguments."
           fullWidth
           margin="normal"
           InputLabelProps={{
