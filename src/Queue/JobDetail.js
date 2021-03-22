@@ -52,9 +52,12 @@ const useStyles = makeStyles((theme) => ({
   },
 
 }));
+
+
 function JobDetail(props) {
   let { id } = useParams();
-  const[job, setJob] = useState({});
+  const [job, setJob] = useState({});
+  const [log, setLog] = useState(null);
 
   useEffect(() => {
     let config = {
@@ -63,7 +66,7 @@ function JobDetail(props) {
       }
     }
     // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}/?collab_id=neuromorphic-testing-private`;
+    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -73,6 +76,26 @@ function JobDetail(props) {
      fetchData();
   }, []);
   const classes = useStyles();
+
+  const getLog = async (jobId) => {
+    const logUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/log/${jobId}`;
+    const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
+    return axios.get(logUrl, config)
+  };
+
+  const handleOpenLog = async (event, expanded) => {
+    if (expanded) {
+      if (log === null) {
+        getLog(id)
+        .then(res => {
+          setLog(res.data.content);
+        })
+        .catch(err => {
+          console.log("error getting log");
+        })
+      }
+    }
+  };
 
   return(
 
@@ -93,7 +116,7 @@ function JobDetail(props) {
         </p>
 
 
-        <ExpansionPanel defaultExpanded='true' >
+        <ExpansionPanel defaultExpanded={true} >
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading}>Output files</Typography>
         </ExpansionPanelSummary>
@@ -109,7 +132,7 @@ function JobDetail(props) {
 
 
 
-        <ExpansionPanel defaultExpanded='true' >
+        <ExpansionPanel defaultExpanded={true} >
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading} >Code</Typography>
         </ExpansionPanelSummary>
@@ -123,7 +146,7 @@ function JobDetail(props) {
       </ExpansionPanel>
 
 
-      <ExpansionPanel defaultExpanded='true' >
+      <ExpansionPanel defaultExpanded={true} >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} >Command</Typography>
       </ExpansionPanelSummary>
@@ -137,31 +160,31 @@ function JobDetail(props) {
     </ExpansionPanel>
 
 
-    <ExpansionPanel defaultExpanded='true'>
+    <ExpansionPanel defaultExpanded={true} >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} >Hardware Config</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
-        
-      
+
+
         {"Platform: "+job.hardware_platform}
         <br></br>
         {"Ressource allocation ID: "}
         {(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")}
 
-        
+
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
-    
 
 
-    <ExpansionPanel defaultExpanded='true' >
+
+    <ExpansionPanel defaultExpanded={true} >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} >Provenance</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
-      
+
       {(job.provenance) ?
         ("Machine's IP : "+job.provenance.spinnaker_machine) : ("No details")
       }
@@ -170,14 +193,14 @@ function JobDetail(props) {
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
-    <ExpansionPanel defaultExpanded='true' >
+    <ExpansionPanel defaultExpanded={false} onChange={handleOpenLog} >
     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
       <Typography className={classes.heading} >Log</Typography>
     </ExpansionPanelSummary>
     <ExpansionPanelDetails className={classes.expansion_panel_details}>
 
 
-      {job.log}
+      <pre>{log}</pre>
 
 
     </ExpansionPanelDetails>
