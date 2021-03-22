@@ -186,7 +186,7 @@ export default function CreateJob(props) {
 
   const [configExample, setConfigExample] = React.useState('');
   const [commExample, setCommExample] = React.useState('');
-  const [config, setConfig] = React.useState('');
+  const [hardwareConfig, setHardwareConfig] = React.useState('');
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
@@ -211,9 +211,9 @@ export default function CreateJob(props) {
     console.log("here is the current model value:", value);
     setCode(value);
   }
-  
-  function handleConfig(event){
-    setConfig(event.target.value)
+
+  function handleHardwareConfig(event){
+    setHardwareConfig(event.target.value)
     console.log(event.target.value)
   }
 
@@ -244,8 +244,8 @@ export default function CreateJob(props) {
 
 function handleSubmit(){
     const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
-  
-    const config = {
+
+    const requestConfig = {
       headers: {
         'Authorization': 'Bearer ' + props.auth.token,
         'Content-type': 'application/json'
@@ -258,7 +258,7 @@ function handleSubmit(){
     status : 'submitted',
     code : mymodel,
     command : command,
-    hardware_config : config,
+    hardware_config : hardwareConfig,
     hardware_platform : hw,
     collab_id: currentCollab,
     tags : tags
@@ -271,8 +271,8 @@ function handleSubmit(){
     // inputs = [];
     }
     console.log(job.hardware_platform)
-  
-    axios.post(Url, job, config)
+
+    axios.post(Url, job, requestConfig)
     .then(response => {
       console.log(response);
     })
@@ -423,7 +423,7 @@ function handleSubmit(){
           autoFocus = {true}
           multiline
           variant="outlined"
-          onChange={handleConfig}
+          onChange={handleHardwareConfig}
         />
 
       {/* </AppBar> */}
