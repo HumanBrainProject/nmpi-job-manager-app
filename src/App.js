@@ -30,7 +30,9 @@ function App(props) {
   React.useEffect(() => {
     let params = (new URL(document.location)).searchParams;
     let requestedCollabId = params.get('collab_id');
-    setCurrentCollab(requestedCollabId);
+    if (requestedCollabId) {
+      setCurrentCollab(requestedCollabId);
+    }
     console.log(`Requested ${requestedCollabId}`);
   });
 

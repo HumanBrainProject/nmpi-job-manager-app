@@ -167,6 +167,7 @@ export default function CreateJob(props) {
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
   const [tags, setTags] = React.useState([])
+  const [errorMessage, setErrorMessage] = React.useState('');
 
 
   useEffect(() => {
@@ -230,7 +231,6 @@ function handleSubmit(){
     status : 'submitted',
     code : mymodel,
     command : command,
-    hardware_config: JSON.parse(hardwareConfig),
     hardware_platform : hw,
     collab_id: props.collab,
     tags : tags,
@@ -242,6 +242,9 @@ function handleSubmit(){
     // job.resource_uri = ""; 
     // inputs = [];
     }
+    if (hardwareConfig) {
+      job.hardware_config = JSON.parse(hardwareConfig);
+    }
     console.log(job.hardware_platform)
 
     axios.post(Url, job, requestConfig)
@@ -250,7 +253,7 @@ function handleSubmit(){
     })
     .catch(error => {
       console.log(error)
-      this.setState({errorMsg: 'Error submitting a job'})
+      setErrorMessage('Error submitting a job');
     })
   }
 
