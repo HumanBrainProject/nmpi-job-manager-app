@@ -179,23 +179,19 @@ export default function CreateJob(props) {
   useEffect(() => {
     if(tab == 0) setModel(code);
     if(tab == 1) setModel(git);
-    console.log('model:', mymodel)
   }, [tab, code, git]);
 
 
   function handleEditorChange(value, event) {
-    console.log("here is the current model value:", value);
     setCode(value);
   }
 
   function handleHardwareConfig(event){
     setHardwareConfig(event.target.value)
-    console.log(event.target.value)
   }
 
   function handleCommand(event){
     setCommand(event.target.value)
-    console.log(event.target.value)
   }
 
   function handleCodeURL(event){
@@ -227,14 +223,14 @@ function handleSubmit(){
         'Content-type': 'application/json'
       }
     }
-  
+
     let job = {
     // job.id = null;
     // job.log = " ";
     status : 'submitted',
     code : mymodel,
     command : command,
-    hardware_config : hardwareConfig,
+    hardware_config: JSON.parse(hardwareConfig),
     hardware_platform : hw,
     collab_id: props.collab,
     tags : tags,
