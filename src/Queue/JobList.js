@@ -72,14 +72,13 @@ class JobList extends React.Component {
       authToken: props.auth.token,
       refreshState: false,
       refreshDate :'',
-      currentCollab:'neuromorphic-testing-private',
       collabList:[],
     }
     
   }
 
   getTagsList = async()=> {
-    const tagsUrl = baseUrl + 'tags/?collab_id=neuromorphic-testing-private';
+    const tagsUrl = baseUrl + 'tags/?collab_id=' + this.props.collab;
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
     await axios.get(tagsUrl, config)
         .then(res => {
@@ -137,16 +136,16 @@ class JobList extends React.Component {
         'Authorization': 'Bearer ' + this.state.authToken,
       }
     }
-    let resultsUrl = baseUrl+this.state.currentCollab;
-    let queueUrl = baseQueueUrl +this.state.currentCollab;
+    let resultsUrl = baseUrl+this.props.collab;
+    let queueUrl = baseQueueUrl +this.props.collab;
 
- 
+
     let currentdate = new Date();
-    let fetchDataDate = "Last Sync on : " + currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/" 
-    + currentdate.getFullYear() + " @ "  
-    + currentdate.getHours() + ":"  
-    + currentdate.getMinutes() + ":" 
+    let fetchDataDate = "Last updated: " + currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/"
+    + currentdate.getFullYear() + " @ "
+    + currentdate.getHours() + ":"
+    + currentdate.getMinutes() + ":"
     + currentdate.getSeconds();
 
     await axios.get(resultsUrl, config)
@@ -192,23 +191,25 @@ class JobList extends React.Component {
 
 
 onCollabChange= async (newValue)=>{
-// setState is asynchronous, i added await 
-  await this.setState({currentCollab:newValue});
-console.log(this.state.currentCollab);
- this.fetchData();
-
+// setState is asynchronous, i added await
+  await this.props.setCollab(newValue);
+  if (newValue) {
+    this.fetchData();
+  }
 }
 
   async componentDidMount(){
     //this.setState({authToken: this.props.auth.token});
     await this.getCollabList();
-    await this.fetchData();
-    
+    if (this.props.collab) {
+      await this.fetchData();
+    }
+
     console.log(this.state.collabList);
 
-    
+
   }
-  
+
   render() {
     return (
       <ThemeProvider theme={theme}>
@@ -219,10 +220,10 @@ console.log(this.state.currentCollab);
       id="Collab-list"
       options={this.state.collabList}
       getOptionLabel={(option) => option}
-      defaultValue={this.state.currentCollab}
+      defaultValue={this.props.collab}
       onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
       style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
+      renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
     />
 
 
@@ -241,7 +242,7 @@ console.log(this.state.currentCollab);
                   <tr>
                       <th  width="120 px">
                         <Tooltip title="Create job">
-                          <a aria-hidden="true" href="/new" ><MdAddCircle /></a>
+                          <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
                           <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
@@ -249,7 +250,7 @@ console.log(this.state.currentCollab);
                            </Tooltip>
                       </th>
 
-                      <th><FingerprintIcon /> ID</th>
+                      <th>ID</th>
                       <th><DoneAllIcon /> Status</th>
                       <th><StorageIcon /> System</th>
                       <th> <CodeIcon /> Code </th>
@@ -267,9 +268,9 @@ console.log(this.state.currentCollab);
                     
                     <td>
                       <div>
-                        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
-                          color="primary"  /> :job.status === 'error' 
-                        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+                        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label={job.status}
+                          color="primary"  /> :job.status === 'error'
+                        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status}
                           color="secondary" /> ) :
                           (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
                              style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }

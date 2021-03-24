@@ -77,6 +77,7 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+    margin: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
   },
   textField: {
@@ -149,31 +150,7 @@ const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 export default function CreateJob(props) {
 // class CreateJob extends React.Component {
 
-
-    const url = ebrainsCollabUrl + "projects";
-    // const url = 'https://wiki.ebrains.eu/bin/view/Collabs/'
-    const conf = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
-
-    axios.get(url, conf)
-        .then(res => {
-            let editableProjects = [];
-            res.data.forEach(proj => {
-                if (proj.permissions.UPDATE) {
-                    editableProjects.push(proj.project_id);
-                }
-            });
-            editableProjects.sort();
-            setCollabList(editableProjects.map(String))
-        })
-        .catch(err => {
-            console.log('Error: ', err.message);
-        });
-
   const classes = useStyles();
-
-  const [currentCollab, setcurrentCollab] = React.useState('neuromorphic-testing-private')
-  const [collabList, setCollabList] = React.useState([])
-
 
   const [hw, set_hw] = React.useState('');
   const [hwIsSelected, set_hwIsSelected] = React.useState(false);
@@ -185,11 +162,12 @@ export default function CreateJob(props) {
 
   const [configExample, setConfigExample] = React.useState('');
   const [commExample, setCommExample] = React.useState('');
-  const [config, setConfig] = React.useState('');
+  const [hardwareConfig, setHardwareConfig] = React.useState('');
   const [command, setCommand] = React.useState('');
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
   const [tags, setTags] = React.useState([])
+  const [errorMessage, setErrorMessage] = React.useState('');
 
 
   useEffect(() => {
@@ -202,26 +180,22 @@ export default function CreateJob(props) {
   useEffect(() => {
     if(tab == 0) setModel(code);
     if(tab == 1) setModel(git);
-    console.log('model:', mymodel)
   }, [tab, code, git]);
 
 
   function handleEditorChange(value, event) {
-    console.log("here is the current model value:", value);
     setCode(value);
   }
-  
-  function handleConfig(event){
-    setConfig(event.target.value)
-    console.log(event.target.value)
+
+  function handleHardwareConfig(event){
+    setHardwareConfig(event.target.value)
   }
 
   function handleCommand(event){
     setCommand(event.target.value)
-    console.log(event.target.value)
   }
 
-  function handleGit(event){
+  function handleCodeURL(event){
     setGit(event.target.value)
   }
 
@@ -243,24 +217,24 @@ export default function CreateJob(props) {
 
 function handleSubmit(){
     const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
-  
-    const config = {
+
+    const requestConfig = {
       headers: {
         'Authorization': 'Bearer ' + props.auth.token,
         'Content-type': 'application/json'
       }
     }
-  
+
     let job = {
     // job.id = null;
     // job.log = " ";
     status : 'submitted',
     code : mymodel,
     command : command,
-    hardware_config : config,
     hardware_platform : hw,
-    collab_id: currentCollab,
-    tags : tags
+    collab_id: props.collab,
+    tags : tags,
+    user_id: props.auth.tokenParsed["preferred_username"]
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
@@ -268,36 +242,25 @@ function handleSubmit(){
     // job.resource_uri = ""; 
     // inputs = [];
     }
+    if (hardwareConfig) {
+      job.hardware_config = JSON.parse(hardwareConfig);
+    }
     console.log(job.hardware_platform)
-  
-    axios.post(Url, job, config)
+
+    axios.post(Url, job, requestConfig)
     .then(response => {
       console.log(response);
     })
     .catch(error => {
       console.log(error)
-      this.setState({errorMsg: 'Error submitting a job'})
+      setErrorMessage('Error submitting a job');
     })
   }
 
   return (
     <div id="container" >
 
-    <h5>Collab</h5>     
-    {/* <br/> */}
-
-    <div>
-    <Autocomplete
-      id="Collab-list"
-      options={collabList}
-      getOptionLabel={(option) => option}
-      defaultValue={currentCollab}
-      onChange={(event, newValue)=> { setcurrentCollab(newValue);}}
-      style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collabs List" variant="outlined" />}
-    />
-    </div>
-      <br/>
+    <h2>New job</h2>
 
     {/* */}
       <h5>Hardware Platform</h5>
@@ -361,8 +324,8 @@ function handleSubmit(){
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <TextField
-            id="github-url"
-            label="Github link"
+            id="code-location-url"
+            label="URL"
             style={{ margin: 8 }}
             placeholder="https://github.com/MyGitAccount/my_git_repository.git"
             helperText="Please type the URL of a version control repository"
@@ -372,7 +335,7 @@ function handleSubmit(){
               shrink: true,
             }}
             variant="outlined"
-            onChange={handleGit}
+            onChange={handleCodeURL}
           />
       </TabPanel>
       <TabPanel value={tab} index={2}>
@@ -389,7 +352,7 @@ function handleSubmit(){
           label="Command:"
           style={{ margin: 8 }}
           placeholder={commExample}
-          helperText="oOptional: specify the path to the main Python script, with any command-line arguments."
+          helperText="Optional: specify the path to the main Python script, with any command-line arguments."
           fullWidth
           margin="normal"
           InputLabelProps={{
@@ -420,7 +383,7 @@ function handleSubmit(){
           autoFocus = {true}
           multiline
           variant="outlined"
-          onChange={handleConfig}
+          onChange={handleHardwareConfig}
         />
 
       {/* </AppBar> */}
