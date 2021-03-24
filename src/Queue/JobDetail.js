@@ -19,10 +19,49 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
 import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
+import Chip from '@material-ui/core/Chip';
+import Avatar from '@material-ui/core/Avatar';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import CodeIcon from '@material-ui/icons/Code';
+import FingerprintIcon from '@material-ui/icons/Fingerprint';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import StorageIcon from '@material-ui/icons/Storage';
+import red from '@material-ui/core/colors/red';
+import green from '@material-ui/core/colors/green';
+import yellow from '@material-ui/core/colors/yellow';
+import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
+import DescriptionIcon from '@material-ui/icons/Description';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import LaunchIcon from '@material-ui/icons/Launch';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
 
-
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#0b6623',
+    },
+    secondary: {
+      main: red[500],
+    },
+    running: {
+      main: yellow[500],
+    },
+  },
+  });
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -31,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
-    fontWeight: 'bold',
+    fontWeight: '550',
     
 
     
@@ -40,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
    
     backgroundColor:'#f8f8ff',
     fontFamily:'Futura',
-    'font-size': '16px',
+    'font-size': '14px',
 
   },
   expansion_panel_summary:{
@@ -98,30 +137,47 @@ function JobDetail(props) {
   };
 
   return(
+    <ThemeProvider theme={theme}>
+      
+    <div style={{marginBottom:"2%",marginTop:"1%"}}>
+    
+      
+        <div style={{marginLeft:"1%",marginRight:"2%",}}>
+        
+        <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"22%",marginBottom:"1%"}} >
+        <Box component="span" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Job {id}</Box>
 
-    <div className={classes.root}>
-      <h2> Job {id} </h2>
+        <p>
         <div>
-        <p>
-          <span className={job.status === 'finished' ? ('badge badge-success') : 'badge badge-danger'}>{job.status}</span>
-        </p>
-        <p>
-          <small >
-            Submitted on <strong >{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
-          </small>
-          <br></br>
-          <small >
-            Completed on <strong> {String(job.timestamp_completion).slice(0,4)+"/"+String(job.timestamp_completion).slice(5,7)+"/"+String(job.timestamp_completion).slice(8,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong>
-          </small>
+        {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
+          color="primary"  /> :job.status === 'error' 
+        ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+          color="secondary" /> ) :
+          (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
+             style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
+      </div>
+      
         </p>
 
+        <p>
+
+        <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
+        </Box>
+        
+        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {String(job.timestamp_completion).slice(0,4)+"/"+String(job.timestamp_completion).slice(5,7)+"/"+String(job.timestamp_completion).slice(8,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong></Box>
+  
+        </p>
+
+        </Paper>
+
+        
 
         <ExpansionPanel defaultExpanded={true} >
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading}>Output files</Typography>
+          <Typography className={classes.heading}><DescriptionIcon /> Output files</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file =><div><p> <a href= {String(out_file.url)} > {String(out_file.url)} </a> {'\n'} </p></div>))
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =><Box component="span" display="block"> <AttachFileIcon /> <a href= {String(out_file.url)} > {"Output file "+(index+1)} </a> </Box>))
           : ('No files available')}
   
   
@@ -134,7 +190,7 @@ function JobDetail(props) {
 
         <ExpansionPanel defaultExpanded={true} >
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading} >Code</Typography>
+          <Typography className={classes.heading} > <CodeIcon /> Code</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails   className={classes.expansion_panel_details}>
           <Typography>
@@ -148,9 +204,10 @@ function JobDetail(props) {
 
       <ExpansionPanel defaultExpanded={true} >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Command</Typography>
+        <Typography className={classes.heading} >     <LaunchIcon /> Command</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+ 
         <Typography>
         <SyntaxHighlighter language="bash" style={docco}>
         {String(job.command)}
@@ -160,34 +217,43 @@ function JobDetail(props) {
     </ExpansionPanel>
 
 
-    <ExpansionPanel defaultExpanded={true} >
+    <ExpansionPanel defaultExpanded={true}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Hardware Config</Typography>
+        <Typography className={classes.heading} ><StorageIcon /> Hardware Config</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      <List component="nav" aria-label="mailbox folders">
+      <ListItem Box>
+      <Box component="div" display="inline" width="300px">Platform:</Box>
+<Box component="div" display="inline">{job.hardware_platform} </Box>
+ 
+      </ListItem>
+
+      <ListItem Box>
+      <Box component="div" display="inline" width="300px">Ressource allocation ID:</Box>
+      <Box component="div" display="inline">{(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")} </Box>
+      </ListItem>
+      </List>
 
 
-        {"Platform: "+job.hardware_platform}
-        <br></br>
-        {"Ressource allocation ID: "}
-        {(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")}
 
-
+        
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
-
+    
 
 
     <ExpansionPanel defaultExpanded={true} >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Provenance</Typography>
+        <Typography className={classes.heading} ><LocationOnIcon />Provenance</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      <Box component="div" display="inline" width="300px" style={{paddingLeft:"15px"}}>Machine's IP :</Box>
+      <Box component="div" display="inline">{(job.provenance) ?
+        (String(job.provenance.spinnaker_machine)) : ("No details")
+      }</Box>
 
-      {(job.provenance) ?
-        ("Machine's IP : "+job.provenance.spinnaker_machine) : ("No details")
-      }
 
 
       </ExpansionPanelDetails>
@@ -210,6 +276,7 @@ function JobDetail(props) {
 
       </div>
     </div>
+    </ThemeProvider>
   );
 }
 

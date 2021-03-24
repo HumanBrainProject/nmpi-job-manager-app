@@ -39,7 +39,7 @@ function App(props) {
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
-      <div className="navbar-brand"><Link to={`/?collab_id=${currentCollab}`} className={classes.plainLink}>
+      <div className="navbar-brand"><Link to={`/?collab_id=${currentCollab}`} style ={{textDecoration: "none"}} className={classes.plainLink}>
         EBRAINS Neuromorphic Computing Service: Job Manager
         </Link></div>
       <div className="ml-auto order-lg-last">
