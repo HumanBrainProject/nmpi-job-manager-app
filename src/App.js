@@ -27,10 +27,19 @@ function App(props) {
 
   const [currentCollab, setCurrentCollab] = React.useState(null);
 
+  React.useEffect(() => {
+    let params = (new URL(document.location)).searchParams;
+    let requestedCollabId = params.get('collab_id');
+    setCurrentCollab(requestedCollabId);
+    console.log(`Requested ${requestedCollabId}`);
+  });
+
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
-      <div className="navbar-brand"><Link to="/" className={classes.plainLink}>EBRAINS Neuromorphic Computing Service: Job Manager</Link></div>
+      <div className="navbar-brand"><Link to={`/?collab_id=${currentCollab}`} className={classes.plainLink}>
+        EBRAINS Neuromorphic Computing Service: Job Manager
+        </Link></div>
       <div className="ml-auto order-lg-last">
         <ul className="navbar-nav flex-row">
           <li className="nav-item pr-3 pr-lg-0">
