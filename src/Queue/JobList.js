@@ -224,6 +224,7 @@ onCollabChange= async (newValue)=>{
       onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
       style={{ width: 300 ,display:"inline-block"}}
       renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
+      autoHighlight={true}
     />
 
 
