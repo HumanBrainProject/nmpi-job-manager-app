@@ -30,12 +30,12 @@ function App(props) {
 
   React.useEffect(() => {
     let params = (new URL(document.location)).searchParams;
-    let requestedCollabId = params.get('collab_id');
+    let requestedCollabId = params.get('clb-collab-id');
     if (requestedCollabId) {
       setCurrentCollab(requestedCollabId);
     }
     console.log(`Requested ${requestedCollabId}`);
-  });
+  }, [currentCollab]);
 
   return (
     <Router>

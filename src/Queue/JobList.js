@@ -32,7 +32,7 @@ import StorageIcon from '@material-ui/icons/Storage';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
 const baseQueueUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue/?collab_id=';
-// url used to get collabs' ids 
+// url used to get collabs' ids
 const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 
 
@@ -58,23 +58,52 @@ const theme = createMuiTheme({
     },
   },
 });
+
+
+function isInCollab() {
+  const isParent = (window.opener == null);
+  const isIframe = (window !== window.parent);
+  return isIframe && isParent;
+}
+
+
+function CollabSelector(props) {
+
+    if (!isInCollab()) {
+      return (
+        <Autocomplete
+            id="Collab-list"
+            options={props.collabList}
+            getOptionLabel={(option) => option}
+            defaultValue={props.collab}
+            onChange={(event, newValue)=> { props.onCollabChange(newValue);}}
+            style={{ width: 300 ,display:"inline-block"}}
+            renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
+            autoHighlight={true}
+        />
+      )
+    } else {
+      return ""
+    }
+}
+
 class JobList extends React.Component {
 
   constructor(props) {
-    
-    
+
+
     super(props)
     this.state = {
       jobs: [],
       provJobList: [],
-      tagList:[], 
+      tagList:[],
       error: '',
       authToken: props.auth.token,
       refreshState: false,
       refreshDate :'',
       collabList:[],
     }
-    
+
   }
 
   getTagsList = async()=> {
@@ -216,25 +245,9 @@ onCollabChange= async (newValue)=>{
       <div >
 
 <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
-      <Autocomplete
-      id="Collab-list"
-      options={this.state.collabList}
-      getOptionLabel={(option) => option}
-      defaultValue={this.props.collab}
-      onChange={(event, newValue)=> { this.onCollabChange(newValue);}}
-      style={{ width: 300 ,display:"inline-block"}}
-      renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
-      autoHighlight={true}
-    />
 
+    <CollabSelector collabList={this.state.collabList} collab={this.props.collab} onCollabChange={this.onCollabChange} />
 
-
-    <Tooltip title="Reload Jobs">
-    <Button style={{ marginLeft :"1%" ,height: "60%" ,     position: "absolute",
-    bottom: 30,
-     display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
-    </Button>
-    </Tooltip>
     </div>
         <div className="row-fluid" >
           <div className="col-md-12">
