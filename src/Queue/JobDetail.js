@@ -32,12 +32,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
     fontWeight: 'bold',
-    
 
-    
+
+
   },
   expansion_panel_details:{
-   
+
     backgroundColor:'#f8f8ff',
     fontFamily:'Futura',
     'font-size': '16px',
@@ -73,7 +73,7 @@ function JobDetail(props) {
       await setJob(result.data);
       console.log(result.data);
     };
-     fetchData();
+    fetchData();
   }, []);
   const classes = useStyles();
 
@@ -123,8 +123,8 @@ function JobDetail(props) {
         <ExpansionPanelDetails className={classes.expansion_panel_details}>
         {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file =><div><p> <a href= {String(out_file.url)} > {String(out_file.url)} </a> {'\n'} </p></div>))
           : ('No files available')}
-  
-  
+
+
         </ExpansionPanelDetails>
       </ExpansionPanel>
 
