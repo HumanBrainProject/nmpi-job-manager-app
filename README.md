@@ -1,6 +1,6 @@
 # Job Manager app (version 2) for the EBRAINS Neuromorphic Computing Service
 
-This app is currently in development and has not yet been deployed.
+Available online at https://job-manager.hbpneuromorphic.eu and as an app in the EBRAINS Collaboratory.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -20,3 +20,17 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npx prettier --write .`
+
+To format the project code using [Prettier](https://prettier.io).
+
+## Copyright
+
+All code is copyright 2020-2021 CNRS unless otherwise indicated, and made available under the Apache License v2.
+
+## Acknowledgements
+
+This project was developed in the Human Brain Project,
+funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation
+under Specific Grant Agreement No. 945539 (Human Brain Project SGA3).
