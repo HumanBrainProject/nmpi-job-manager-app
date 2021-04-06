@@ -1,0 +1,13 @@
+variables:
+  docker_registry_user: "robot$$gitlab"
+
+stages:
+  - build
+
+build_image:
+  stage: build
+  script:
+    - docker-compose -f deployment/docker-compose.prod.yml build
+    - docker login -u $docker_registry_user -p $docker_registry_prod_token docker-registry.ebrains.eu
+    - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager
+
