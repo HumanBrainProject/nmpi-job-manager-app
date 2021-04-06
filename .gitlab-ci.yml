@@ -10,4 +10,6 @@ build_image:
     - docker build -f deployment/Dockerfile.prod -t docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager
     - docker login -u $docker_registry_user -p $docker_registry_prod_token docker-registry.ebrains.eu
     - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager
+  tags:
+    - shell-runner
 
