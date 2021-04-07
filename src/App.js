@@ -12,6 +12,7 @@ import JobList from './Queue/JobList.js';
 import JobDetail from './Queue/JobDetail.js';
 import CreateJob from './Queue/CreateJob.js';
 import ResubmitJob from './Queue/ResubmitJob.js';
+import ResourceRequestList from './Quotas/ResourceRequestList.js';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,21 +30,31 @@ function App(props) {
 
   React.useEffect(() => {
     let params = (new URL(document.location)).searchParams;
-    let requestedCollabId = params.get('collab_id');
+    let requestedCollabId = params.get('clb-collab-id');
     if (requestedCollabId) {
       setCurrentCollab(requestedCollabId);
     }
     console.log(`Requested ${requestedCollabId}`);
-  });
+  }, [currentCollab]);
 
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
+<<<<<<< HEAD
       <div className="navbar-brand"><Link to={`/?collab_id=${currentCollab}`} style ={{textDecoration: "none"}} className={classes.plainLink}>
+=======
+      <div className="navbar-brand"><Link to={`/?clb-collab-id=${currentCollab}`} className={classes.plainLink}>
+>>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
         EBRAINS Neuromorphic Computing Service: Job Manager
         </Link></div>
       <div className="ml-auto order-lg-last">
         <ul className="navbar-nav flex-row">
+          <li className="nav-item pr-3 pr-lg-0">
+            <div className="nav-link"><Link to={`/?clb-collab-id=${currentCollab}`} className={classes.plainLink}>Jobs</Link></div>
+          </li>
+          <li className="nav-item pr-3 pr-lg-0">
+            <div className="nav-link"><Link to="/resources" className={classes.plainLink}>Quotas</Link></div>
+          </li>
           <li className="nav-item pr-3 pr-lg-0">
             <div className="nav-link"><Link to="/new" className={classes.plainLink}>+</Link></div>
           </li>
@@ -59,6 +70,9 @@ function App(props) {
       </Route>
       <Route path="/resubmit">
           <ResubmitJob auth={props.auth} />
+      </Route>
+      <Route path="/resources">
+          <ResourceRequestList auth={props.auth} collab={currentCollab} />
       </Route>
       <Route path="/:id">
           <JobDetail auth={props.auth} />

@@ -42,7 +42,7 @@ import WatchLaterIcon from '@material-ui/icons/WatchLater';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
 const baseQueueUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue/?collab_id=';
-// url used to get collabs' ids 
+// url used to get collabs' ids
 const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 
 
@@ -81,6 +81,7 @@ const theme = createMuiTheme({
     },
   
 });
+<<<<<<< HEAD
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontSize: 16,
@@ -107,17 +108,52 @@ const StyledTableRow = withStyles((theme) => ({
 //     },
 //   },
 // }))(TableRow);
+=======
+
+
+function isInCollab() {
+  const isParent = (window.opener == null);
+  const isIframe = (window !== window.parent);
+  return isIframe && isParent;
+}
+
+
+function CollabSelector(props) {
+
+    if (!isInCollab()) {
+      return (
+        <Autocomplete
+            id="Collab-list"
+            options={props.collabList}
+            getOptionLabel={(option) => option}
+            defaultValue={props.collab}
+            onChange={(event, newValue)=> { props.onCollabChange(newValue);}}
+            style={{ width: 300 ,display:"inline-block"}}
+            renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
+            autoHighlight={true}
+        />
+      )
+    } else {
+      return ""
+    }
+}
+
+>>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
 class JobList extends React.Component {
 
   constructor(props) {
-    
-    
+
+
     super(props)
     this.state = {
       jobs: [],
       provJobList: [],
+<<<<<<< HEAD
       filteredJobs:[],
       tagList:[], 
+=======
+      tagList:[],
+>>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
       error: '',
       authToken: props.auth.token,
       refreshState: false,
@@ -132,7 +168,11 @@ class JobList extends React.Component {
       statusFilter:null,
       hardwareSystemFilter:null,
     }
+<<<<<<< HEAD
     this.routeChange = this.routeChange.bind(this);
+=======
+
+>>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
   }
 
   getTagsList = async()=> {
@@ -425,6 +465,7 @@ onCollabChange= async (newValue)=>{
     return (
       <ThemeProvider theme={theme}>
       <div >
+<<<<<<< HEAD
       <Paper elevation={1} style={{marginTop:"1%",paddingTop:"0.5%" ,marginBottom:"1%", marginLeft:"1%", marginRight:"2%"}} >
       <div style={{position:"relative",}} >
       <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",paddingRight:"1%",   position: "relative"}}>
@@ -484,6 +525,20 @@ onCollabChange= async (newValue)=>{
         <TableHead>
           <TableRow  style={{ height: 'auto !important' }} >
           <StyledTableCell width="120 px" >
+=======
+
+<div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",   position: "relative"}}>
+
+    <CollabSelector collabList={this.state.collabList} collab={this.props.collab} onCollabChange={this.onCollabChange} />
+
+    </div>
+        <div className="row-fluid" >
+          <div className="col-md-12">
+            <table className="table table-striped table-condensed">
+              <thead>
+                  <tr>
+                      <th  width="120 px">
+>>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
                         <Tooltip title="Create job">
                           <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
