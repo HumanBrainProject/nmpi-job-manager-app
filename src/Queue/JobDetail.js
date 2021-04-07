@@ -70,12 +70,8 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
-<<<<<<< HEAD
     fontWeight: '550',
     
-=======
-    fontWeight: 'bold',
->>>>>>> 6cdbb64178dffa4ee0ff56dd974b7dd11b35df7e
 
 
 
