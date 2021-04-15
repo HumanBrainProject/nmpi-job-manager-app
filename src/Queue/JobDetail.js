@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core';
 // import hljs from 'highlight.js';
 // https://openbase.com/js/react-syntax-highlighter
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 // import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 // <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" />
@@ -48,6 +48,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import {apiV2Url} from '../Globals';
+import {timeFormat} from '../Utils';
 
 const theme = createMuiTheme({
   palette: {
@@ -106,7 +108,7 @@ function JobDetail(props) {
       }
     }
     // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}`;
+    const resultUrl = apiV2Url +`results/${id}`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -118,7 +120,7 @@ function JobDetail(props) {
   const classes = useStyles();
 
   const getLog = async (jobId) => {
-    const logUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/log/${jobId}`;
+    const logUrl = apiV2Url + `/log/${jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
     return axios.get(logUrl, config)
   };
@@ -162,10 +164,10 @@ function JobDetail(props) {
 
         <p>
 
-        <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
+        <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
         </Box>
         
-        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {String(job.timestamp_completion).slice(0,4)+"/"+String(job.timestamp_completion).slice(5,7)+"/"+String(job.timestamp_completion).slice(8,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong></Box>
+        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>
   
         </p>
 

@@ -37,14 +37,13 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
-
+import {validationV2Url,apiV2Url } from '../Globals';
+import {timeFormat,currentDate} from '../Utils';
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
 //const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
-const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
-const baseQueueUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue/?collab_id=';
-// url used to get collabs' ids
-const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 
+const baseUrl = apiV2Url+'/results/?collab_id=';
+const baseQueueUrl =  apiV2Url +'/queue/?collab_id=';
 
 /*const useStyles = makeStyles((theme) => ({
 
@@ -277,7 +276,7 @@ async filterJobs(statusFilter,hardwareSystemFilter){
   
 
    getCollabList= async()=> {
-    const url = baseGlobalUrl + "/projects";
+    const url = validationV2Url + "/projects";
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
     await axios.get(url, config)
         .then(res => {
@@ -381,13 +380,7 @@ requestSort(pSortBy) {
     let queueUrl = baseQueueUrl +this.props.collab;
 
 
-    let currentdate = new Date();
-    let fetchDataDate = "Last updated: " + currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/"
-    + currentdate.getFullYear() + " @ "
-    + currentdate.getHours() + ":"
-    + currentdate.getMinutes() + ":"
-    + currentdate.getSeconds();
+    let fetchDataDate = "Last updated: " + currentDate();
 
     await axios.get(resultsUrl, config)
     .then(response => {
@@ -565,7 +558,7 @@ onCollabChange= async (newValue)=>{
                             </StyledTableCell> 
                             <StyledTableCell  component="td" scope="row">{job.hardware_platform}</StyledTableCell> 
                             <StyledTableCell  component="td" scope="row"><code>{job.code.substring(0,50) + "..."}</code></StyledTableCell> 
-                            <StyledTableCell  component="th" scope="row">{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</StyledTableCell> 
+                            <StyledTableCell  component="th" scope="row">{timeFormat(job.timestamp_submission)}</StyledTableCell> 
                             <StyledTableCell  component="td" scope="row">{job.user_id}</StyledTableCell> 
                             </TableRow>)
                           // }
