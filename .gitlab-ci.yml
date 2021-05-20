@@ -1,5 +1,3 @@
-variables:
-  docker_registry_user: "robot$$gitlab"
 
 stages:
   - build
@@ -8,7 +6,7 @@ build_image:
   stage: build
   script:
     - docker build -f deployment/Dockerfile.prod -t docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager .
-    - docker login -u $docker_registry_user -p $docker_registry_prod_token docker-registry.ebrains.eu
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_SECRET docker-registry.ebrains.eu
     - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager
   tags:
     - shell-runner
