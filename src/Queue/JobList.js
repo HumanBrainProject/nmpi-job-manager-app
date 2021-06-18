@@ -120,13 +120,14 @@ function CollabSelector(props) {
     if (!isInCollab()) {
       return (
         <Autocomplete
+        data-testid="autocomplete"
             id="Collab-list"
             options={props.collabList}
             getOptionLabel={(option) => option}
             defaultValue={props.collab}
             onChange={(event, newValue)=> { props.onCollabChange(newValue);}}
             style={{ width: 300 ,display:"inline-block"}}
-            renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
+            renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined"  />}
             autoHighlight={true}
         />
       )
@@ -465,6 +466,7 @@ onCollabChange= async (newValue)=>{
               </div>
               <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
               <Autocomplete
+              
               id="Filter by platform"
               options={["BrainScaleS","SpiNNaker"]}
               getOptionLabel={(option) => option}

@@ -3,9 +3,9 @@ import axios from 'axios';
 import {
   useParams
 } from "react-router-dom";
-//import { Button } from '@material-ui/core';
+
 import { makeStyles } from '@material-ui/core';
-//import * as Mui from '@material-ui/core';
+
 // import Prism, { highlight } from "prismjs";
 // import hljs from 'highlight.js';
 // https://openbase.com/js/react-syntax-highlighter
@@ -14,9 +14,7 @@ import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 // import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 // import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 // <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" />
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
@@ -29,8 +27,6 @@ import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import CodeIcon from '@material-ui/icons/Code';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
 import StorageIcon from '@material-ui/icons/Storage';
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
@@ -48,8 +44,16 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+
+
 import {apiV2Url} from '../Globals';
 import {timeFormat} from '../Utils';
+
+
+
 
 const theme = createMuiTheme({
   palette: {
@@ -108,7 +112,7 @@ function JobDetail(props) {
       }
     }
     // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = apiV2Url +`results/${id}`;
+    const resultUrl = apiV2Url +`/results/${id}`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -175,56 +179,56 @@ function JobDetail(props) {
 
         
 
-        <ExpansionPanel defaultExpanded={true} >
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading}><DescriptionIcon /> Output files</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansion_panel_details}>
+        <Accordion defaultExpanded={true} >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+          <Typography className={classes.heading}><DescriptionIcon /> Output files </Typography>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansion_panel_details}>
         {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =><Box component="span" display="block"> <AttachFileIcon /> <a href= {String(out_file.url)} > {"Output file "+(index+1)} </a> </Box>))
           : ('No files available')}
 
 
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
 
 
 
 
 
-        <ExpansionPanel defaultExpanded={true} >
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+        <Accordion defaultExpanded={true} >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading} > <CodeIcon /> Code</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails   className={classes.expansion_panel_details}>
+        </AccordionSummary>
+        <AccordionDetails   className={classes.expansion_panel_details}>
           <Typography>
           <SyntaxHighlighter language="python" style={docco}>
           {String(job.code)}
         </SyntaxHighlighter>
           </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
 
 
-      <ExpansionPanel defaultExpanded={true} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+      <Accordion defaultExpanded={true} >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} >     <LaunchIcon /> Command</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
  
         <Typography>
         <SyntaxHighlighter language="bash" style={docco}>
         {String(job.command)}
       </SyntaxHighlighter>
         </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
 
 
-    <ExpansionPanel defaultExpanded={true}>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+    <Accordion defaultExpanded={true}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} ><StorageIcon /> Hardware Config</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
       <List component="nav" aria-label="mailbox folders">
       <ListItem Box>
       <Box component="div" display="inline" width="300px">Platform:</Box>
@@ -241,17 +245,17 @@ function JobDetail(props) {
 
 
         
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
 
     
 
 
-    <ExpansionPanel defaultExpanded={true} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+    <Accordion defaultExpanded={true} >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
         <Typography className={classes.heading} ><LocationOnIcon />Provenance</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
       <Box component="div" display="inline" width="300px" style={{paddingLeft:"15px"}}>Machine's IP :</Box>
       <Box component="div" display="inline">{(job.provenance) ?
         (String(job.provenance.spinnaker_machine)) : ("No details")
@@ -259,21 +263,21 @@ function JobDetail(props) {
 
 
 
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
 
-    <ExpansionPanel defaultExpanded={false} onChange={handleOpenLog} >
-    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
+    <Accordion defaultExpanded={false} onChange={handleOpenLog} >
+    <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
       <Typography className={classes.heading} >Log</Typography>
-    </ExpansionPanelSummary>
-    <ExpansionPanelDetails className={classes.expansion_panel_details}>
+    </AccordionSummary>
+    <AccordionDetails className={classes.expansion_panel_details}>
 
 
       <pre>{log}</pre>
 
 
-    </ExpansionPanelDetails>
-  </ExpansionPanel>
+    </AccordionDetails>
+  </Accordion>
 
 
 
