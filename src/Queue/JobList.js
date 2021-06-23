@@ -281,6 +281,8 @@ async filterJobs(statusFilter,hardwareSystemFilter){
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
     await axios.get(url, config)
         .then(res => {
+
+
             let editableProjects = [];
             res.data.forEach(proj => {
                 if (proj.permissions.UPDATE) {
@@ -387,6 +389,8 @@ requestSort(pSortBy) {
     .then(response => {
       let initial_list = []
       console.log(response);
+      console.log(response.data.objects);
+      console.log(resultsUrl);
       this.setState({provJobList: initial_list.concat(response.data.objects)});
       var mydate = new Date(response.data.objects.date);
       var date = mydate.toString("jj/MM/yyyy");
@@ -460,7 +464,7 @@ onCollabChange= async (newValue)=>{
               display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
               <Tooltip title="Reload Jobs">
               <Button style={{ marginLeft :"1%" ,height: "100%" ,
-              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
               </Button>
               </Tooltip>
               </div>
@@ -506,7 +510,7 @@ onCollabChange= async (newValue)=>{
                           <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
                            </Button>
                            </Tooltip>
                            </StyledTableCell>
@@ -584,7 +588,7 @@ onCollabChange= async (newValue)=>{
                 
                 
                 
-                    <div Style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
+                    <div>
                     <TablePagination
                     
                     component="div"

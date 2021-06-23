@@ -3,6 +3,7 @@ import { render , cleanup, fireEvent,wait} from '@testing-library/react';
 import axios from 'axios';
 import JobDetail from './JobDetail.js';
 import {apiV2Url} from '../Globals';
+import { act } from 'react-dom/test-utils';
 
 const auth={key: 5000,};
 
@@ -51,7 +52,7 @@ test('mocking axios request', async () => {
     
   }
 
-  const resultUrl = apiV2Url +`/results/`+jobExemple.data.id;
+  const resultUrl = apiV2Url +`/results/`+jobExemple.data.output_data.id;
   axios.mockImplementation((url) => {
  switch (url) {
       case resultUrl: 
@@ -61,9 +62,9 @@ test('mocking axios request', async () => {
       case baseQueueUrl+collab:
         return Promise.resolve({responseQueue}) */
   /*     case '/items.json':
-        return Promise.resolve({data: [{id: 1}, {id: 2}]})
+        return Promise.resolve({data: [{id: 1}, {id: 2}]})*/
       default:
-        return Promise.reject(new Error('not found')) */
+        return Promise.reject(new Error('not found '+url+' '+resultUrl)) 
     
     
   }
@@ -87,4 +88,7 @@ test('mocking axios request', async () => {
      fireEvent.click(getByText(attribute));
     
     })
+
+
+    await act(()=> Promise.resolve() )
   });
