@@ -26,3 +26,6 @@ package-lock.json
 .eslintcache
 package-lock.json
 package-lock.json
+src/.owncloudsync.log
+src/.sync_journal.db
+src/.sync_journal.db-wal

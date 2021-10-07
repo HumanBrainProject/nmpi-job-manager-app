@@ -266,7 +266,7 @@ function handleSubmit(){
       <h5>Hardware Platform</h5>
 
       <div>
-      <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl}  data-testid ='hardwareList'>
         <InputLabel id="hardware-simple-select">Hardware</InputLabel>
         <Select
           labelId="hardware-simple-select"
