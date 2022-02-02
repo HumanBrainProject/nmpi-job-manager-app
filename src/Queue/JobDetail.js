@@ -3,26 +3,64 @@ import axios from 'axios';
 import {
   useParams
 } from "react-router-dom";
-//import { Button } from '@material-ui/core';
+
 import { makeStyles } from '@material-ui/core';
-//import * as Mui from '@material-ui/core';
-// import Prism, { highlight } from "prismjs";
-// import hljs from 'highlight.js';
-// https://openbase.com/js/react-syntax-highlighter
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-// import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-// import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-// <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" />
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
 import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
+import Chip from '@material-ui/core/Chip';
+import Avatar from '@material-ui/core/Avatar';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import CodeIcon from '@material-ui/icons/Code';
+import StorageIcon from '@material-ui/icons/Storage';
+import red from '@material-ui/core/colors/red';
+import green from '@material-ui/core/colors/green';
+import yellow from '@material-ui/core/colors/yellow';
+import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
+import DescriptionIcon from '@material-ui/icons/Description';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import LaunchIcon from '@material-ui/icons/Launch';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Button from '@mui/material/Button';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { Link } from "react-router-dom";
+import {apiV2Url} from '../Globals';
+import {timeFormat} from '../Utils';
 
 
+
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#0b6623',
+    },
+    secondary: {
+      main: red[500],
+    },
+    warning: {
+      main: yellow[500],
+    },
+  },
+  });
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -31,7 +69,8 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
-    fontWeight: 'bold',
+    fontWeight: '550',
+    
 
 
 
@@ -40,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
 
     backgroundColor:'#f8f8ff',
     fontFamily:'Futura',
-    'font-size': '16px',
+    'font-size': '14px',
 
   },
   expansion_panel_summary:{
@@ -53,8 +92,22 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 function JobDetail(props) {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   let { id } = useParams();
   const [job, setJob] = useState({});
   const [log, setLog] = useState(null);
@@ -65,8 +118,8 @@ function JobDetail(props) {
         'Authorization': 'Bearer ' + props.auth.token,
       }
     }
-    // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}`;
+    
+    const resultUrl = apiV2Url +`/results/${id}`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -78,7 +131,7 @@ function JobDetail(props) {
   const classes = useStyles();
 
   const getLog = async (jobId) => {
-    const logUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/log/${jobId}`;
+    const logUrl = apiV2Url + `/log/${jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
     return axios.get(logUrl, config)
   };
@@ -98,118 +151,157 @@ function JobDetail(props) {
   };
 
   return(
+    <ThemeProvider theme={theme}>
+      
+    <div style={{marginBottom:"2%",marginTop:"1%"}}>
 
-    <div className={classes.root}>
-      <h2> Job {id} </h2>
-        <div>
+    
+      
+        <div style={{marginLeft:"1%",marginRight:"2%",}}>
+        <div style={{ display: 'flex'}}>
+        <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"30%",marginBottom:"1%"}} >
+        <Box component="span" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Job {id}</Box>
+
         <p>
-          <span className={job.status === 'finished' ? ('badge badge-success') : 'badge badge-danger'}>{job.status}</span>
+        <div style={{ display: 'flex'}}>
+          <div style={{ float: 'left'}}>
+            {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
+              color="primary"  /> :job.status === 'error' 
+            ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+              color="secondary" /> ) :
+              (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
+                style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
+          </div>
+
+
+      </div>
         </p>
+
         <p>
-          <small >
-            Submitted on <strong >{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
-          </small>
-          <br></br>
-          <small >
-            Completed on <strong> {String(job.timestamp_completion).slice(0,4)+"/"+String(job.timestamp_completion).slice(5,7)+"/"+String(job.timestamp_completion).slice(8,10)+" "+String(job.timestamp_completion).slice(11,19)}</strong>
-          </small>
+
+        <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
+        </Box>
+        
+        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>
+  
         </p>
 
-
-        <ExpansionPanel defaultExpanded={true} >
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading}>Output files</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? ( job.output_data.map(out_file =><div><p> <a href= {String(out_file.url)} > {String(out_file.url)} </a> {'\n'} </p></div>))
+        </Paper>
+<div style={{ float: 'left', paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%"}} >
+        <div style={{  paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
+        <Tooltip title="Edit & Resubmit">
+        <Link to={'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
+          </Button> </Link>
+          </Tooltip>
+       </div>
+ 
+      </div>
+              </div>
+        <Accordion defaultExpanded={true} >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+          <Typography className={classes.heading}><DescriptionIcon /> Output files </Typography>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansion_panel_details}>
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =><Box component="span" display="block"> <AttachFileIcon /> <a href= {String(out_file.url)} > {"Output file "+(index+1)} </a> </Box>))
           : ('No files available')}
 
 
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
 
 
 
 
 
-        <ExpansionPanel defaultExpanded={true} >
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-          <Typography className={classes.heading} >Code</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails   className={classes.expansion_panel_details}>
+        <Accordion defaultExpanded={true} >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+          <Typography className={classes.heading} > <CodeIcon /> Code</Typography>
+        </AccordionSummary>
+        <AccordionDetails   className={classes.expansion_panel_details}>
           <Typography>
           <SyntaxHighlighter language="python" style={docco}>
           {String(job.code)}
         </SyntaxHighlighter>
           </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
 
 
-      <ExpansionPanel defaultExpanded={true} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Command</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+      <Accordion defaultExpanded={true} >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+        <Typography className={classes.heading} >     <LaunchIcon /> Command</Typography>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
+ 
         <Typography>
         <SyntaxHighlighter language="bash" style={docco}>
         {String(job.command)}
       </SyntaxHighlighter>
         </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
 
 
-    <ExpansionPanel defaultExpanded={true} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Hardware Config</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
+    <Accordion defaultExpanded={true}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+        <Typography className={classes.heading} ><StorageIcon /> Hardware Config</Typography>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
+      <List component="nav" aria-label="mailbox folders">
+      <ListItem Box>
+      <Box component="div" display="inline" width="300px">Platform:</Box>
+<Box component="div" display="inline">{job.hardware_platform} </Box>
+ 
+      </ListItem>
+
+      <ListItem Box>
+      <Box component="div" display="inline" width="300px">Ressource allocation ID:</Box>
+      <Box component="div" display="inline">{(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")} </Box>
+      </ListItem>
+      </List>
 
 
-        {"Platform: "+job.hardware_platform}
-        <br></br>
-        {"Ressource allocation ID: "}
-        {(job.hardware_config)? (job.hardware_config.resource_allocation_id) : ("Undefined")}
+
+        
+      </AccordionDetails>
+    </Accordion>
+
+    
 
 
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+    <Accordion defaultExpanded={true} >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
+        <Typography className={classes.heading} ><LocationOnIcon />Provenance</Typography>
+      </AccordionSummary>
+      <AccordionDetails  className={classes.expansion_panel_details}>
+      <Box component="div" display="inline" width="300px" style={{paddingLeft:"15px"}}>Machine's IP :</Box>
+      <Box component="div" display="inline">{(job.provenance) ?
+        (String(job.provenance.spinnaker_machine)) : ("No details")
+      }</Box>
 
 
 
+      </AccordionDetails>
+    </Accordion>
 
-    <ExpansionPanel defaultExpanded={true} >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
-        <Typography className={classes.heading} >Provenance</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails  className={classes.expansion_panel_details}>
-
-      {(job.provenance) ?
-        ("Machine's IP : "+job.provenance.spinnaker_machine) : ("No details")
-      }
-
-
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-
-    <ExpansionPanel defaultExpanded={false} onChange={handleOpenLog} >
-    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
+    <Accordion defaultExpanded={false} onChange={handleOpenLog} >
+    <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary} >
       <Typography className={classes.heading} >Log</Typography>
-    </ExpansionPanelSummary>
-    <ExpansionPanelDetails className={classes.expansion_panel_details}>
+    </AccordionSummary>
+    <AccordionDetails className={classes.expansion_panel_details}>
 
 
       <pre>{log}</pre>
 
 
-    </ExpansionPanelDetails>
-  </ExpansionPanel>
+    </AccordionDetails>
+  </Accordion>
 
 
 
       </div>
     </div>
+    </ThemeProvider>
   );
 }
 

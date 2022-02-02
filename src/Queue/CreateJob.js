@@ -8,6 +8,7 @@ import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
@@ -20,8 +21,6 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import axios from 'axios';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
-
 import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -34,9 +33,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
+import {apiV2Url} from '../Globals';
+import {
+    useParams
+  } from "react-router-dom";
 
-const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
-// const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
+
 
 
 function TabPanel(props) {
@@ -142,24 +144,30 @@ const command_example = {
 }
 };
 
-const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
-  const thetext = ''
+
+
+
+  
+
+
+
+
+const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
 
 export default function CreateJob(props) {
-// class CreateJob extends React.Component {
 
+
+
+  
   const classes = useStyles();
 
   const [hw, set_hw] = React.useState('');
   const [hwIsSelected, set_hwIsSelected] = React.useState(false);
   const [hwlabel, set_hwlabel] = React.useState('');
-
   const [tab, setTab] = React.useState(0);
-
   const [code, setCode] = React.useState("# write your code here");
-
   const [configExample, setConfigExample] = React.useState('');
   const [commExample, setCommExample] = React.useState('');
   const [hardwareConfig, setHardwareConfig] = React.useState('');
@@ -168,8 +176,11 @@ export default function CreateJob(props) {
   const [mymodel, setModel] = React.useState('');
   const [tags, setTags] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [FolderContent, setFolderContent] = React.useState({});
+  const [currentDir,setcurrentDir]= React.useState('/')
 
 
+  
   useEffect(() => {
     if(hwIsSelected) {
       setConfigExample(config_example[hw].example);
@@ -178,9 +189,42 @@ export default function CreateJob(props) {
     }, [hw]);
 
   useEffect(() => {
-    if(tab == 0) setModel(code);
-    if(tab == 1) setModel(git);
+    if(tab === 0) setModel(code);
+    if(tab === 1) setModel(git);
   }, [tab, code, git]);
+
+  // Job resubmission
+  let { id } = useParams();
+  useEffect(() => {
+if (props.resubmit==="true")
+
+    {
+        let config = {
+        headers: {
+            'Authorization': 'Bearer ' + props.auth.token,
+        }
+        }
+        // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
+        
+        const resultUrl = apiV2Url +`/results/${id}`;
+
+        const fetchData = async () => {
+        const result = await axios(resultUrl, config);
+        //await setJob(result.data);
+
+        set_hw(result.data.hardware_platform)
+        set_hwIsSelected(true)
+        setCode(result.data.code)
+        setTab(1)
+        setTab(0)
+        setCommand(result.data.command)
+
+        };
+        fetchData();
+    }
+  }, []);
+
+
 
 
   function handleEditorChange(value, event) {
@@ -211,7 +255,7 @@ export default function CreateJob(props) {
   }
 
   const handleChangeTab = (event, newValue) => {
-    console.log(newValue)
+
     setTab(newValue);
   };
 
@@ -245,7 +289,7 @@ function handleSubmit(){
     if (hardwareConfig) {
       job.hardware_config = JSON.parse(hardwareConfig);
     }
-    console.log(job.hardware_platform)
+ 
 
     axios.post(Url, job, requestConfig)
     .then(response => {
@@ -266,7 +310,7 @@ function handleSubmit(){
       <h5>Hardware Platform</h5>
 
       <div>
-      <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl}  data-testid ='hardwareList'>
         <InputLabel id="hardware-simple-select">Hardware</InputLabel>
         <Select
           labelId="hardware-simple-select"
@@ -311,13 +355,14 @@ function handleSubmit(){
       <div>
 
         <Editor
-        height="20vh"
+        height="40vh"
         onChange={handleEditorChange}
         // onMount={handleEditorDidMount}
         // beforeMount={handleEditorWillMount}
         // onValidate={handleEditorValidation}
         defaultLanguage="python"
         defaultValue={code}
+        
         />
       </div>
       
@@ -339,7 +384,10 @@ function handleSubmit(){
           />
       </TabPanel>
       <TabPanel value={tab} index={2}>
-        Coming soon...
+        <div>
+
+
+        </div>
       </TabPanel>
       <TabPanel value={tab} index={3}>
         Coming soon...
@@ -380,7 +428,7 @@ function handleSubmit(){
             shrink: true,
           }}
           loatingLabelText="MultiLine and FloatingLabel"
-          autoFocus = {true}
+          autoFocus = {false}
           multiline
           variant="outlined"
           onChange={handleHardwareConfig}
