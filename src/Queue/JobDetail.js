@@ -44,7 +44,8 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
 import {apiV2Url} from '../Globals';
 import {timeFormat} from '../Utils';
-
+import ExportToDrive from './ExportToDrive';
+import Modal from '@mui/material/Modal';
 
 
 
@@ -92,8 +93,9 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const style = {
+const DriveFilesExplorerStyle = {
   position: 'absolute',
+  paddingTop:'10%',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -194,7 +196,29 @@ function JobDetail(props) {
           </Button> </Link>
           </Tooltip>
        </div>
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
+       <Tooltip title="Export files to Drive">
+        
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Output
+         </Button> 
+         </Tooltip>
  
+         <Modal
+         open={open}
+         onClose={handleClose}
+         aria-labelledby="modal-modal-title"
+         aria-describedby="modal-modal-description"
+       >
+         <Box sx={DriveFilesExplorerStyle}>
+
+              <div style={{paddingTop:"5%"}} >
+         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} closeExplorer={setOpen}/>
+         </div>
+         
+         </Box>
+       </Modal>
+
+      </div>
       </div>
               </div>
         <Accordion defaultExpanded={true} >
