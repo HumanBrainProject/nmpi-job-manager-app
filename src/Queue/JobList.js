@@ -41,20 +41,10 @@ import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import {validationV2Url,apiV2Url } from '../Globals';
 import {timeFormat,currentDate} from '../Utils';
-//const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
-//const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
 
 const baseUrl = apiV2Url+'/results/?collab_id=';
 const baseQueueUrl =  apiV2Url +'/queue/?collab_id=';
 
-/*const useStyles = makeStyles((theme) => ({
-
-  spinIcon: { spin: false,
-
-  },
-
-}));
-*/
 
 const theme = createMuiTheme({
   palette: {
@@ -101,14 +91,6 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-// const StyledTableRow = withStyles((theme) => ({
-//   root: {
-//     '&:nth-of-type(odd)': {
-//       backgroundColor: theme.palette.action.hover,
-//     },
-//   },
-// }))(TableRow);
-
 
 function isInCollab() {
   const isParent = (window.opener == null);
@@ -149,7 +131,6 @@ class JobList extends React.Component {
       provJobList: [],
       filteredJobs:[],
       tagList:[], 
-      tagList:[],
       error: '',
       authToken: props.auth.token,
       refreshState: false,
@@ -173,8 +154,6 @@ class JobList extends React.Component {
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
     await axios.get(tagsUrl, config)
         .then(res => {
-          console.log(res);
-          // this.setState({jobs: response.data.objects});
           let availableTags = [];
           res.data.objects.forEach(tag => {
               console.log(tag.name);
@@ -195,8 +174,10 @@ class JobList extends React.Component {
     
         console.log('---taglist?---', this.tagList)
 }
+
+
 async filterJobs(statusFilter,hardwareSystemFilter){
-  console.log("hardware is "+hardwareSystemFilter+"status is "+statusFilter)
+
     function isStatus(x) {
   
       return x.status===statusFilter;
@@ -224,7 +205,6 @@ async filterJobs(statusFilter,hardwareSystemFilter){
   else {
   
     if (statusFilter===null ) {
-      console.log("here null status")
       await this.setState({
         statusFilter:null,
         filteredJobs: this.state.jobs,
@@ -243,25 +223,23 @@ async filterJobs(statusFilter,hardwareSystemFilter){
   
      }
     if (statusFilter!==null )
-  {var filteredJobs1;
-  filteredJobs1 = this.state.filteredJobs.filter(isStatus);
+  {var filteredJobsByStatus;
+    filteredJobsByStatus = this.state.filteredJobs.filter(isStatus);
   await this.setState({
     filterBy: "status",
-    filteredJobs: filteredJobs1,
+    filteredJobs: filteredJobsByStatus,
     statusFilter:statusFilter,
   
   });
-  console.log(this.state.statusFilter)
   }
   
   if (hardwareSystemFilter!==null )
-  {var filteredJobs2;
-    console.log("here not null hardware")
+  {var filteredJobsByStatusByHard;
   
-  filteredJobs2 = this.state.filteredJobs.filter(isHardware);
+    filteredJobsByStatusByHard = this.state.filteredJobs.filter(isHardware);
   await this.setState({
     filterBy: "hardware",
-    filteredJobs: filteredJobs2,
+    filteredJobs: filteredJobsByStatusByHard,
     hardwareSystemFilter:hardwareSystemFilter,
   
   });
