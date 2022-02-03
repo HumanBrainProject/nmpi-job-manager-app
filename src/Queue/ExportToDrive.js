@@ -5,12 +5,38 @@ import DriveFilesExplorer from'./DriveFilesExplorer'
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
-import Alert from '@mui/material/Alert';
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {timeFormat,currentDate,currentDateFileFormat} from '../Utils';
 
-export default function DriveFileExplorer(props) {
+
+
+export default function ExportToDrive(props) {
+
+  const [open, setOpen] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    props.setDriveFilesExplorerStatus(false);
+  };
+
+
     const [FolderContent, setFolderContent] = React.useState({});
     //const [filesList, setfilesList] = React.useState({});
     let filesList =[];
@@ -75,12 +101,15 @@ const newBlob = new Blob([singularFile.data], {
 
 
 let currentFolder =currentDir.split('/').slice(2).join('/');
+console.log("current currentFolder",currentFolder)
 let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
+if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
 console.log("destination 2", relativePath)
 fileData.append("parent_dir", '/');
 fileData.append("relative_path", relativePath);
 fileData.append("replace", "1");
 fileData.append("file",newBlob,fileName)
+console.log("relative path",relativePath)
 
 
 
@@ -93,14 +122,30 @@ axios.get(query_url, config).then(function(res) {
   };
 
   console.log("given link",res.data)
+  console.log("query link",query_url)
   console.log("token",props.auth.token)
+  console.log("Postrequest",res.data," file ",fileData," config ",configPost)
    axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
     //setCode(res.data)
     //setTab(0)
     console.log("post result",res)
-  }) 
+  }.catch((errPost)=>{
 
-}).catch((err) =>{console.log("error",err)})
+
+    
+  }
+  
+  
+  ))
+
+}).catch((err) =>{
+  
+  console.log("error",err)
+
+
+
+
+})
 
 
   }
@@ -169,18 +214,23 @@ axios.get(query_url, config).then(function(res) {
 {
  
 let iterableFolderContent = FolderContent
+console.log("folder content",FolderContent)
 
 let currentRepoId =''
 for ( const d of iterableFolderContent)
 { 
     if (d.name===currentDir.split('/').pop()){currentDirUrl=d.repoid 
         currentRepoId=d.repoid
+        console.log("actual name",d.name)
 break
 
 } }
-downloadFiles(currentRepoId)
+downloadFiles(currentDirUrl)
 
-//uploadFiles(currentRepoId)
+handleClose()
+setOpenAlert(true)
+
+
 
 }
 
@@ -230,25 +280,68 @@ downloadFiles(currentRepoId)
           
     
         }).catch((err) => {console.log("Error: ", err.message) });
-      }, []);
+      }, [props.DriveFilesExplorerStatus]);
     
-    function handleOnClick()
-    {
-      exportToDrive()
+      useEffect(() => 
+      {
+       console.log(" open ",props.DriveFilesExplorerStatus)
 
+        setOpen(props.DriveFilesExplorerStatus)
 
-
-    }
+      }, [props.DriveFilesExplorerStatus]);
 
 
     return (
-      <div className="DriveFileExplorer">
+      <div className="ExportToDrive">
 
-        <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
-        <Tooltip title="Export files to Drive">
-        <Button onClick={handleOnClick} style={{backgroundColor:'#101b54', color:'white' ,textTransform: 'none' ,width:"10%",left:"45%",marginTop:"1%" }}  variant="contained"  > Export here
-         </Button> 
-         </Tooltip>
+      <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      fullWidth={ true } maxWidth={"xl"}
+    >
+      <DialogTitle id="alert-dialog-title">
+      <h5 style={{ display: 'inline' }} >{"Select the destination folder: "}</h5>
+      <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
+        
+      </DialogTitle>
+      <DialogContent  >
+      <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={exportToDrive} autoFocus>
+          Export
+        </Button>
+      </DialogActions>
+    </Dialog>
+
+    <Box sx={{ width: '100%' }}>
+    <Collapse in={openAlert}>
+      <Alert
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpenAlert(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+        sx={{ mb: 2 }}
+      >
+        Files exported successfully
+      </Alert>
+    </Collapse>
+
+  </Box>
+
+
+
       </div>
     );
   }

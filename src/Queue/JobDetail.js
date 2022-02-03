@@ -93,9 +93,8 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const DriveFilesExplorerStyle = {
+const style = {
   position: 'absolute',
-  paddingTop:'10%',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -109,10 +108,13 @@ const DriveFilesExplorerStyle = {
 function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+ // const handleClose = () => setOpen(false);
   let { id } = useParams();
   const [job, setJob] = useState({});
   const [log, setLog] = useState(null);
+
+
+
 
   useEffect(() => {
     let config = {
@@ -202,21 +204,11 @@ function JobDetail(props) {
        <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Output
          </Button> 
          </Tooltip>
- 
-         <Modal
-         open={open}
-         onClose={handleClose}
-         aria-labelledby="modal-modal-title"
-         aria-describedby="modal-modal-description"
-       >
-         <Box sx={DriveFilesExplorerStyle}>
 
-              <div style={{paddingTop:"5%"}} >
-         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} closeExplorer={setOpen}/>
-         </div>
-         
+         <Box sx={style}>
+         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/>
          </Box>
-       </Modal>
+
 
       </div>
       </div>
