@@ -83,7 +83,7 @@ export default function ExportToDrive(props) {
   
     function uploadFile(destination,singularFile,fileName)
   {
-    console.log("currentdirurl", currentDirUrl)
+
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+currentDirUrl+'/upload-link/';
     let config = {
       
@@ -92,7 +92,7 @@ export default function ExportToDrive(props) {
 
     //let iterableFileslist = filesList
 
-console.log("singularFile",singularFile)
+
 const FormData = require('form-data');
 const fileData = new FormData() 
 const newBlob = new Blob([singularFile.data], {
@@ -101,15 +101,15 @@ const newBlob = new Blob([singularFile.data], {
 
 
 let currentFolder =currentDir.split('/').slice(2).join('/');
-console.log("current currentFolder",currentFolder)
+
 let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
 if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
-console.log("destination 2", relativePath)
+
 fileData.append("parent_dir", '/');
 fileData.append("relative_path", relativePath);
 fileData.append("replace", "1");
 fileData.append("file",newBlob,fileName)
-console.log("relative path",relativePath)
+
 
 
 
@@ -121,15 +121,10 @@ axios.get(query_url, config).then(function(res) {
     
   };
 
-  console.log("given link",res.data)
-  console.log("query link",query_url)
-  console.log("token",props.auth.token)
-  console.log("Postrequest",res.data," file ",fileData," config ",configPost)
    axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
-    //setCode(res.data)
-    //setTab(0)
+
     console.log("post result",res)
-  }.catch((errPost)=>{
+  }.catch((errPost)=>{console.log(errPost)
 
 
     
@@ -148,40 +143,6 @@ axios.get(query_url, config).then(function(res) {
 })
 
 
-  }
-    function uploadFiles(destination)
-  { console.log("currentdirurl", currentDirUrl)
-    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+currentDirUrl+'/upload-link/';
-      let config = {
-        
-        headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-      };
-      
-      //let iterableFileslist = filesList
-
-  console.log("before_iteration",filesList)
-  console.log("before_iteration length",filesList.length)
-  
-  for(let i=0;i<filesList.length;i++)
-  {
-    
-        const fileData = new FormData() 
-        fileData.append(String(filesList[i].name), filesList[i].data,filesList[i].name)
-
-
-       
-        console.log("before axios",query_url)
-      
-     axios.get(query_url, config).then(function(res) {
-        console.log("given link",res.data)
-         axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, config,).then(function(res) {
-          //setCode(res.data)
-          //setTab(0)
-          console.log("post result",res)
-        }) 
-  
-      }) 
-    }
   }
 
   function downloadFiles(destination)
@@ -202,11 +163,9 @@ axios.get(query_url, config).then(function(res) {
     })
 
   }
-  //setfilesList(currentFilesList)
-// removed filelist
 
   filesList = currentFilesList
-  //console.log("download filelist length",filesList,filesList.length)
+ 
 
   }
 
@@ -214,14 +173,14 @@ axios.get(query_url, config).then(function(res) {
 {
  
 let iterableFolderContent = FolderContent
-console.log("folder content",FolderContent)
+
 
 let currentRepoId =''
 for ( const d of iterableFolderContent)
 { 
     if (d.name===currentDir.split('/').pop()){currentDirUrl=d.repoid 
         currentRepoId=d.repoid
-        console.log("actual name",d.name)
+
 break
 
 } }
@@ -271,7 +230,6 @@ setOpenAlert(true)
     
               }
             }
-            console.log("repocontent",repoContent)
             setFolderContent(repoContent)
           }))
     
@@ -284,7 +242,6 @@ setOpenAlert(true)
     
       useEffect(() => 
       {
-       console.log(" open ",props.DriveFilesExplorerStatus)
 
         setOpen(props.DriveFilesExplorerStatus)
 
