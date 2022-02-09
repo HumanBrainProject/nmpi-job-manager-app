@@ -22,6 +22,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme } from '@material-ui/core/styles';
 import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 
+import { jobQueueServer } from "../globals";
+
 
 const useStyles = makeStyles((theme) => ({
 
@@ -66,7 +68,7 @@ function JobDetail(props) {
       }
     }
     // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-    const resultUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/results/${id}`;
+    const resultUrl = `${jobQueueServer}/api/v2/results/${id}`;
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -78,7 +80,7 @@ function JobDetail(props) {
   const classes = useStyles();
 
   const getLog = async (jobId) => {
-    const logUrl = `https://nmpi.hbpneuromorphic.eu/api/v2/log/${jobId}`;
+    const logUrl = `${jobQueueServer}/api/v2/log/${jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
     return axios.get(logUrl, config)
   };

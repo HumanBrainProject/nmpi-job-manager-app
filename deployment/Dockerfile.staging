@@ -11,7 +11,7 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm ci --silent
 COPY . ./
-COPY ./src/globals-prod.js ./src/globals.js
+COPY ./src/globals-staging.js ./src/globals.js
 RUN npm run build
 
 # production environment

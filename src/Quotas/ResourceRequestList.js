@@ -16,7 +16,8 @@ import AddIcon from "@material-ui/icons/Add";
 
 import ResourceRequestDialog from "./ResourceRequestDialog";
 
-const baseUrl = "https://quotas.hbpneuromorphic.eu/";
+import { quotasServer } from "../globals";
+
 
 // note that "Project" and "Resource request" mean more-or-less the same thing:
 //  a Project is an accepted resource request.
@@ -39,7 +40,7 @@ function fetchResourceRequests(collabId, auth) {
       Authorization: "Bearer " + auth.token,
     },
   };
-  const resourceRequestListUrl = `${baseUrl}projects/?collab=${collabId}`;
+  const resourceRequestListUrl = `${quotasServer}/projects/?collab=${collabId}`;
   return axios.get(resourceRequestListUrl, config);
 }
 
@@ -54,7 +55,7 @@ function saveResourceRequest(resourceRequest, collabId, auth, submit) {
   }
   if (resourceRequest.context) {
     // previously saved
-    const resourceRequestUpdateUrl = `${baseUrl}${resourceRequest.resource_uri}`;
+    const resourceRequestUpdateUrl = `${quotasServer}/${resourceRequest.resource_uri}`;
     axios.put(resourceRequestUpdateUrl, resourceRequest, config);
     console.log(`Updated ${resourceRequestUpdateUrl}`);
     console.log(resourceRequest);
@@ -63,7 +64,7 @@ function saveResourceRequest(resourceRequest, collabId, auth, submit) {
     resourceRequest.owner = auth.tokenParsed["preferred_username"];
     resourceRequest.context = uuidv4();
     resourceRequest.collab = collabId;
-    const resourceRequestCreateUrl = `${baseUrl}projects/`;
+    const resourceRequestCreateUrl = `${quotasServer}/projects/`;
     axios.post(resourceRequestCreateUrl, resourceRequest, config);
     console.log("Created new resource request");
     console.log(resourceRequest);

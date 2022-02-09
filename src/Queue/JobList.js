@@ -27,11 +27,12 @@ import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import StorageIcon from '@material-ui/icons/Storage';
 
+import { jobQueueServer } from "../globals";
 
 //const resultsUrl = 'https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db.json';
-//const resultsUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=neuromorphic-testing-private';
-const baseUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/results/?collab_id=';
-const baseQueueUrl = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue/?collab_id=';
+//const resultsUrl = jobQueueServer + '/api/v2/results/?collab_id=neuromorphic-testing-private';
+const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
+const baseQueueUrl = jobQueueServer + '/api/v2/queue/?collab_id=';
 // url used to get collabs' ids
 const baseGlobalUrl = "https://validation-v2.brainsimulation.eu";
 
@@ -130,7 +131,7 @@ class JobList extends React.Component {
           console.log(error)
           this.setState({errorMsg: 'Error retreiving data'})
         })
-    
+
         console.log('---taglist?---', this.tagList)
 }
 
@@ -259,7 +260,7 @@ onCollabChange= async (newValue)=>{
                           <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
+                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
                            </Button>
                            </Tooltip>
                       </th>
@@ -279,17 +280,17 @@ onCollabChange= async (newValue)=>{
                   <tr>
                     <td> <Link to={'/' + job.id}> <MdSearch /></Link></td>
                     <td>{job.id}</td>
-                    
+
                     <td>
                       <div>
                         {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label={job.status}
                           color="primary"  /> :job.status === 'error'
                         ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status}
                           color="secondary" /> ) :
-                          (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
+                          (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status}
                              style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
                       </div>
-                    </td>  
+                    </td>
                     <td>{job.hardware_platform}</td>
                     <td><code>{job.code.substring(0,50) + "..."}</code></td>
                     <td>{String(job.timestamp_submission).slice(0,4)+"/"+String(job.timestamp_submission).slice(5,7)+"/"+String(job.timestamp_submission).slice(8,10)+" "+String(job.timestamp_submission).slice(11,19)}</td>
@@ -311,7 +312,7 @@ onCollabChange= async (newValue)=>{
 
       </div>
       </ThemeProvider>
-      
+
     )
   };
 }

@@ -35,6 +35,8 @@ import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
 
+import { jobQueueServer, hw_options } from "../globals";
+
 const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
 // const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
 
@@ -124,6 +126,9 @@ const config_example = {
   "BrainScaleS-2": {
     example: ``,
   },
+  "Test": {
+    example: ``
+  }
 };
 
 const command_example = {
@@ -142,11 +147,12 @@ const command_example = {
   "BrainScaleS-2": {
     example: ``,
   },
+  "Test": {
+    example: ``
+  }
 };
 
-const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-2", "BrainScaleS-ESS", "Spikey"];
-
-  const thetext = ''
+const thetext = ''
 
 
 export default function CreateJob(props) {
@@ -218,7 +224,7 @@ export default function CreateJob(props) {
   };
 
 function handleSubmit(){
-    const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
+    const Url = jobQueueServer + '/api/v2/queue';
 
     const requestConfig = {
       headers: {
