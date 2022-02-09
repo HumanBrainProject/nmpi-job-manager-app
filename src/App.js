@@ -11,7 +11,6 @@ import './App.css';
 import JobList from './Queue/JobList.js';
 import JobDetail from './Queue/JobDetail.js';
 import CreateJob from './Queue/CreateJob.js';
-import ResubmitJob from './Queue/ResubmitJob.js';
 import ResourceRequestList from './Quotas/ResourceRequestList.js';
 
 
@@ -40,7 +39,7 @@ function App(props) {
   return (
     <Router>
     <header className="navbar navbar-expand navbar-dark fixed-top bg-dark">
-      <div className="navbar-brand"><Link to={`/?clb-collab-id=${currentCollab}`} className={classes.plainLink}>
+      <div data-testid="job-manager-link" className="navbar-brand"><Link to={`/?collab_id=${currentCollab}`} style ={{textDecoration: "none"}} className={classes.plainLink}>
         EBRAINS Neuromorphic Computing Service: Job Manager
         </Link></div>
       <div className="ml-auto order-lg-last">
@@ -61,11 +60,13 @@ function App(props) {
       <Route exact path="/">
           <JobList auth={props.auth} collab={currentCollab} setCollab={setCurrentCollab} />
       </Route>
+
+
       <Route path="/new">
           <CreateJob auth={props.auth} collab={currentCollab}  setCollab={setCurrentCollab} />
       </Route>
-      <Route path="/resubmit">
-          <ResubmitJob auth={props.auth} />
+      <Route path="/:id/resubmit">
+          <CreateJob auth={props.auth} collab={currentCollab}  setCollab={setCurrentCollab} resubmit="true"  />
       </Route>
       <Route path="/resources">
           <ResourceRequestList auth={props.auth} collab={currentCollab} />
