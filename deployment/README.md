@@ -29,7 +29,7 @@ version: '3.3'
 services:
 
   nmpi-job-manager-app:
-    image: docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:latest
+    image: docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:prod
     container_name: nmpi-job-manager-app
     volumes:
       - "/etc/letsencrypt:/etc/letsencrypt"
