@@ -14,7 +14,7 @@ jobs:
           source_repo: "HumanBrainProject/nmpi-job-manager-app"
           source_branch: "master"
           destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/neuromorphic/nmpi-job-manager-app.git"
-          destination_branch: "master"
+          destination_branch: "main"
       - name: syncstaging
         uses: wei/git-sync@v3
         with:
