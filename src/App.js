@@ -12,6 +12,7 @@ import JobList from './Queue/JobList.js';
 import JobDetail from './Queue/JobDetail.js';
 import CreateJob from './Queue/CreateJob.js';
 import ResourceRequestList from './Quotas/ResourceRequestList.js';
+import DriveFilesExplorer from './Queue/DriveFilesExplorer';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +62,9 @@ function App(props) {
           <JobList auth={props.auth} collab={currentCollab} setCollab={setCurrentCollab} />
       </Route>
 
+      <Route exact path="/drive">
+      <DriveFilesExplorer auth={props.auth} collab={currentCollab} setCollab={setCurrentCollab} />
+  </Route>
 
       <Route path="/new">
           <CreateJob auth={props.auth} collab={currentCollab}  setCollab={setCurrentCollab} />
