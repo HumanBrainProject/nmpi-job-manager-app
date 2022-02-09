@@ -7,7 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-
+import DriveFilesExplorer from'./DriveFilesExplorer'
 
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -114,8 +114,8 @@ const config_example = {
   },
   BrainScaleS: {
     example: `{
-"WAFER_MODULE": 33,
-"HICANN": 297,
+"WAFER_MODULE": 33, 
+"HICANN": 297, 
 "SOFTWARE_VERSION":'nmpm_software/current'
 }`,
   },
@@ -161,7 +161,11 @@ export default function CreateJob(props) {
 
 
 
+  function updateFolderContent(folderstructuer ,path=''){
+    setFolderContent(({isRoot:true,Reop:[ {Folder:true,Name:'Dependecey'},{Folder:false,Name:'Ai.py'},{Folder:true,Name:'Test'},{Folder:true,Name:'Production'}]}))
 
+  }
+  
   const classes = useStyles();
 
   const [hw, set_hw] = React.useState('');
@@ -179,9 +183,44 @@ export default function CreateJob(props) {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [FolderContent, setFolderContent] = React.useState({});
   const [currentDir,setcurrentDir]= React.useState('/')
+  function updatecurrentDirAndopencode(dir,type,getlink){
+    if (type==="file" && dir.split('.').pop()!=="py") {return}
+    if(type==="file"){
 
+   let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+getlink;
 
+   let config = {
+      
+      headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+    };
+    axios.get(query_url, config).then(function(res) {
+  
 
+       axios.get("https://corsproxy-sa.herokuapp.com/"+res.data, config).then(function(res) {
+        setCode(res.data)
+        setTab(0)
+
+      }) 
+
+    })
+   
+      return
+    }
+    if (currentDir==="/"){    
+    setcurrentDir(currentDir+dir)
+    return
+    }
+    setcurrentDir(currentDir+"/"+dir)
+  }
+  function backout(){
+    if(currentDir.substring(0,currentDir.lastIndexOf("/").length!==0||currentDir.substring(0,currentDir.lastIndexOf("/"))==="")){
+      setcurrentDir(currentDir.substring(0,currentDir.lastIndexOf("/")))
+      return null
+    }
+    setcurrentDir("/")
+  }
+
+  
   useEffect(() => {
     if(hwIsSelected) {
       setConfigExample(config_example[hw].example);
@@ -206,7 +245,7 @@ if (props.resubmit==="true")
         }
         }
         // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
-
+        
         const resultUrl = jobQueueServer +`/api/v2/results/${id}`;
 
         const fetchData = async () => {
@@ -225,7 +264,57 @@ if (props.resubmit==="true")
     }
   }, []);
 
+// drive part
+   useEffect(() => {
+ 
+    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
+    let config = {
+      
+      headers: { Authorization: "Bearer " + props.auth.token },
+    };
+    let ids_query_url=query_url+"/?type=mine"
+    axios.get(ids_query_url, config).then(function(res) {
+      let axios_requests=[];
+      
+      let repoContent=[]
+      let ids=[]
+      for(let i=0;i<res.data.length;i++){
+          ids.push(res.data[i].id)
+          axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
+          repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/"})
+      }
+      axios.all(axios_requests).then(axios.spread((...responses) => {
 
+        let parent_dir=''
+        let repoid=''
+        for(let i=0;i<responses.length;i++){
+          repoid=ids[i]
+          for(let j=0;j<responses[i].data.length;j++){
+            parent_dir=repoContent[i].name+responses[i].data[j].parent_dir
+            if(parent_dir.slice(-1)==="/"){
+              parent_dir=parent_dir.slice(0,-1)
+            }
+            if(responses[i].data[j].type==="file")
+            {
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})}else{
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir})
+            }
+
+          }
+        }
+
+        setFolderContent(repoContent)
+      }))
+
+      
+
+      
+
+    }).catch((err) => {console.log("Error: ", err.message) });
+  }, []);
+
+
+ 
 
 
   function handleEditorChange(value, event) {
@@ -283,14 +372,14 @@ function handleSubmit(){
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
-    // job.output_data = [];
-    // job.resource_uri = "";
+    // job.output_data = []; 
+    // job.resource_uri = ""; 
     // inputs = [];
     }
     if (hardwareConfig) {
       job.hardware_config = JSON.parse(hardwareConfig);
     }
-
+ 
 
     axios.post(Url, job, requestConfig)
     .then(response => {
@@ -347,12 +436,12 @@ function handleSubmit(){
         >
           <Tab label="Editor" icon={<CodeIcon />} {...a11yProps(0)} />
           <Tab label="From Git repository or zip archive" icon={<GitHubIcon />} {...a11yProps(1)} />
-          <Tab label="From the Drive" disabled icon={<StorageIcon />} {...a11yProps(2)} />
+          <Tab label="From the Drive"  icon={<StorageIcon />} {...a11yProps(2)} />
           <Tab label="Graphical model builder" disabled icon={<CreateIcon />} {...a11yProps(3)} />
         </Tabs>
       {/* </AppBar> */}
       <TabPanel value={tab} index={0}>
-
+         
       <div>
 
         <Editor
@@ -363,10 +452,10 @@ function handleSubmit(){
         // onValidate={handleEditorValidation}
         defaultLanguage="python"
         defaultValue={code}
-
+        
         />
       </div>
-
+      
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <TextField
@@ -387,6 +476,7 @@ function handleSubmit(){
       <TabPanel value={tab} index={2}>
         <div>
 
+            <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
 
         </div>
       </TabPanel>
@@ -412,9 +502,9 @@ function handleSubmit(){
         />
       </div>
       <br/>
-
+                
       <h5>Hardware Configuration</h5>
-
+      
       <div>
       {/* <AppBar position="static" color="default"> */}
       <TextField
@@ -439,7 +529,7 @@ function handleSubmit(){
       </div>
 
       <br/>
-
+                
       <h5>Tags</h5>
       <div>
         <TextField
@@ -459,7 +549,7 @@ function handleSubmit(){
       </div>
 
       <br/>
-
+                
       {/* <h5>Input Files</h5>
       <div>
       <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
