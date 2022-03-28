@@ -42,16 +42,11 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
-=======
-import {apiV2Url} from '../Globals';
-import {timeFormat} from '../Utils';
 import ExportToDrive from './ExportToDrive';
 import Modal from '@mui/material/Modal';
 
->>>>>>> 110bd733548615eddc6db884b0b5219a866924e9
 
 
 const theme = createMuiTheme({
@@ -206,9 +201,6 @@ function JobDetail(props) {
           </Button> </Link>
           </Tooltip>
        </div>
-<<<<<<< HEAD
-
-=======
        <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
        <Tooltip title="Export files to Drive">
         
@@ -222,7 +214,6 @@ function JobDetail(props) {
 
 
       </div>
->>>>>>> 110bd733548615eddc6db884b0b5219a866924e9
       </div>
               </div>
         <Accordion defaultExpanded={true} >
