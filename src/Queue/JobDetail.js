@@ -42,7 +42,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
-import { jobQueueServer } from "../globals";
+import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
 
 
