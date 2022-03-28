@@ -42,8 +42,16 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
+=======
+import {apiV2Url} from '../Globals';
+import {timeFormat} from '../Utils';
+import ExportToDrive from './ExportToDrive';
+import Modal from '@mui/material/Modal';
+
+>>>>>>> 110bd733548615eddc6db884b0b5219a866924e9
 
 
 const theme = createMuiTheme({
@@ -108,10 +116,13 @@ const style = {
 function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+ // const handleClose = () => setOpen(false);
   let { id } = useParams();
   const [job, setJob] = useState({});
   const [log, setLog] = useState(null);
+
+
+
 
   useEffect(() => {
     let config = {
@@ -195,7 +206,23 @@ function JobDetail(props) {
           </Button> </Link>
           </Tooltip>
        </div>
+<<<<<<< HEAD
 
+=======
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
+       <Tooltip title="Export files to Drive">
+        
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Output
+         </Button> 
+         </Tooltip>
+
+         <Box sx={style}>
+         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/>
+         </Box>
+
+
+      </div>
+>>>>>>> 110bd733548615eddc6db884b0b5219a866924e9
       </div>
               </div>
         <Accordion defaultExpanded={true} >
