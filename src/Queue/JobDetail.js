@@ -26,6 +26,7 @@ import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -46,8 +47,11 @@ import {apiV2Url} from '../Globals';
 import {timeFormat} from '../Utils';
 import ExportToDrive from './ExportToDrive';
 import Modal from '@mui/material/Modal';
+import SendIcon from '@material-ui/icons/Send';
+import TextField from '@material-ui/core/TextField';
 
-
+const imgLink =
+  "https://drive.ebrains.eu/media/avatars/default.png";
 
 const theme = createMuiTheme({
   palette: {
@@ -111,9 +115,31 @@ function JobDetail(props) {
  // const handleClose = () => setOpen(false);
   let { id } = useParams();
   const [job, setJob] = useState({});
+  const [comments, setComments] = useState([]);
   const [log, setLog] = useState(null);
 
 
+  function handleSubmit(){
+    const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
+
+    const requestConfig = {
+      headers: {
+        'Authorization': 'Bearer ' + props.auth.token,
+        'Content-type': 'application/json'
+      }
+    }
+
+    let submittedComment=
+
+    axios.post(Url, submittedComment, requestConfig)
+    .then(response => {
+      console.log(response);
+    })
+    .catch(error => {
+      console.log(error)
+      /* setErrorMessage('Error submitting a job'); */
+    })
+  }
 
 
   useEffect(() => {
@@ -122,7 +148,7 @@ function JobDetail(props) {
         'Authorization': 'Bearer ' + props.auth.token,
       }
     }
-    
+    console.log("token",props.auth.token)
     const resultUrl = apiV2Url +`/results/${id}`;
 
     const fetchData = async () => {
@@ -132,6 +158,43 @@ function JobDetail(props) {
     };
     fetchData();
   }, []);
+
+  
+  useEffect(() => {
+    let config = {
+      headers: {
+        'Authorization': 'Bearer ' + props.auth.token,
+      }
+    }
+    const commentstUrl = apiV2Url +`/comment`;
+    let currentJobComments=[]
+    let currentJobID= `/api/v2/results/${id}`
+    const fetchData = async () => {
+      const result = await axios(commentstUrl, config);
+      console.log("result",result)
+
+      for ( const comment of result.data.objects) 
+      
+          { console.log("current job",comment.job,currentJobID,comment)
+            
+            if (comment.job===currentJobID) 
+              {
+                currentJobComments.push(comment)
+
+              }
+    
+       }
+      await setComments(currentJobComments);
+      console.log("currentJobComments",currentJobComments);
+      console.log("comments",comments);
+    };
+    fetchData();
+  }, []);
+
+
+
+
+
   const classes = useStyles();
 
   const getLog = async (jobId) => {
@@ -312,10 +375,59 @@ function JobDetail(props) {
 
     </AccordionDetails>
   </Accordion>
+  <Box
+  component="form"
+  sx={{
+    '& > :not(style)': { m: 10, width: '100ch' },
+  }}
+  noValidate
+  autoComplete="off"
+>
+  <TextField  id="outlined-basic" label="Outlined" variant="outlined" />
 
+</Box>
+
+
+  <Button
+  onClick={handleSubmit}
+  variant="contained"
+  color="primary"
+  className={classes.button}
+  endIcon={<SendIcon />}
+
+>
+  Submit Comment
+</Button>
 
 
       </div>
+
+        <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"100%",marginBottom:"1%",paddingTop:"1%",marginTop:"2%"}} >
+  
+  {comments.map ((comment)=> (
+  <div>
+  <Grid container wrap="nowrap" spacing={2}>
+  <Grid item>
+    <Avatar alt="Remy Sharp" src={imgLink} />
+  </Grid>
+  <Grid justifyContent="left" item xs zeroMinWidth>
+    <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
+    <p style={{ textAlign: "left" }}>
+      {comment.content}
+    </p>
+    <p style={{ textAlign: "left", color: "gray" }}>
+      {"Posted on "+ timeFormat(comment.created_time)}
+    </p>
+  </Grid>
+</Grid>
+<Divider variant="fullWidth" style={{ margin: "30px 0" }} />
+</div>
+  
+))}
+  
+  
+  </Paper>
+
     </div>
     </ThemeProvider>
   );
