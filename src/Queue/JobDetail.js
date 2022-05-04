@@ -49,6 +49,7 @@ import ExportToDrive from './ExportToDrive';
 import Modal from '@mui/material/Modal';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
+import { palette } from '@mui/system';
 
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
@@ -64,7 +65,9 @@ const theme = createMuiTheme({
     warning: {
       main: yellow[500],
     },
+
   },
+
   });
 const useStyles = makeStyles((theme) => ({
 
@@ -94,6 +97,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor:'#f2f2f2',
 
   },
+  comments_panel:{
+    backgroundColor: 'primary.dark',
+    '&:hover': {
+      backgroundColor: 'primary.main',
+      opacity: [0.9, 0.8, 0.7],
+    },
+  },
+
 
 }));
 
@@ -142,6 +153,7 @@ function handlesubmit(){
   };
   
   axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+    setCommentField("");
     console.log(response.data);
   }).catch(function (error) {
     console.error(error);
@@ -405,6 +417,7 @@ function handlesubmit(){
   component="form"
   sx={{
     '& > :not(style)': { m: 10, width: '100ch' },
+
   }}
   noValidate
   autoComplete="off"
@@ -426,8 +439,7 @@ function handlesubmit(){
   <Button
   onClick={handlesubmit}
   variant="contained"
-  style={{marginBottom:"1%"}}
-  color="primary"
+  style={{marginBottom:"1%",textTransform: 'none',}}
   className={classes.button}
   endIcon={<SendIcon />}
 
@@ -441,13 +453,21 @@ function handlesubmit(){
         
   
   {comments.map ((comment)=> (
-  <div>
-  <Paper elevation={3} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"}} >
-  <Grid container wrap="nowrap" spacing={2}>
+  <div >
+  <Paper elevation={3}  style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%",
+  backgroundColor: 'white',
+  '&:hover': {
+    backgroundColor: 'red',
+    opacity: [0.9, 0.8, 0.7],
+  }
+
+
+}} >
+  <Grid container wrap="nowrap" spacing={2}  >
   <Grid item>
     <Avatar alt="Remy Sharp" src={imgLink} />
   </Grid>
-  <Grid justifyContent="left" item xs zeroMinWidth>
+  <Grid justifyContent="left" item xs zeroMinWidth >
     <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
     <p style={{ textAlign: "left" }}>
       {comment.content}
