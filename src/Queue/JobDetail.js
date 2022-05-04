@@ -117,31 +117,38 @@ function JobDetail(props) {
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
   const [log, setLog] = useState(null);
+  const [refreshComments, setRefreshComments] = useState(0);
+  const [commentField, setCommentField] = useState("");
 
 
-  function handleSubmit(){
-    const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
 
-    const requestConfig = {
-      headers: {
-        'Authorization': 'Bearer ' + props.auth.token,
-        'Content-type': 'application/json'
-      }
+
+function handlesubmit(){
+  console.log("comment ",commentField)
+  const jobUrl=`/api/v2/results/${id}`;
+
+  const options = {
+    method: 'POST',
+    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+      content: commentField,
+      job: jobUrl,
+      user: props.auth.tokenParsed["preferred_username"]
     }
-
-    let submittedComment=
-
-    axios.post(Url, submittedComment, requestConfig)
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.log(error)
-      /* setErrorMessage('Error submitting a job'); */
-    })
-  }
+  };
+  
+  axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
 
 
+}
   useEffect(() => {
     let config = {
       headers: {
@@ -159,7 +166,15 @@ function JobDetail(props) {
     fetchData();
   }, []);
 
-  
+  function compare( a, b ) {
+    if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
+      return -1;
+    }
+    if ( timeFormat(a.created_time) < timeFormat(b.created_time) ){
+      return 1;
+    }
+    return 0;
+  }
   useEffect(() => {
     let config = {
       headers: {
@@ -172,24 +187,27 @@ function JobDetail(props) {
     const fetchData = async () => {
       const result = await axios(commentstUrl, config);
       console.log("result",result)
+      
 
       for ( const comment of result.data.objects) 
       
-          { console.log("current job",comment.job,currentJobID,comment)
+          { 
             
             if (comment.job===currentJobID) 
               {
                 currentJobComments.push(comment)
-
+                currentJobComments.sort(compare);
               }
     
        }
+       //currentJobComments.sort(compare);
       await setComments(currentJobComments);
+      //setComments(comments.sort(compare))
       console.log("currentJobComments",currentJobComments);
       console.log("comments",comments);
     };
     fetchData();
-  }, []);
+  }, [refreshComments]);
 
 
 
@@ -383,13 +401,23 @@ function JobDetail(props) {
   noValidate
   autoComplete="off"
 >
-  <TextField  id="outlined-basic" label="Outlined" variant="outlined" />
+
+<Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
+  <TextField 
+  style={{ marginTop: "1%",width:"90%", marginBottom:"1%", textAlign: "left" }}
+  id="outlined-basic" 
+  multiline
+  value={commentField}
+  onChange={(event) => {setCommentField(event.target.value)}}
+  label="Outlined" 
+  
+  variant="outlined" />
 
 </Box>
 
 
   <Button
-  onClick={handleSubmit}
+  onClick={handlesubmit}
   variant="contained"
   color="primary"
   className={classes.button}
@@ -402,7 +430,7 @@ function JobDetail(props) {
 
       </div>
 
-        <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"100%",marginBottom:"1%",paddingTop:"1%",marginTop:"2%"}} >
+        <Paper elevation={3} style={{paddingLeft:"5%", paddingBottom:"0.1%",width:"100%",marginBottom:"1%",paddingTop:"1%",marginTop:"2%"}} >
   
   {comments.map ((comment)=> (
   <div>
