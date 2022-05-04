@@ -393,6 +393,14 @@ function handlesubmit(){
 
     </AccordionDetails>
   </Accordion>
+
+  <Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
+  
+</div>
+<div>
+  <Paper elevation={2} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"}} >
+
+
   <Box
   component="form"
   sx={{
@@ -402,14 +410,13 @@ function handlesubmit(){
   autoComplete="off"
 >
 
-<Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
   <TextField 
-  style={{ marginTop: "1%",width:"90%", marginBottom:"1%", textAlign: "left" }}
+  style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
   id="outlined-basic" 
   multiline
   value={commentField}
   onChange={(event) => {setCommentField(event.target.value)}}
-  label="Outlined" 
+  label={"Comment on Job "+job.id} 
   
   variant="outlined" />
 
@@ -419,21 +426,23 @@ function handlesubmit(){
   <Button
   onClick={handlesubmit}
   variant="contained"
+  style={{marginBottom:"1%"}}
   color="primary"
   className={classes.button}
   endIcon={<SendIcon />}
 
 >
-  Submit Comment
+  Post Comment
 </Button>
 
-
+</Paper>
       </div>
 
-        <Paper elevation={3} style={{paddingLeft:"5%", paddingBottom:"0.1%",width:"100%",marginBottom:"1%",paddingTop:"1%",marginTop:"2%"}} >
+        
   
   {comments.map ((comment)=> (
   <div>
+  <Paper elevation={3} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"}} >
   <Grid container wrap="nowrap" spacing={2}>
   <Grid item>
     <Avatar alt="Remy Sharp" src={imgLink} />
@@ -448,13 +457,13 @@ function handlesubmit(){
     </p>
   </Grid>
 </Grid>
-<Divider variant="fullWidth" style={{ margin: "30px 0" }} />
+</Paper>
 </div>
   
 ))}
   
   
-  </Paper>
+  
 
     </div>
     </ThemeProvider>
