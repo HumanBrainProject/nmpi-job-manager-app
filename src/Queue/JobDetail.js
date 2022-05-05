@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom'
 import {
   useParams
 } from "react-router-dom";
@@ -108,16 +109,6 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-/* const StyledTableCell = withStyles((theme) => ({
-  head: {
-    fontSize: 16,
-    fontWeight:"bold"
-  },
-  body: {
-    fontSize: 16,
-  },
-}))(TableCell); */
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -135,6 +126,8 @@ function JobDetail(props) {
   const handleOpen = () => setOpen(true);
  // const handleClose = () => setOpen(false);
   let { id } = useParams();
+  const location = useLocation();
+  const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
   const [log, setLog] = useState(null);
@@ -171,6 +164,12 @@ function handlesubmit(){
 
 
 }
+
+/* useEffect(() => {
+
+
+
+}, []); */
   useEffect(() => {
     let config = {
       headers: {
@@ -178,7 +177,9 @@ function handlesubmit(){
       }
     }
     console.log("token",props.auth.token)
-    const resultUrl = apiV2Url +`/results/${id}`;
+    let resultUrl=""
+    if (jobStatus==="finished"){resultUrl = apiV2Url +`/results/${id}`;}
+   else{resultUrl = apiV2Url +`/queue/${id}`;}
 
     const fetchData = async () => {
       const result = await axios(resultUrl, config);
@@ -186,7 +187,8 @@ function handlesubmit(){
       console.log(result.data);
     };
     fetchData();
-  }, []);
+    if (job.status===undefined){setJobStatus("unfinished")}
+  }, [jobStatus]);
 
   function compare( a, b ) {
     if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
@@ -289,7 +291,7 @@ function handlesubmit(){
         <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
         </Box>
         
-        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>
+        {(job.status==="finished")?<Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>:<Box component="span" display="block" fontSize="13px"  > <strong></strong></Box> }
   
         </p>
 

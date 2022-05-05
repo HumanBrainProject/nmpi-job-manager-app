@@ -519,7 +519,7 @@ onCollabChange= async (newValue)=>{
                             // used striped rows shading 
                             <TableRow    key={job.id} hover='true' style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
                             
-                            <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
+                            <StyledTableCell  component="td" scope="row"><Link to={{pathname:'/' + job.id,state:{jobStatus:job.status}}}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
                             <StyledTableCell   component="td" scope="row"  >
                 
                             {job.id}
