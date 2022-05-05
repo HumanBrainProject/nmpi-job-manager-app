@@ -4,7 +4,7 @@ import {
   useParams
 } from "react-router-dom";
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles,withStyles } from '@material-ui/core';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Typography from '@material-ui/core/Typography';
@@ -98,15 +98,25 @@ const useStyles = makeStyles((theme) => ({
 
   },
   comments_panel:{
-    backgroundColor: 'primary.dark',
+    backgroundColor: '#FFFFFF',
     '&:hover': {
-      backgroundColor: 'primary.main',
+      backgroundColor: '#f2f2f2',
       opacity: [0.9, 0.8, 0.7],
     },
   },
 
 
 }));
+
+/* const StyledTableCell = withStyles((theme) => ({
+  head: {
+    fontSize: 16,
+    fontWeight:"bold"
+  },
+  body: {
+    fontSize: 16,
+  },
+}))(TableCell); */
 
 const style = {
   position: 'absolute',
@@ -454,13 +464,7 @@ function handlesubmit(){
   
   {comments.map ((comment)=> (
   <div >
-  <Paper elevation={3}  style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%",
-  backgroundColor: 'white',
-  '&:hover': {
-    backgroundColor: 'red',
-    opacity: [0.9, 0.8, 0.7],
-  }
-
+  <Paper elevation={3} className={classes.comments_panel} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"
 
 }} >
   <Grid container wrap="nowrap" spacing={2}  >
