@@ -125,15 +125,17 @@ function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
  // const handleClose = () => setOpen(false);
-  let { id } = useParams();
-  const location = useLocation();
+  let { id,endpoint } = useParams();
+/*  const location = useLocation();
   const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
+  console.log("job status",jobStatus) */
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
   const [log, setLog] = useState(null);
   const [refreshComments, setRefreshComments] = useState(0);
   const [commentField, setCommentField] = useState("");
-
+  let queueUrl=apiV2Url +`/queue/${id}`;
+  let resultUrl = apiV2Url +`/results/${id}`
 
 
 
@@ -165,11 +167,7 @@ function handlesubmit(){
 
 }
 
-/* useEffect(() => {
 
-
-
-}, []); */
   useEffect(() => {
     let config = {
       headers: {
@@ -177,18 +175,21 @@ function handlesubmit(){
       }
     }
     console.log("token",props.auth.token)
-    let resultUrl=""
-    if (jobStatus==="finished"){resultUrl = apiV2Url +`/results/${id}`;}
-   else{resultUrl = apiV2Url +`/queue/${id}`;}
+    let requestUrl=""
 
-    const fetchData = async () => {
-      const result = await axios(resultUrl, config);
-      await setJob(result.data);
-      console.log(result.data);
-    };
-    fetchData();
-    if (job.status===undefined){setJobStatus("unfinished")}
-  }, [jobStatus]);
+    if (endpoint==="f"){requestUrl=resultUrl;}
+   else{requestUrl = queueUrl}
+
+  
+    axios(requestUrl, config).then((result)=>{ 
+        setJob(result.data);
+      console.log(result.data)}).catch((error)=>{
+        console.log(error)
+      })
+      
+   
+    
+  }, []);
 
   function compare( a, b ) {
     if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
@@ -224,11 +225,8 @@ function handlesubmit(){
               }
     
        }
-       //currentJobComments.sort(compare);
+
       await setComments(currentJobComments);
-      //setComments(comments.sort(compare))
-      console.log("currentJobComments",currentJobComments);
-      console.log("comments",comments);
     };
     fetchData();
   }, [refreshComments]);
@@ -291,7 +289,7 @@ function handlesubmit(){
         <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
         </Box>
         
-        {(job.status==="finished")?<Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>:<Box component="span" display="block" fontSize="13px"  > <strong></strong></Box> }
+        {(job.status==="finished"||job.status==="error")?<Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>:<Box component="span" display="block" fontSize="13px"  > <strong></strong></Box> }
   
         </p>
 

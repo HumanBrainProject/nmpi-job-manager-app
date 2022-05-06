@@ -75,7 +75,7 @@ function App(props) {
       <Route path="/resources">
           <ResourceRequestList auth={props.auth} collab={currentCollab} />
       </Route>
-      <Route path="/:id">
+      <Route path="/:endpoint/:id">
           <JobDetail auth={props.auth} setCollab={setCurrentCollab}/>
       </Route>
     </Switch>
