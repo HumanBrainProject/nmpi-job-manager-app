@@ -23,8 +23,13 @@ import {timeFormat,currentDate,currentDateFileFormat} from '../utils';
 
 export default function ExportToDrive(props) {
 
-  const [open, setOpen] = React.useState(false);
-  const [openAlert, setOpenAlert] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [openResult, setOpenResult] = useState(false);
+  const [existingFiles, setExistingFiles] = useState([])
+  const [oversizeFiles, setOversizeFile] = useState([])
+  const [allfiles, setAllFiles] = useState(true);
+  const [size_error, setError] = useState(false);
 
 
   const handleClickOpen = () => {
@@ -36,183 +41,211 @@ export default function ExportToDrive(props) {
     props.setDriveFilesExplorerStatus(false);
   };
 
+  const [FolderContent, setFolderContent] = React.useState({});
+  //const [filesList, setfilesList] = React.useState({});
+  let filesList =[];
+  const [currentDir,setcurrentDir]= React.useState('/')
+  //const [currentDirUrl,setcurrentDirUrl]= React.useState('')
+  let currentDirUrl = ''
 
-    const [FolderContent, setFolderContent] = React.useState({});
-    //const [filesList, setfilesList] = React.useState({});
-    let filesList =[];
-    const [currentDir,setcurrentDir]= React.useState('/')
-    //const [currentDirUrl,setcurrentDirUrl]= React.useState('')
-    let currentDirUrl = ''
-    function updatecurrentDirAndopencode(dir,type,getlink){
+  function updatecurrentDirAndopencode(dir,type,getlink){
 
-      if (type==="file" && dir.split('.').pop()!=="py") {return}
-      if(type==="file"){
-  
-     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+getlink;
+    if(type==="file" && dir.split('.').pop()!=="py") {return}
+    if(type==="file"){
+
+      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+getlink;
       let config = {
-        
         headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
       };
+      console.log(getlink)
 
-
-/*       axios.get(query_url, config).then(function(res) {
+  /*       axios.get(query_url, config).then(function(res) {
         console.log("given link",res.data)
-         axios.get("https://corsproxy-sa.herokuapp.com/"+res.data, config).then(function(res) {
+          axios.get("https://corsproxy-sa.herokuapp.com/"+res.data, config).then(function(res) {
           //setCode(res.data)
           //setTab(0)
           console.log(res)
         }) 
-  
+
       }) */
 
-        return
-      }
-      if (currentDir==="/"){    
-      setcurrentDir(currentDir+dir)
       return
-      }
-      setcurrentDir(currentDir+"/"+dir)
     }
-    function backout(){
-      if(currentDir.substring(0,currentDir.lastIndexOf("/").length!==0||currentDir.substring(0,currentDir.lastIndexOf("/"))==="")){
-        setcurrentDir(currentDir.substring(0,currentDir.lastIndexOf("/")))
-        return null
-      }
-      setcurrentDir("/")
+    if (currentDir==="/"){    
+      setcurrentDir(currentDir+dir)
+      console.log('setcurentdir sans /')
+      return
     }
-  
-    function uploadFile(destination,singularFile,fileName)
-  {
+    setcurrentDir(currentDir+"/"+dir)
+    console.log('setcurentdir avec /')
+  }
+
+  function backout(){
+    if(currentDir.substring(0,currentDir.lastIndexOf("/").length!==0||currentDir.substring(0,currentDir.lastIndexOf("/"))==="")){
+      setcurrentDir(currentDir.substring(0,currentDir.lastIndexOf("/")))
+      return null
+    }
+    setcurrentDir("/")
+  }
+
+  function uploadFile(destination,singularFile,fileName){
 
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+currentDirUrl+'/upload-link/';
     let config = {
-      
       headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
     };
 
     //let iterableFileslist = filesList
 
-
-const FormData = require('form-data');
-const fileData = new FormData() 
-const newBlob = new Blob([singularFile.data], {
-  type: 'text/plain'
-});
-
-
-let currentFolder =currentDir.split('/').slice(2).join('/');
-
-let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
-if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
-
-fileData.append("parent_dir", '/');
-fileData.append("relative_path", relativePath);
-fileData.append("replace", "1");
-fileData.append("file",newBlob,fileName)
+    const FormData = require('form-data');
+    const fileData = new FormData() 
+    const newBlob = new Blob([singularFile.data], {
+      type: 'text/plain'
+    });
 
 
+    let currentFolder =currentDir.split('/').slice(2).join('/');
 
+    let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
+    if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
 
-axios.get(query_url, config).then(function(res) {
+    fileData.append("parent_dir", '/');
+    fileData.append("relative_path", relativePath);
+    fileData.append("replace", "1");
+    fileData.append("file",newBlob,fileName)
 
-  let configPost = {
-      
-    headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-    
-  };
+    axios.get(query_url, config)
+      .then(function(res) {
 
-   axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
-
-    console.log("post result",res)
-  }.catch((errPost)=>{console.log(errPost)
-
-
-    
-  }
-  
-  
-  ))
-
-}).catch((err) =>{
-  
-  console.log("error",err)
-
-
-
-
-})
-
-
-  }
-
-  function downloadFiles(destination)
-  {      let config = {
-        
-    headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-  };
-  let currentFilesList=[]
-  for ( const file of props.files)
-  {
-
-  let fileName= file.url.split('/').pop()
-    axios.get("https://corsproxy-sa.herokuapp.com/"+file.url, config).then(function(res) {  
-        
-      uploadFile(destination,res,fileName)
-    currentFilesList.push(res)
-
-    })
-
-  }
-
-  filesList = currentFilesList
- 
-
-  }
-
- function exportToDrive()
-{
- 
-let iterableFolderContent = FolderContent
-
-
-let currentRepoId =''
-for ( const d of iterableFolderContent)
-{ 
-    if (d.name===currentDir.split('/').pop()){currentDirUrl=d.repoid 
-        currentRepoId=d.repoid
-
-break
-
-} }
-downloadFiles(currentDirUrl)
-
-handleClose()
-setOpenAlert(true)
-
-
-
-}
-
-    useEffect(() => {
- 
-        let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
-        let config = {
-          
-          headers: { Authorization: "Bearer " + props.auth.token },
+        let configPost = {
+          headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
         };
-        let ids_query_url=query_url+"/?type=mine"
-        axios.get(ids_query_url, config).then(function(res) {
-          let axios_requests=[];
-          
-          let repoContent=[]
-          let ids=[]
-          for(let i=0;i<res.data.length;i++){
-              ids.push(res.data[i].id)
-              axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
-              repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
-          }
-          axios.all(axios_requests).then(axios.spread((...responses) => {
-            console.log(responses)
+
+        axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
+          console.log("post result",res)
+        }.catch((errPost)=>{
+          console.log(errPost)
+        })
+        )
+      }).catch((err) =>{
+        console.log("error",err)
+      })
+
+  }
+
+
+
+  function downloadFiles(destination){
+    let config = {
+      headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+    };
+    let currentFilesList=[]
+    for ( const file of props.files){
+      let fileName= file.url.split('/').pop()
+    
+      axios.get("https://corsproxy-sa.herokuapp.com/"+file.url, config)
+        .then(function(res) {  
+          console.log('UPLOAD',"https://corsproxy-sa.herokuapp.com/"+file.url, destination,res,fileName)
+          uploadFile(destination,res,fileName)
+          currentFilesList.push(res)
+
+        })
+
+    } 
+
+    filesList = currentFilesList
+ 
+  }
+
+  const handleCloseResult = () => {
+    setOpenResult(false);
+    setAllFiles(true)
+    setOversizeFile([])
+    setExistingFiles([])
+  };
+
+
+  const handleCopy = async(path) =>{
+    let target = 'drive'
+    const url = 'https://127.0.0.1:8000/copydata/' + target + '/' + `${props.jobId}`;
+    const config = {headers: {'Authorization': 'Bearer ' + props.auth.token},
+                    params: {
+                      path: path
+                    }};
+    const config2 = {headers: {'Authorization': 'Bearer ' + props.auth.token}}
+    let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
+    const rr = axios.get(ids_query_url, config2)
+    console.log(rr)
+    const response = await axios.get(url, config)
+    for (let i = 0; i < response.data[1].length; i++) {
+      console.log('data', response.data);
+      if (response.data[1][i] != 'Copied') {
+        setAllFiles(false)
+        if (response.data[1][i] == 'Exists') {
+          existingFiles.push(response.data[0][i])
+        }
+        else{
+          setError(true)
+          oversizeFiles.push([response.data[0][i], parseFloat(response.data[1][i][1]).toFixed(2)])
+        }
+      }
+    } 
+    setOpenResult(true);
+    setOpenAlertCopy(false)
+
+  }
+
+  function exportToDrive(){
+  
+      let iterableFolderContent = FolderContent
+
+      let currentRepoId =''
+      for ( const d of iterableFolderContent)
+      { 
+        if (d.name===currentDir.split('/').pop()){
+          currentDirUrl=d.repoid 
+          currentRepoId=d.repoid
+          break
+        } 
+      }
+      console.log('dans exporttodrive, avant lappel a dowloadfiles')
+      // downloadFiles(currentDirUrl)
+      console.log('currentDir', currentDir)
+      console.log('TEST',currentDir.split('/').slice(2).join('/'))
+      console.log('dans exporttodrive, apres lappel a dowloadfiles')
+      handleCopy(currentDir)
+      handleClose()
+      setOpenAlert(true)
+
+  }
+
+  useEffect(() => {
+ 
+    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
+    let config = {
+      headers: { Authorization: "Bearer " + props.auth.token },
+    };
+    // let ids_query_url=query_url//+"/?type=grepo"
+    let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos" + "?nameContains=" + props.collab
+    axios.get(ids_query_url, config)
+      .then(function(res) {
+        let axios_requests=[];
+        // console.log('useeffect: after axios.get', ids_query_url)
+        let repoContent=[]
+        let ids=[]
+        // console.log('useeffect: after axios.get - res', res)
+        // return
+        for(let i=0;i<res.data.length;i++){
+            ids.push(res.data[i].id)
+            axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
+            // console.log('data.lenght, etc... ', res.data.length,query_url+res.data[i].id, "/dir/?t&recursive=1" )
+            repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
+            // console.log('repo content ', )
+
+        }
+        axios.all(axios_requests)
+          .then(axios.spread((...responses) => {
+            // console.log('axios.all',responses)
             let parent_dir=''
             let repoid=''
             for(let i=0;i<responses.length;i++){
@@ -224,23 +257,21 @@ setOpenAlert(true)
                 }
                 if(responses[i].data[j].type==="file")
                 {
-                  repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})}else{
+                  // console.log('===file',{name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
+                  repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
+                }else{
                   repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,repoid:repoid})
                 }
-    
               }
             }
             setFolderContent(repoContent)
           }))
+
+      }).catch((err) => {console.log("Error: ", err.message) });
+
+    }, [props.DriveFilesExplorerStatus]);
     
-          
-    
-          
-    
-        }).catch((err) => {console.log("Error: ", err.message) });
-      }, [props.DriveFilesExplorerStatus]);
-    
-      useEffect(() => 
+    useEffect(() => 
       {
 
         setOpen(props.DriveFilesExplorerStatus)
@@ -274,16 +305,82 @@ setOpenAlert(true)
       </DialogActions>
     </Dialog>
 
-    <Box sx={{ width: '100%' }}>
-    <Collapse in={openAlert}>
+    <Dialog
+        open={openResult}
+        onClose={handleCloseResult}
+        maxWidth='xl'
+        fullWidth={true}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <h3>Copy output files to the Drive </h3>
+          <hr></hr>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <h4>Target repository <strong>/{currentDir.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>
+            <br></br>
+          </DialogContentText>
+            {(() => {
+            if (allfiles) {
+              return (
+                <DialogContentText id="alert-dialog-description2">
+                  <h5> All output files have been copied to the Drive. </h5>
+                </DialogContentText>
+              )
+            } else{
+              return (
+                <DialogContentText id="alert-dialog-description3">
+                  <h5> Copy done, except: </h5> 
+                </DialogContentText>
+              )          
+            }
+          })()}
+          {(() => {
+            if (existingFiles.length >=1) {
+              const listItems1 = existingFiles.map((f) =>
+                  <li>{f} : already exists in the Drive</li>
+              );
+              return ( 
+                  <DialogContentText id="alert-dialog-description4">
+                    <ul>{listItems1}</ul>
+                  </DialogContentText>
+              )
+            }
+          })()}
+          {(() => {
+            if (oversizeFiles.length >=1) {
+              const listItems2 = oversizeFiles.map((f) =>
+                  <li>{f[0]} : the size ({f[1]} GB) exceeds the limit allowed of 1GB</li>
+              );
+              return (
+                <DialogContentText id="alert-dialog-description5">
+                    <ul>{listItems2}</ul>
+                </DialogContentText>
+            )
+          }
+          })()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseResult} autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>  
+    {/* {() => {if(openResult==true){
+      return( */}
+    <Box sx={{ width: '100%' }}>      
+    <Collapse in={openAlertCopy}>
       <Alert
+        severity="info"
         action={
           <IconButton
             aria-label="close"
             color="inherit"
             size="small"
             onClick={() => {
-              setOpenAlert(false);
+              setOpenAlertCopy(false);
             }}
           >
             <CloseIcon fontSize="inherit" />
@@ -291,10 +388,29 @@ setOpenAlert(true)
         }
         sx={{ mb: 2 }}
       >
-        Files exported successfully
+      File copy in progress
       </Alert>
     </Collapse>
-
+    <Collapse in={openAlertDone}>
+      <Alert
+        severity="info"
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpenAlertDone(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+        sx={{ mb: 2 }}
+      >
+      File copy in progress
+      </Alert>
+    </Collapse>
   </Box>
 
 
