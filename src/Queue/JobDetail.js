@@ -125,7 +125,7 @@ function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
  // const handleClose = () => setOpen(false);
-  let { id,endpoint } = useParams();
+  let { collab_id,endpoint,id } = useParams();
 /*  const location = useLocation();
   const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
   console.log("job status",jobStatus) */

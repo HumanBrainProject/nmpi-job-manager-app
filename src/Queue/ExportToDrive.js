@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DriveFilesExplorer from'./DriveFilesExplorer'
+import DriveFilesExplorerExport from'./DriveFilesExplorerExport'
 
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -264,7 +264,7 @@ setOpenAlert(true)
         
       </DialogTitle>
       <DialogContent  >
-      <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
+      <DriveFilesExplorerExport RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorerExport>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>

@@ -33,7 +33,7 @@ const styleFileIcon = {
 
 
 
-export default function DriveFilesExplorer(props) {
+export default function DriveFilesExplorerExport(props) {
   let currentDir=props.currentDir
   if(props.currentDir===""){
      currentDir='/'

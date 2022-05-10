@@ -7,8 +7,28 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import DriveFilesExplorer from'./DriveFilesExplorer'
+import DriveFilesExplorerImport from'./DriveFilesExplorerImport'
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Paper from '@material-ui/core/Paper';
 
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+
+import DialogTitle from '@mui/material/DialogTitle';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
@@ -27,18 +47,24 @@ import { useDropzone } from 'react-dropzone'
 import { DropzoneDialogBase } from 'material-ui-dropzone';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Collapse from '@mui/material/Collapse';
+import Alert from '@mui/material/Alert';
+import AlertTitle from "@mui/material/AlertTitle";
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import Icon from '@material-ui/core/Icon';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import BackupIcon from '@mui/icons-material/Backup';
+import GroupIcon from '@mui/icons-material/Group';
 import {apiV2Url} from '../Globals';
 import {
     useParams
   } from "react-router-dom";
 
-
+  import {handleAddToList,isItemInArray} from '../Utils';
 
 
 function TabPanel(props) {
@@ -158,7 +184,57 @@ const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
 export default function CreateJob(props) {
 
+  const [open, setOpen] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [importFiles, setImportFiles] = React.useState(0);
+  const [collabType, setCollabType] = React.useState("mine");
+  const [refreshRepoContent, setRefreshRepoContent] = React.useState(0);
 
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  function handleExcludeFile(link)
+  {
+    let fileIndex=isItemInArray(downloadQueue,link)
+    if(fileIndex!==-1){
+      
+      setDownloadQueue([
+        ...downloadQueue.slice(0, fileIndex),
+        ...downloadQueue.slice(fileIndex + 1)
+      ]);
+      setSourceFiles([
+        ...sourceFiles.slice(0, fileIndex),
+        ...sourceFiles.slice(fileIndex + 1)
+      ]);
+
+    }
+
+  }
+  function importSelected()
+  {
+    setImportFiles(importFiles+1)
+    //downloadFiles()
+    //setCode(downloadQueue.toString())
+    
+  handleClose()
+  setOpenAlert(true)
+  
+  
+  
+  }
+
+  function handleCloseErrorAlert()
+  {
+
+    setHasError(!hasError)
+  }
+  
+//////////
 
   function updateFolderContent(folderstructuer ,path=''){
     setFolderContent(({isRoot:true,Reop:[ {Folder:true,Name:'Dependecey'},{Folder:false,Name:'Ai.py'},{Folder:true,Name:'Test'},{Folder:true,Name:'Production'}]}))
@@ -166,9 +242,11 @@ export default function CreateJob(props) {
   }
   
   const classes = useStyles();
-
+  const [checkedFiles, setCheckedFiles] = React.useState([]);
   const [hw, set_hw] = React.useState('');
   const [hwIsSelected, set_hwIsSelected] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
   const [hwlabel, set_hwlabel] = React.useState('');
   const [tab, setTab] = React.useState(0);
   const [code, setCode] = React.useState("# write your code here");
@@ -179,9 +257,99 @@ export default function CreateJob(props) {
   const [git, setGit] = React.useState('');
   const [mymodel, setModel] = React.useState('');
   const [tags, setTags] = React.useState([])
+  const [sourceFiles, setSourceFiles] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('');
   const [FolderContent, setFolderContent] = React.useState({});
   const [currentDir,setcurrentDir]= React.useState('/')
+  const [downloadQueue,setDownloadQueue]= React.useState([])
+
+
+  // download hook
+
+  useEffect(() => {
+
+
+  for ( const element of checkedFiles)
+  {
+
+
+    let config = {
+       
+       headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+     };
+if (element[1]==="file")
+    {    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+element[2];
+
+       axios.get(query_url, config).then(function(res) {
+
+
+           let file = {name: element[0],link:res.data}
+
+
+setSourceFiles(sourceFiles=>[...sourceFiles,file]);
+setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
+   
+   
+   
+       })
+  }
+
+  else {
+    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/repos/"+element[2];
+
+
+    axios.get(query_url, config).then(function(res) {  
+      
+
+      let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
+
+axios.get(query_task_progress_url, config).then( function(res){console.log("zip return",res.data.zipped===res.data.total) }).catch((err) => {console.log("Task progress request Error: ", err.message) });
+/*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
+     console.log("progress",progress)
+        progress=(res.data.zipped===res.data.total)
+      console.log("zip return",progress) }) } */
+    let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
+
+
+
+let folder = {name: element[0],link:downlaod_zip_url}
+
+setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
+setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
+
+
+    /*       axios.get(downlaod_zip_url, config).then(function(res) {
+        console.log("final result",res,element[0])
+        const blob = new Blob([res], {type: 'application/octet-stream'});
+        const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
+
+
+        currentFilesList.push(file)
+        console.log("array result",currentFilesList[0],element[0])
+           
+                 })  */
+
+
+     } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+
+    
+
+
+
+
+  }
+
+  
+  }
+
+
+
+ 
+
+}, [importFiles]);
+
+
+
   function updatecurrentDirAndopencode(dir,type,getlink){
     if (type==="file" && dir.split('.').pop()!=="py") {return}
     if(type==="file"){
@@ -219,21 +387,33 @@ export default function CreateJob(props) {
     setcurrentDir("/")
   }
 
-  
+
   useEffect(() => {
     if(hwIsSelected) {
       setConfigExample(config_example[hw].example);
       setCommExample(command_example[hw].example);
     }
     }, [hw]);
+    useEffect(() => {
+      if(code==="") {
+setCode("# write your code here")
+      }
+      }, [code]);
+
+useEffect(()=> {setCode(downloadQueue.toString())
+
+},[downloadQueue]);
+
 
   useEffect(() => {
     if(tab === 0) setModel(code);
     if(tab === 1) setModel(git);
-  }, [tab, code, git]);
+    if(tab === 2) setModel(code)
+
+  }, [tab, code, git,sourceFiles]);
 
   // Job resubmission
-  let { id } = useParams();
+  let { collabid ,id} = useParams();
   useEffect(() => {
 if (props.resubmit==="true")
 
@@ -271,8 +451,13 @@ if (props.resubmit==="true")
       
       headers: { Authorization: "Bearer " + props.auth.token },
     };
-    let ids_query_url=query_url+"/?type=mine"
+    let ids_query_url=query_url+"/?type="+collabType
+    //let ids_query_url=query_url+"/?type=mine"
     axios.get(ids_query_url, config).then(function(res) {
+      console.log("res",res)
+      console.log("token",props.auth.token)
+      console.log("collab",props.collab)
+      console.log("collab",collabid)
       let axios_requests=[];
       
       let repoContent=[]
@@ -295,8 +480,10 @@ if (props.resubmit==="true")
             }
             if(responses[i].data[j].type==="file")
             {
-              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})}else{
-              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir})
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})}
+              
+              else{
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/zip-task/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name,repoid:repoid})
             }
 
           }
@@ -310,7 +497,7 @@ if (props.resubmit==="true")
       
 
     }).catch((err) => {console.log("Error: ", err.message) });
-  }, []);
+  }, [collabType,refreshRepoContent]);
 
 
  
@@ -346,7 +533,25 @@ if (props.resubmit==="true")
   const handleChangeTab = (event, newValue) => {
 
     setTab(newValue);
+    //if(newValue===2){handleClickOpen()}
   };
+function handleSubmitClick()
+{
+  setHasError(!hwIsSelected)
+  if (hasError===false){handleSubmit()}
+
+}
+
+function handleClickCollabType(currentCollabType)
+{
+
+  setFolderContent({});
+  setcurrentDir('/');
+  setRefreshRepoContent(refreshRepoContent+1);
+  setCollabType(currentCollabType);
+  console.log(collabType)
+
+}
 
 function handleSubmit(){
     const Url = 'https://nmpi.hbpneuromorphic.eu/api/v2/queue';
@@ -357,7 +562,7 @@ function handleSubmit(){
         'Content-type': 'application/json'
       }
     }
-
+    setHasError(!hwIsSelected)
     let job = {
     // job.id = null;
     // job.log = " ";
@@ -365,7 +570,7 @@ function handleSubmit(){
     code : mymodel,
     command : command,
     hardware_platform : hw,
-    collab_id: props.collab,
+    collab_id: props.collab??collabid,
     tags : tags,
     user_id: props.auth.tokenParsed["preferred_username"]
     // job.selected_tab = "code_editor";
@@ -383,10 +588,12 @@ function handleSubmit(){
     axios.post(Url, job, requestConfig)
     .then(response => {
       console.log(response);
+      setSubmitStatus(true);
     })
     .catch(error => {
+      console.log("current job",job)
       console.log(error)
-      setErrorMessage('Error submitting a job');
+      setErrorMessage(error);
     })
   }
 
@@ -402,6 +609,7 @@ function handleSubmit(){
       <FormControl className={classes.formControl}  data-testid ='hardwareList'>
         <InputLabel id="hardware-simple-select">Hardware</InputLabel>
         <Select
+        required
           labelId="hardware-simple-select"
           id="hardware-simple-select"
           value={hw}
@@ -475,7 +683,98 @@ function handleSubmit(){
       <TabPanel value={tab} index={2}>
         <div>
 
-            <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
+        <Button
+        onClick={handleClickOpen}
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        startIcon={<BackupIcon />}
+      >
+        Import Files or Folders
+      </Button>
+      
+        <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth={ true } maxWidth={"xl"}
+      >
+        <DialogTitle id="alert-dialog-title">
+        <h5 style={{ display: 'inline' }} >{"Select the destination folder: "}</h5>
+        <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
+          
+        </DialogTitle>
+        <DialogContent  >
+        <Button startIcon={<FolderSharedIcon />} variant={(collabType==="mine")?"contained":"outlined"} onClick={()=>{handleClickCollabType("mine")}} >
+        My libraries
+      </Button>
+      <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
+      Shared directories
+    </Button>
+        <DriveFilesExplorerImport RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} setCheckedFiles={setCheckedFiles} setCollabType={setCollabType} ></DriveFilesExplorerImport>
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={importSelected}  color="success">
+            Import Selected
+          </Button>
+        </DialogActions>
+      </Dialog>
+  
+      <Box sx={{ width: '100%' }}>
+      <Collapse in={openAlert}>
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpenAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{ mb: 2 }}
+        >
+          Files imported successfully
+        </Alert>
+      </Collapse>
+  
+    </Box>
+        
+       <Box>
+       <Paper elevation={(sourceFiles.length===0)?0:3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",marginTop:"1%"}} >
+       <List>
+       {sourceFiles.map(file=>(
+         <ListItem
+           secondaryAction={
+             <IconButton edge="end" aria-label="delete"              onClick={() => {
+              handleExcludeFile(file.link);
+            }}>
+               <DeleteIcon />
+             </IconButton>
+           }
+         >
+           <ListItemAvatar>
+             <Avatar>
+               <FolderIcon />
+             </Avatar>
+           </ListItemAvatar>
+           <ListItemText
+             primary={file.name}
+             secondary={file.size+" Kb"}
+           />
+         </ListItem>
+       ))}
+     </List>
+       
+       
+     </Paper> 
+       </Box>     
 
         </div>
       </TabPanel>
@@ -585,21 +884,45 @@ function handleSubmit(){
         color="secondary"
         className={classes.button}
         startIcon={<CancelIcon />}
-        component={ Link } to="/"
+        component={ Link } to={"/"+"?collab_id="+props.collab}
       >
         Cancel
       </Button>
       <Button
-        onClick={handleSubmit}
+        onClick={handleSubmitClick}
         variant="contained"
         color="primary"
         className={classes.button}
         endIcon={<SendIcon />}
-        component={ Link } to="/"
+        //component={ Link } to={"/"+"?collab_id="+props.collab}
       >
         Submit
       </Button>
+      <Link to={"/"+"?collab_id="+props.collab}>
+      <Dialog open={submitStatus} >
+        <Alert
+          severity="success"
+          color="success"
+          role="button"
+          icon={<CloudDoneIcon />}
+          onClose={() => {}}
+          closeText="Go back to Jobs list"
+          sx={{
+            // width: '80%',
+            // margin: 'auto',
+            "& .MuiAlert-icon": {
+              color: "blue"
+            }
+            //backgroundColor: "green"
+          }}
+        >
+          <AlertTitle>Done !</AlertTitle>
+          The Job has been submitted successfully
+        </Alert>
+      </Dialog>
+      </Link>
 
+      
       </div>
 
     </div>
