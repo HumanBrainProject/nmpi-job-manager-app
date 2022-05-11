@@ -13,6 +13,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
@@ -385,6 +387,7 @@ export default function ExportToDrive(props) {
     <Collapse in={openAlertCopy}>
       <Alert
         severity="info"
+        icon={<CircularProgress size="1.3rem" />}
         action={
           <IconButton
             aria-label="close"
@@ -399,6 +402,7 @@ export default function ExportToDrive(props) {
         }
         // sx={{ mb: 2 }}
       >
+        {/* <LinearProgress /> */}
       File copy in progress
       </Alert>
     </Collapse>
