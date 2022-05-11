@@ -303,6 +303,7 @@ export default function ExportToDrive(props) {
                 }
               }
             }
+            repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
             setFolderContent(repoContent)
           }))
 
