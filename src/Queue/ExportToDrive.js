@@ -176,10 +176,10 @@ export default function ExportToDrive(props) {
                     params: {
                       path: path
                     }};
-    const config2 = {headers: {'Authorization': 'Bearer ' + props.auth.token}}
-    let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
-    const rr = axios.get(ids_query_url, config2)
-    console.log(rr)
+    // const config2 = {headers: {'Authorization': 'Bearer ' + props.auth.token}}
+    // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
+    // const rr = axios.get(ids_query_url, config2)
+    // console.log(rr)
     const response = await axios.get(url, config)
     setOpenAlertCopy(false)
     setOpenAlertDone(true)
@@ -238,24 +238,50 @@ export default function ExportToDrive(props) {
     let config = {
       headers: { Authorization: "Bearer " + props.auth.token },
     };
-    // let ids_query_url=query_url//+"/?type=grepo"
+    // let ids_query_url=query_url+"/?type=group"
     let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos" + "?nameContains=" + props.collab
-    axios.get(ids_query_url, config)
-      .then(function(res) {
-        let axios_requests=[];
-        // console.log('useeffect: after axios.get', ids_query_url)
-        let repoContent=[]
-        let ids=[]
-        // console.log('useeffect: after axios.get - res', res)
-        // return
-        for(let i=0;i<res.data.length;i++){
-            ids.push(res.data[i].id)
-            axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
-            // console.log('data.lenght, etc... ', res.data.length,query_url+res.data[i].id, "/dir/?t&recursive=1" )
-            repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
-            // console.log('repo content ', )
+    // axios.get(ids_query_url, config)
+    //   .then(function(res) {
+    //     let axios_requests=[];
+    //     // console.log('useeffect: after axios.get', ids_query_url)
+    //     let repoContent=[]
+    //     let ids=[]
+    //     // console.log('useeffect: after axios.get - res', res)
+    //     // return
+    //     for(let i=0;i<res.data.length;i++){
+    //         ids.push(res.data[i].id)
+    //         axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
+    //         // console.log('data.lenght, etc... ', res.data.length,query_url+res.data[i].id, "/dir/?t&recursive=1" )
+    //         repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
+    //         // console.log('repo content ', )
 
-        }
+    //     }
+
+        let query_url2 = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
+        let config2 = {
+          headers: { Authorization: "Bearer " + props.auth.token },
+        };
+        let ids_query_url2=query_url//+"/?type=group&type=mine"
+        // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos" + "?nameContains=" + props.collab
+        axios.get(ids_query_url2, config)
+          .then(function(res) {
+            let axios_requests=[];
+            // console.log('useeffect: after axios.get', ids_query_url)
+            let repoContent=[]
+            let ids=[]
+            console.log('useeffect: after axios.get - res', res)
+            // return
+            for(let i=0;i<res.data.length;i++){
+                if(res.data[i].permission=='rw'){
+                  console.log(res.data[i].name, res.data[i].permission)
+                  ids.push(res.data[i].id)
+                  axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
+                  // console.log('data.lenght, etc... ', res.data.length,query_url+res.data[i].id, "/dir/?t&recursive=1" )
+                  repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
+                  // console.log('repo content ', )
+                }
+            }
+        
         axios.all(axios_requests)
           .then(axios.spread((...responses) => {
             // console.log('axios.all',responses)
