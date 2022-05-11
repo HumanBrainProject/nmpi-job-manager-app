@@ -24,7 +24,9 @@ import {timeFormat,currentDate,currentDateFileFormat} from '../utils';
 export default function ExportToDrive(props) {
 
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [openAlertCopy, setOpenAlertCopy] = useState(false);
+  const [openAlertDone, setOpenAlertDone] = useState(false);
+  const [openAlertSize, setOpenAlertSize] = useState(false);
   const [openResult, setOpenResult] = useState(false);
   const [existingFiles, setExistingFiles] = useState([])
   const [oversizeFiles, setOversizeFile] = useState([])
@@ -177,6 +179,8 @@ export default function ExportToDrive(props) {
     const rr = axios.get(ids_query_url, config2)
     console.log(rr)
     const response = await axios.get(url, config)
+    setOpenAlertCopy(false)
+    setOpenAlertDone(true)
     for (let i = 0; i < response.data[1].length; i++) {
       console.log('data', response.data);
       if (response.data[1][i] != 'Copied') {
@@ -187,11 +191,18 @@ export default function ExportToDrive(props) {
         else{
           setError(true)
           oversizeFiles.push([response.data[0][i], parseFloat(response.data[1][i][1]).toFixed(2)])
+          setOpenAlertDone(false)
+          setOpenAlertSize(true)
         }
       }
-    } 
+    }
     setOpenResult(true);
-    setOpenAlertCopy(false)
+    // if(size_error){
+    //   setOpenAlertSize(true)
+    // }
+    // else{
+    //   setOpenAlertDone(true);
+    // }
 
   }
 
@@ -215,7 +226,7 @@ export default function ExportToDrive(props) {
       console.log('dans exporttodrive, apres lappel a dowloadfiles')
       handleCopy(currentDir)
       handleClose()
-      setOpenAlert(true)
+      setOpenAlertCopy(true)
 
   }
 
@@ -370,7 +381,7 @@ export default function ExportToDrive(props) {
       </Dialog>  
     {/* {() => {if(openResult==true){
       return( */}
-    <Box sx={{ width: '100%' }}>      
+    {/* <Box sx={{ width: '100%' }}>       */}
     <Collapse in={openAlertCopy}>
       <Alert
         severity="info"
@@ -386,14 +397,14 @@ export default function ExportToDrive(props) {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        sx={{ mb: 2 }}
+        // sx={{ mb: 2 }}
       >
       File copy in progress
       </Alert>
     </Collapse>
     <Collapse in={openAlertDone}>
       <Alert
-        severity="info"
+        severity="success"
         action={
           <IconButton
             aria-label="close"
@@ -406,12 +417,33 @@ export default function ExportToDrive(props) {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        sx={{ mb: 2 }}
+        // sx={{ mb: 2 }}
       >
-      File copy in progress
+       File copy done with success
       </Alert>
     </Collapse>
-  </Box>
+    <Collapse in={openAlertSize}>
+      <Alert
+        severity="warning"
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpenAlertSize(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+        // sx={{ mb: 2 }}
+      >
+        Some files exceed the size limit of 1 GB. 
+        Please use the Bucket. 
+      </Alert>
+    </Collapse>
+  {/* </Box> */}
 
 
 
