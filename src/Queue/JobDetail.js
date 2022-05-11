@@ -51,6 +51,8 @@ import Modal from '@mui/material/Modal';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
 import { palette } from '@mui/system';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+
 
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
@@ -105,7 +107,16 @@ const useStyles = makeStyles((theme) => ({
       opacity: [0.9, 0.8, 0.7],
     },
   },
-
+  chip_styling:{
+    color:'#FFFFFF',
+    fontSize:"h7.fontSize",
+      fontWeight:"fontWeightMedium",
+    backgroundColor: '#292965',
+    '&:hover': {
+      backgroundColor: '#44449E',
+      opacity: [0.9, 0.8, 0.7],
+    },
+  },
 
 }));
 
@@ -297,7 +308,7 @@ function handlesubmit(){
 <div style={{ float: 'left', paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%"}} >
         <div style={{  paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
         <Tooltip title="Edit & Resubmit">
-        <Link to={'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
+        <Link to={'/'+collab_id+'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
           </Button> </Link>
           </Tooltip>
        </div>
@@ -316,6 +327,49 @@ function handlesubmit(){
       </div>
       </div>
               </div>
+
+              <div>
+              {(job.tags?.length!==0)? <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"30%",marginBottom:"1%",}} >
+              <Grid
+  container
+  direction="row"
+  justifyContent="flex-start"
+  alignItems="flex-start"
+> <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
+              
+              <Chip className={classes.chip_styling} 
+              
+                label={"Tags:"}
+                
+              />
+            
+            </Grid>
+            
+            
+            {job.tags?.map((data) => {
+      
+/*               if (data.label === 'React') {
+                icon = <TagFacesIcon />;
+              } */
+      
+              return (
+                <Grid item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+                
+                  <Chip
+                  className={classes.chip_styling}
+                    icon={<LocalOfferIcon sx={{ color: "#FFFFFF" }} />}
+                    label={data}
+                    
+                  />
+                
+                </Grid>
+              );
+            })}
+            </Grid>
+            </Paper>
+            
+          :console.log("empty")}
+          </div>
         <Accordion defaultExpanded={true} >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading}><DescriptionIcon /> Output files </Typography>
