@@ -61,7 +61,6 @@ export default function ExportToDrive(props) {
       let config = {
         headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
       };
-      console.log(getlink)
 
   /*       axios.get(query_url, config).then(function(res) {
         console.log("given link",res.data)
@@ -176,6 +175,8 @@ export default function ExportToDrive(props) {
                     params: {
                       path: path
                     }};
+    console.log('colab , ' ,props.collab)
+
     // const config2 = {headers: {'Authorization': 'Bearer ' + props.auth.token}}
     // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
     // const rr = axios.get(ids_query_url, config2)
@@ -209,7 +210,6 @@ export default function ExportToDrive(props) {
   }
 
   function exportToDrive(){
-  
       let iterableFolderContent = FolderContent
 
       let currentRepoId =''
@@ -233,7 +233,8 @@ export default function ExportToDrive(props) {
   }
 
   useEffect(() => {
- 
+    setcurrentDir('/'+props.collab)
+
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
     let config = {
       headers: { Authorization: "Bearer " + props.auth.token },
@@ -303,7 +304,9 @@ export default function ExportToDrive(props) {
                 }
               }
             }
-            repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
+            // repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
+            // repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()) || b.type - a.type)
+            // repoContent.sort((a, b) => a.type.localeCompare(b.type) && b.name.normalize() - a.name.normalize())
             setFolderContent(repoContent)
           }))
 
