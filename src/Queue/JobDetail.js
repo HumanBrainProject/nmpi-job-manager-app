@@ -59,6 +59,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Popover from '@mui/material/Popover';
+import DownloadIcon from '@mui/icons-material/Download';
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
 
@@ -122,6 +124,19 @@ const useStyles = makeStyles((theme) => ({
       opacity: [0.9, 0.8, 0.7],
     },
   },
+  download_button_info:{
+    backgroundColor: '#404188',
+    color:'#FFFFFF',
+    textTransform: 'none',
+
+
+  },
+  download_button_icon:{
+    backgroundColor: '#2F3178',
+    color:'#FFFFFF',
+
+  },
+
 
 }));
 
@@ -156,9 +171,19 @@ function JobDetail(props) {
   const [openCommentEdit, setOpenCommentEdit] = useState(false);
   const [editedCommentId, setEditedCommentId] = useState(0);
   const [openTagsEdit, setOpenTagsEdit] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openPopover = Boolean(anchorEl);
+  const popoverid = open ? 'simple-popover' : undefined;
   let queueUrl=apiV2Url +`/queue/${id}`;
   let resultUrl = apiV2Url +`/results/${id}`
 
+  const handlePopoverClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
 
 
 function handlesubmit(){
@@ -547,11 +572,46 @@ useEffect(()=>{
         <AccordionDetails className={classes.expansion_panel_details}>
         {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =>
         
-        <Box component="span" display="block">
-        <Button>
-         <AttachFileIcon /> <a href= {String(out_file.url)} > 
+        
+        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}}>
+        <div style={{display:"inline-block",float:"left"}}>
+        <Button style={{  backgroundColor: '#404188',
+    color:'#FFFFFF', textTransform: 'none',width:"100%"}} variant="contained" onClick={handlePopoverClick}>
+         <AttachFileIcon />  
          
-        {"Output file "+(index+1)} </a></Button> </Box>))
+        {"Output file "+(index+1)} </Button> 
+        <Popover
+  id={popoverid}
+  open={openPopover}
+  anchorEl={anchorEl}
+  onClose={handlePopoverClose}
+  anchorOrigin={{
+    vertical: 'bottom',
+    horizontal: 'left',
+  }}
+>
+  <Typography sx={{ p: 2 }}> {String(out_file.url)}</Typography>
+</Popover>
+
+
+</div>
+<div style={{display:"inline-block",float:"left" }}>
+        <Button style={{  backgroundColor: '#2F3178',
+    color:'#FFFFFF', textTransform: 'none',width:"100%",}} variant="contained" >
+
+<a style={{textTransform:'none',color:'#FFFFFF',textDecoration:'none',}} href= {String(out_file.url)} >
+
+<DownloadIcon />
+
+
+
+</a>
+
+    </Button>
+    </div>
+        
+        </div>
+        ))
           : ('No files available')}
 
 
