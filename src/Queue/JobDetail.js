@@ -52,8 +52,13 @@ import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
 import { palette } from '@mui/system';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
 
@@ -142,9 +147,15 @@ function JobDetail(props) {
   console.log("job status",jobStatus) */
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [editedTagsList, seteditedTagsList] = useState([]);
   const [log, setLog] = useState(null);
   const [refreshComments, setRefreshComments] = useState(0);
   const [commentField, setCommentField] = useState("");
+  const [editedCommentField, setEditedCommentField] = useState("");
+  const [openCommentEdit, setOpenCommentEdit] = useState(false);
+  const [editedCommentId, setEditedCommentId] = useState(0);
+  const [openTagsEdit, setOpenTagsEdit] = useState(false);
   let queueUrl=apiV2Url +`/queue/${id}`;
   let resultUrl = apiV2Url +`/results/${id}`
 
@@ -177,7 +188,66 @@ function handlesubmit(){
 
 
 }
+function handleAddTag()
+{
+  const jobUrl=`/api/v2/results/${id}`;
+  let requestUrl="";
+  if (endpoint==="f"){requestUrl=resultUrl;}
+  else{requestUrl = queueUrl}
+  const options = {
+    method: 'patch',
+    url: requestUrl,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+tags:[...job.tags,...editedTagsList],
+    }
+  };
+  
+  axios.request(options).then(function (response) {
 
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
+
+
+
+
+}
+
+function handleEditcomment()
+
+{
+  const jobUrl=`/api/v2/results/${id}`;
+
+  const options = {
+    method: 'patch',
+    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/'+editedCommentId,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+      content: editedCommentField,
+      job: jobUrl,
+      user: props.auth.tokenParsed["preferred_username"]
+    }
+  };
+  
+  axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+    setEditedCommentField("");
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
+
+
+
+
+}
 
   useEffect(() => {
     let config = {
@@ -201,6 +271,36 @@ function handlesubmit(){
    
     
   }, []);
+
+
+useEffect(()=>{
+  const tagsUrl = apiV2Url + '/tags/?collab_id=' + collab_id;
+  const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
+  let currentAvailableTags = [];
+   axios.get(tagsUrl, config)
+      .then(res => {
+        
+        res.data.objects.forEach(tag => {
+          currentAvailableTags.push(tag.name);
+            }
+        );
+        currentAvailableTags.sort();
+        console.log("current tags",currentAvailableTags.map(String));
+
+          }
+          )
+      .catch(error => {
+        console.log(error)
+        //this.setState({errorMsg: 'Error retreiving data'})
+      })
+/*       this.setState({
+        tagList: availableTags.map(String)
+      }); */
+
+      setAvailableTags(currentAvailableTags)
+      console.log('---taglist?---', availableTags)
+},[]);
+
 
   function compare( a, b ) {
     if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
@@ -335,7 +435,9 @@ function handlesubmit(){
   direction="row"
   justifyContent="flex-start"
   alignItems="flex-start"
-> <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
+> 
+
+<Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
               
               <Chip className={classes.chip_styling} 
               
@@ -365,10 +467,78 @@ function handlesubmit(){
                 </Grid>
               );
             })}
+
+            <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+              
+            <Chip className={classes.chip_styling} 
+            icon={<AddCircleIcon sx={{ color: "#FFFFFF" }} />}
+            onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}}
+              label="Add"
+            />
+          
+          </Grid>
+
             </Grid>
+
+
             </Paper>
             
-          :console.log("empty")}
+          :(        <Tooltip title="Add a tag">
+          <Button onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}} style={{backgroundColor:'#44449E', color:'white' ,textTransform: 'none',width:"30%"}}  variant="contained" startIcon={<EditIcon />} >  Add a tag
+            </Button> 
+            </Tooltip>
+            
+            )}
+
+            <div >
+            <Dialog
+            open={openTagsEdit}
+            onClose={()=>{
+              
+              
+              //handleCloseCommentEdit
+            setOpenTagsEdit(false)
+            }}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={ true } maxWidth={"xl"}
+            >
+            <DialogTitle id="alert-dialog-title">
+            <h5 style={{ display: 'inline' }} >{"Add a tag: "}</h5>
+            
+            </DialogTitle>
+            <DialogContent  >
+            <Autocomplete
+            style={{marginTop:"1%"}}
+            multiple
+            id="Tag"
+            
+            options={availableTags}
+            getOptionLabel={(option) => option}
+            defaultValue={editedTagsList??[]}
+            onChange={(event, newValue)=> {
+             
+              seteditedTagsList([...editedTagsList,newValue]);
+            
+            }}
+            
+            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"   onChange={console.log(availableTags)}     
+             />}
+            />
+
+
+            
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);;console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
+              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);console.log("test")/* handleEditComment */}}  color="success">
+                Add
+              </Button>
+            </DialogActions>
+            </Dialog>
+
+            </div>
+
           </div>
         <Accordion defaultExpanded={true} >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
@@ -525,10 +695,12 @@ function handlesubmit(){
   <Grid item>
     <Avatar alt="Remy Sharp" src={imgLink} />
   </Grid>
-  <Grid justifyContent="left" item xs zeroMinWidth >
+  <Grid justifyContent="left" item xs zeroMinWidth onClick={()=>{if (props.auth.tokenParsed["preferred_username"]===comment.user){setOpenCommentEdit(true);setEditedCommentId(comment.id);setEditedCommentField(comment.content)}}}>
     <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
     <p style={{ textAlign: "left" }}>
+    <Typography style={{whiteSpace: "pre-line"}}>
       {comment.content}
+      </Typography>
     </p>
     <p style={{ textAlign: "left", color: "gray" }}>
       {"Posted on "+ timeFormat(comment.created_time)}
@@ -536,6 +708,44 @@ function handlesubmit(){
   </Grid>
 </Grid>
 </Paper>
+
+<Dialog
+open={openCommentEdit}
+onClose={()=>{
+  
+  
+  //handleCloseCommentEdit
+setOpenCommentEdit(false)
+}}
+aria-labelledby="alert-dialog-title"
+aria-describedby="alert-dialog-description"
+fullWidth={ true } maxWidth={"xl"}
+>
+<DialogTitle id="alert-dialog-title">
+<h5 style={{ display: 'inline' }} >{"Edit the selected comment: "}</h5>
+
+</DialogTitle>
+<DialogContent  >
+<TextField 
+  style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
+  id="outlined-basic" 
+  multiline
+  value={editedCommentField}
+  onChange={(event) => {setEditedCommentField(event.target.value)}}
+  label={"Edited comment "+editedCommentId+ " on Job "+job.id} 
+  
+  variant="outlined" />
+
+</DialogContent>
+<DialogActions>
+  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
+  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();console.log("test")/* handleEditComment */}}  color="success">
+    Edit
+  </Button>
+</DialogActions>
+</Dialog>
+
+
 </div>
   
 ))}

@@ -111,12 +111,16 @@ export default function DriveFilesExplorerImport(props) {
         {(d.type ==="file" && d.name.split('.').pop()==="py") &&       <CodeIcon sx={styleFileIcon}></CodeIcon>        }
         <ListItemText primary={d.name} />
         </ListItemButton>
+
+        { (d.type !=="repo"&& d.type !=="grepo") && 
         <Checkbox
         edge="end"
         onChange={handleToggle([d.name,d.type,d.getpath,d.repoid])}
         checked={isItemInArray(checked,[d.name,d.type,d.getpath,d.repoid]) !== -1}
        
       />
+
+        }
         </ListItem>
         
 
