@@ -260,6 +260,7 @@ export default function CreateJob(props) {
   const [sourceFiles, setSourceFiles] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('');
   const [FolderContent, setFolderContent] = React.useState({});
+  const [allRepos, setAllRepos] = React.useState([]);
   const [currentDir,setcurrentDir]= React.useState('/')
   const [downloadQueue,setDownloadQueue]= React.useState([])
 
@@ -437,6 +438,7 @@ if (props.resubmit==="true")
         setTab(1)
         setTab(0)
         setCommand(result.data.command)
+        setTags(result.data.tags)
 
         };
         fetchData();
@@ -789,6 +791,7 @@ function handleSubmit(){
           label="Command:"
           style={{ margin: 8 }}
           placeholder={commExample}
+          value={command}
           helperText="Optional: specify the path to the main Python script, with any command-line arguments."
           fullWidth
           margin="normal"
@@ -833,6 +836,7 @@ function handleSubmit(){
         <TextField
           id="tag"
           label="tags"
+          value={tags}
           style={{ margin: 8 }}
           placeholder= "Tag1,Tag2;This is Tag3"
           helperText="Please type job tags, separated by a comma, or semicolon. Tags can have spaces."
