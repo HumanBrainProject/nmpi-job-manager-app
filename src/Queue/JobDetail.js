@@ -545,7 +545,13 @@ useEffect(()=>{
           <Typography className={classes.heading}><DescriptionIcon /> Output files </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =><Box component="span" display="block"> <AttachFileIcon /> <a href= {String(out_file.url)} > {"Output file "+(index+1)} </a> </Box>))
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =>
+        
+        <Box component="span" display="block">
+        <Button>
+         <AttachFileIcon /> <a href= {String(out_file.url)} > 
+         
+        {"Output file "+(index+1)} </a></Button> </Box>))
           : ('No files available')}
 
 
