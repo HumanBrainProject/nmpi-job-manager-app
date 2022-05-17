@@ -40,7 +40,7 @@ import Paper from '@material-ui/core/Paper';
 import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import { timeFormat,currentDate } from '../utils';
-import { jobQueueServer, validationServer } from "../globals";
+import { jobQueueServer, validationServer } from "../globals-prod";
 
 const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
 const baseQueueUrl = jobQueueServer + '/api/v2/queue/?collab_id=';

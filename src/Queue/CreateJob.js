@@ -33,7 +33,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Icon from '@material-ui/core/Icon';
-import { jobQueueServer, hw_options } from "../globals";
+import { jobQueueServer, hw_options } from "../globals-prod";
 import {
     useParams
   } from "react-router-dom";
