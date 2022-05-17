@@ -49,6 +49,7 @@ export default function ExportToDrive(props) {
   //const [filesList, setfilesList] = React.useState({});
   let filesList =[];
   const [currentDir,setcurrentDir]= React.useState('/')
+  const [addDetail,setaddDetails]= React.useState('')
   //const [currentDirUrl,setcurrentDirUrl]= React.useState('')
   let currentDirUrl = ''
 
@@ -62,33 +63,28 @@ export default function ExportToDrive(props) {
         headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
       };
 
-  /*       axios.get(query_url, config).then(function(res) {
-        console.log("given link",res.data)
-          axios.get("https://corsproxy-sa.herokuapp.com/"+res.data, config).then(function(res) {
-          //setCode(res.data)
-          //setTab(0)
-          console.log(res)
-        }) 
-
-      }) */
-
       return
     }
     if (currentDir==="/"){    
       setcurrentDir(currentDir+dir)
-      console.log('setcurentdir sans /')
+      if((currentDir+dir)===('/'+props.collab)) setaddDetails(' (current Collab)')
+      else setaddDetails(' ')
       return
     }
     setcurrentDir(currentDir+"/"+dir)
-    console.log('setcurentdir avec /')
+    if((currentDir+"/"+dir)===('/'+props.collab)) setaddDetails(' (current Collab)')
+    else setaddDetails(' ')
   }
 
   function backout(){
     if(currentDir.substring(0,currentDir.lastIndexOf("/").length!==0||currentDir.substring(0,currentDir.lastIndexOf("/"))==="")){
       setcurrentDir(currentDir.substring(0,currentDir.lastIndexOf("/")))
+      if(currentDir.substring(0,currentDir.lastIndexOf("/"))===('/'+props.collab)) setaddDetails(' (current Collab)')
+      else setaddDetails(' ')
       return null
     }
     setcurrentDir("/")
+    setaddDetails(' ')
   }
 
   function uploadFile(destination,singularFile,fileName){
@@ -127,11 +123,9 @@ export default function ExportToDrive(props) {
         axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
           console.log("post result",res)
         }.catch((errPost)=>{
-          console.log(errPost)
         })
         )
       }).catch((err) =>{
-        console.log("error",err)
       })
 
   }
@@ -148,7 +142,6 @@ export default function ExportToDrive(props) {
     
       axios.get("https://corsproxy-sa.herokuapp.com/"+file.url, config)
         .then(function(res) {  
-          console.log('UPLOAD',"https://corsproxy-sa.herokuapp.com/"+file.url, destination,res,fileName)
           uploadFile(destination,res,fileName)
           currentFilesList.push(res)
 
@@ -175,7 +168,6 @@ export default function ExportToDrive(props) {
                     params: {
                       path: path
                     }};
-    console.log('colab , ' ,props.collab)
 
     // const config2 = {headers: {'Authorization': 'Bearer ' + props.auth.token}}
     // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
@@ -185,7 +177,6 @@ export default function ExportToDrive(props) {
     setOpenAlertCopy(false)
     setOpenAlertDone(true)
     for (let i = 0; i < response.data[1].length; i++) {
-      console.log('data', response.data);
       if (response.data[1][i] != 'Copied') {
         setAllFiles(false)
         if (response.data[1][i] == 'Exists') {
@@ -221,11 +212,6 @@ export default function ExportToDrive(props) {
           break
         } 
       }
-      console.log('dans exporttodrive, avant lappel a dowloadfiles')
-      // downloadFiles(currentDirUrl)
-      console.log('currentDir', currentDir)
-      console.log('TEST',currentDir.split('/').slice(2).join('/'))
-      console.log('dans exporttodrive, apres lappel a dowloadfiles')
       handleCopy(currentDir)
       handleClose()
       setOpenAlertCopy(true)
@@ -234,6 +220,7 @@ export default function ExportToDrive(props) {
 
   useEffect(() => {
     setcurrentDir('/'+props.collab)
+    setaddDetails(' (current Collab)')
 
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
     let config = {
@@ -267,25 +254,19 @@ export default function ExportToDrive(props) {
         axios.get(ids_query_url2, config)
           .then(function(res) {
             let axios_requests=[];
-            // console.log('useeffect: after axios.get', ids_query_url)
             let repoContent=[]
             let ids=[]
             console.log('useeffect: after axios.get - res', res)
-            // return
             for(let i=0;i<res.data.length;i++){
                 if(res.data[i].permission=='rw'){
-                  console.log(res.data[i].name, res.data[i].permission)
                   ids.push(res.data[i].id)
                   axios_requests.push(new axios.get(query_url+res.data[i].id+"/dir/?t&recursive=1",config))
-                  // console.log('data.lenght, etc... ', res.data.length,query_url+res.data[i].id, "/dir/?t&recursive=1" )
                   repoContent.push({name:res.data[i].name,type:res.data[i].type,parent_dir:"/",repoid:res.data[i].id})
-                  // console.log('repo content ', )
                 }
             }
         
         axios.all(axios_requests)
           .then(axios.spread((...responses) => {
-            // console.log('axios.all',responses)
             let parent_dir=''
             let repoid=''
             for(let i=0;i<responses.length;i++){
@@ -297,16 +278,12 @@ export default function ExportToDrive(props) {
                 }
                 if(responses[i].data[j].type==="file")
                 {
-                  // console.log('===file',{name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
                   repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
                 }else{
                   repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,repoid:repoid})
                 }
               }
             }
-            // repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
-            // repoContent.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()) || b.type - a.type)
-            // repoContent.sort((a, b) => a.type.localeCompare(b.type) && b.name.normalize() - a.name.normalize())
             setFolderContent(repoContent)
           }))
 
@@ -335,10 +312,11 @@ export default function ExportToDrive(props) {
       <DialogTitle id="alert-dialog-title">
       <h5 style={{ display: 'inline' }} >{"Select the destination folder: "}</h5>
       <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
-        
+      <h5 style={{ display: 'inline' }}>{addDetail}</h5> 
+
       </DialogTitle>
       <DialogContent  >
-      <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} ></DriveFilesExplorer>
+      <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorer>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
@@ -411,9 +389,6 @@ export default function ExportToDrive(props) {
           </Button>
         </DialogActions>
       </Dialog>  
-    {/* {() => {if(openResult==true){
-      return( */}
-    {/* <Box sx={{ width: '100%' }}>       */}
     <Collapse in={openAlertCopy}>
       <Alert
         severity="info"
@@ -430,9 +405,7 @@ export default function ExportToDrive(props) {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        // sx={{ mb: 2 }}
       >
-        {/* <LinearProgress /> */}
       File copy in progress
       </Alert>
     </Collapse>
@@ -451,7 +424,6 @@ export default function ExportToDrive(props) {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        // sx={{ mb: 2 }}
       >
        File copy done with success
       </Alert>
@@ -471,15 +443,11 @@ export default function ExportToDrive(props) {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        // sx={{ mb: 2 }}
       >
         Some files exceed the size limit of 1 GB. 
         Please use the Bucket. 
       </Alert>
     </Collapse>
-  {/* </Box> */}
-
-
 
       </div>
     );

@@ -2,11 +2,9 @@ import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
 import FolderIcon from '@mui/icons-material/Folder';
 import CodeIcon from '@mui/icons-material/Code';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { border, borderRadius, padding } from '@mui/system';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 
@@ -31,8 +29,6 @@ const styleFileIcon = {
 
 };
 
-
-
 export default function DriveFilesExplorer(props) {
   let currentDir=props.currentDir
   if(props.currentDir===""){
@@ -45,6 +41,9 @@ export default function DriveFilesExplorer(props) {
     if(Files[i].parent_dir===currentDir){
       filestorender.push(Files[i])
     }
+    }
+    if(props.currentDir===""){
+      filestorender.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
     }
     return filestorender
   }
@@ -60,7 +59,8 @@ export default function DriveFilesExplorer(props) {
   );}else{
         return(
         <List sx={styleList} component="nav" aria-label="Reop">
-          {currentDir !=='/' &&  <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Back' />  </ListItem>}
+          {currentDir !=='/' && currentDir.substring(0,currentDir.lastIndexOf("/"))!=='' && <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Back' />  </ListItem>}
+          {currentDir !=='/' && currentDir.substring(0,currentDir.lastIndexOf("/"))==='' && <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Select another Library/Collab' />  </ListItem>}
         {currentDirFliter(props.RepoContent,).map(d=>(
         
         <ListItem button onClick={() => props.updatecurrentDirAndopencode(d.name,d.type,d.getpath)} >
@@ -68,10 +68,9 @@ export default function DriveFilesExplorer(props) {
         {(d.type ==="repo"||d.type ==="dir"||d.type ==="srepo"||d.type ==="grepo") &&       <FolderIcon sx={styleIcon}></FolderIcon>      }
         {(d.type ==="file" && d.name.split('.').pop()!=="py") &&       <CodeIcon sx={styleIcon}></CodeIcon>        }
         {(d.type ==="file" && d.name.split('.').pop()==="py") &&       <CodeIcon sx={styleFileIcon}></CodeIcon>        }
-        <ListItemText primary={d.name} />
+        {currentDir =='/' && d.name==props.Collab && <ListItemText style={{ color: "blue" }} primary={d.name+' (current Collab)'} />  }
+        {d.name!==props.Collab && <ListItemText primary={d.name} /> }
         </ListItem>
-        
-
        ))}
     </List>)
 
