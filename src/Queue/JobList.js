@@ -39,7 +39,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
-import { timeFormat,currentDate } from '../utils';
+import { timeFormat,currentDate, isItemInArray} from '../utils';
 import { jobQueueServer, validationServer } from "../globals-prod";
 
 const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
@@ -144,40 +144,41 @@ class JobList extends React.Component {
       filterBy:'',
       statusFilter:null,
       hardwareSystemFilter:null,
+      tagsFilter:[],
     }
     this.routeChange = this.routeChange.bind(this);
 
   }
 
   getTagsList = async()=> {
-    const tagsUrl = baseUrl + 'tags/?collab_id=' + this.props.collab;
+    const tagsUrl = jobQueueServer + '/api/v2/tags/?collab_id=' + this.props.collab;
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
+    let availableTags = [];
     await axios.get(tagsUrl, config)
         .then(res => {
-          let availableTags = [];
+          
           res.data.objects.forEach(tag => {
-              console.log(tag.name);
               availableTags.push(tag.name);
               }
           );
           availableTags.sort();
-          console.log(availableTags);
-          this.setState({
-            tagList: availableTags.map(String)
-          });
+          console.log(availableTags.map(String));
+
             }
             )
         .catch(error => {
           console.log(error)
           this.setState({errorMsg: 'Error retreiving data'})
         })
-
-        console.log('---taglist?---', this.tagList)
+        this.setState({
+          tagList: availableTags.map(String)
+        });
+        console.log('---taglist?---', this.state.tagList)
 }
 
 
-async filterJobs(statusFilter,hardwareSystemFilter){
-
+async filterJobs(statusFilter,hardwareSystemFilter,tagsFilter){
+let currentFilteredJobs=this.state.jobs
     function isStatus(x) {
 
       return x.status===statusFilter;
@@ -187,8 +188,44 @@ async filterJobs(statusFilter,hardwareSystemFilter){
     return String(x.hardware_platform)===hardwareSystemFilter;
 
   }
+  function isTagged(x) {
+    for(const tag of tagsFilter)
 
-  if ((statusFilter===null )  && (hardwareSystemFilter===null ))
+    { 
+      let index=isItemInArray(x.tags,tag)
+      console.log("this job tags",x.tags,"the tag filter",tag,"tag list",tagsFilter,"index",index)
+      if (index===-1){return false}
+
+
+    }
+    return true
+    
+  }
+  
+
+if (statusFilter!==null )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isStatus);
+
+}
+
+if (hardwareSystemFilter!==null )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isHardware);
+
+}
+if (tagsFilter!==[] )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isTagged);
+
+}
+this.setState({
+  filteredJobs: currentFilteredJobs,
+
+
+});
+
+/*   if ((statusFilter===null )  && (hardwareSystemFilter===null ))
   {
 
 
@@ -245,11 +282,29 @@ async filterJobs(statusFilter,hardwareSystemFilter){
   });
   console.log(this.state.hardwareSystemFilter)
   }
+  
+  
+  } */
+
 
 
   }
-  }
+  
 
+  handleReload ()
+
+  {
+
+
+    this.fetchData();this.setState({refreshState:true,
+      statusFilter:null,
+      hardwareSystemFilter:null,
+      tagsFilter:[],
+    
+    });
+   // this.filterJobs(this.state.statusFilter,this.state.hardwareSystemFilter,this.state.tagsFilter);
+
+  };
   routeChange(id) {
     let path = '/'+String(id);
     this.props.history.push(path);
@@ -420,7 +475,7 @@ onCollabChange= async (newValue)=>{
     if (this.props.collab) {
       await this.fetchData();
     }
-
+    this.getTagsList();
     console.log(this.state.collabList);
 
 
@@ -444,6 +499,33 @@ onCollabChange= async (newValue)=>{
               </Button>
               </Tooltip>
               </div>
+
+              <div style={{ width: 400 ,display:"inline-block",float:"right",marginRight:"1%",marginBottom:"1%"}}>
+             
+              <Autocomplete
+              multiple
+              id="Filter by tags"
+              
+              options={this.state.tagList}
+              getOptionLabel={(option) => option}
+              defaultValue={[]}
+              onChange={(event, newValue)=> {
+                this.setState({
+                  tagsFilter: newValue,
+                
+                
+                });
+                
+                
+                this.filterJobs(this.state.statusFilter,this.state.hardwareSystemFilter,newValue);}}
+              
+              renderInput={(params) => <TextField {...params} label="Filter by tags" variant="outlined"        
+               />}
+              />
+
+              </div>
+
+
               <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
               <Autocomplete
 
@@ -451,8 +533,16 @@ onCollabChange= async (newValue)=>{
               options={["BrainScaleS","SpiNNaker"]}
               getOptionLabel={(option) => option}
               defaultValue={null}
-              onChange={(event, newValue)=> { console.log("the new value is "+newValue);this.filterJobs(this.state.statusFilter,newValue);}}
-
+              onChange={(event, newValue)=> {
+                this.setState({
+                  hardwareSystemFilter: newValue,
+                
+                
+                });
+  
+                
+                this.filterJobs(this.state.statusFilter,newValue,this.state.tagsFilter);}}
+              
               renderInput={(params) => <TextField {...params} label="Filter by platform" variant="outlined" />}
               />
 
@@ -464,8 +554,15 @@ onCollabChange= async (newValue)=>{
               options={["finished","error","submitted","running"]}
               getOptionLabel={(option) => option}
               defaultValue={null}
-              onChange={(event, newValue)=> { this.filterJobs(newValue,this.state.hardwareSystemFilter);}}
-
+              onChange={(event, newValue)=> {
+                this.setState({
+                  statusFilter: newValue,
+                
+                
+                });
+                
+                this.filterJobs(newValue,this.state.hardwareSystemFilter,this.state.tagsFilter);}}
+              
               renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
               />
 
@@ -483,7 +580,7 @@ onCollabChange= async (newValue)=>{
           <TableRow  style={{ height: 'auto !important' }} >
           <StyledTableCell width="120 px" >
                         <Tooltip title="Create job">
-                          <Link to="/new" ><MdAddCircle /></Link>
+                          <Link to={"/"+this.currentCollab+"/new"} ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
                           <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
@@ -518,8 +615,8 @@ onCollabChange= async (newValue)=>{
                           // if(this.state.jobs.tags==this.selectedTag){
                             // used striped rows shading
                             <TableRow    key={job.id} hover='true' style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
-
-                            <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
+                            
+                            <StyledTableCell  component="td" scope="row"><Link to={{pathname:'/'+job.collab_id+'/' +(job.status==="finished"||job.status==="error"?"f":"q")+'/'+ job.id,state:{jobStatus:job.status}}}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
                             <StyledTableCell   component="td" scope="row"  >
 
                             {job.id}

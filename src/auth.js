@@ -16,7 +16,20 @@ export default function initAuth(main) {
     keycloak
         .init({ flow: 'implicit' })
         .success(() => checkAuth(main))
-        .error(console.log);
+        .error("keycloak error",console.log)
+        .onTokenExpired = ()=>{
+            console.log('expired '+new Date());
+            keycloak.updateToken(50).success((refreshed)=>{
+                if (refreshed){
+                    console.log('refreshed '+new Date());
+                }else {
+                    console.log('not refreshed '+new Date());
+                }
+            }).error(() => {
+                 console.error('Failed to refresh token '+new Date());
+            });
+            }
+        
 }
 
 function checkAuth(main) {
@@ -87,6 +100,10 @@ function checkAuth(main) {
             return closeCurrentTab();
         }
     }
+
+
+
+    
 }
 
 function verifyMessage(event) {

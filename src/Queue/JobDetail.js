@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom'
 import {
   useParams
 } from "react-router-dom";
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles,withStyles } from '@material-ui/core';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Typography from '@material-ui/core/Typography';
@@ -26,6 +27,7 @@ import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -46,8 +48,21 @@ import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
 import ExportToDrive from './ExportToDrive';
 import Modal from '@mui/material/Modal';
-
-
+import SendIcon from '@material-ui/icons/Send';
+import TextField from '@material-ui/core/TextField';
+import { palette } from '@mui/system';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Popover from '@mui/material/Popover';
+import DownloadIcon from '@mui/icons-material/Download';
+const imgLink =
+  "https://drive.ebrains.eu/media/avatars/default.png";
 
 const theme = createMuiTheme({
   palette: {
@@ -60,7 +75,9 @@ const theme = createMuiTheme({
     warning: {
       main: yellow[500],
     },
+
   },
+
   });
 
 
@@ -93,6 +110,36 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor:'#f2f2f2',
 
   },
+  comments_panel:{
+    backgroundColor: '#FFFFFF',
+    '&:hover': {
+      backgroundColor: '#f2f2f2',
+      opacity: [0.9, 0.8, 0.7],
+    },
+  },
+  chip_styling:{
+    color:'#FFFFFF',
+    fontSize:"h7.fontSize",
+      fontWeight:"fontWeightMedium",
+    backgroundColor: '#292965',
+    '&:hover': {
+      backgroundColor: '#44449E',
+      opacity: [0.9, 0.8, 0.7],
+    },
+  },
+  download_button_info:{
+    backgroundColor: '#404188',
+    color:'#FFFFFF',
+    textTransform: 'none',
+
+
+  },
+  download_button_icon:{
+    backgroundColor: '#2F3178',
+    color:'#FFFFFF',
+
+  },
+
 
 }));
 
@@ -112,12 +159,124 @@ function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
  // const handleClose = () => setOpen(false);
-  let { id } = useParams();
+  let { collab_id,endpoint,id } = useParams();
+/*  const location = useLocation();
+  const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
+  console.log("job status",jobStatus) */
   const [job, setJob] = useState({});
+  const [comments, setComments] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [editedTagsList, seteditedTagsList] = useState([]);
   const [log, setLog] = useState(null);
+  const [refreshComments, setRefreshComments] = useState(0);
+  const [commentField, setCommentField] = useState("");
+  const [editedCommentField, setEditedCommentField] = useState("");
+  const [openCommentEdit, setOpenCommentEdit] = useState(false);
+  const [editedCommentId, setEditedCommentId] = useState(0);
+  const [openTagsEdit, setOpenTagsEdit] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openPopover = Boolean(anchorEl);
+  const popoverid = open ? 'simple-popover' : undefined;
+  let queueUrl=apiV2Url +`/queue/${id}`;
+  let resultUrl = apiV2Url +`/results/${id}`
+
+  const handlePopoverClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+
+function handlesubmit(){
+  console.log("comment ",commentField)
+  const jobUrl=`/api/v2/results/${id}`;
+
+  const options = {
+    method: 'POST',
+    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+      content: commentField,
+      job: jobUrl,
+      user: props.auth.tokenParsed["preferred_username"]
+    }
+  };
+  
+  axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+    setCommentField("");
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
+
+
+}
+function handleAddTag()
+{
+  const jobUrl=`/api/v2/results/${id}`;
+  let requestUrl="";
+  if (endpoint==="f"){requestUrl=resultUrl;}
+  else{requestUrl = queueUrl}
+  const options = {
+    method: 'patch',
+    url: requestUrl,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+tags:[...job.tags,...editedTagsList],
+    }
+  };
+  
+  axios.request(options).then(function (response) {
+
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
 
 
 
+
+}
+
+function handleEditcomment()
+
+{
+  const resultUrl = `${jobQueueServer}/api/v2/results/${id}`;
+  const jobUrl=`/api/v2/results/${id}`;
+
+  const options = {
+    method: 'patch',
+    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/'+editedCommentId,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + props.auth.token,
+    },
+    data: {
+      content: editedCommentField,
+      job: jobUrl,
+      user: props.auth.tokenParsed["preferred_username"]
+    }
+  };
+  
+  axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+    setEditedCommentField("");
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
+  });
+
+
+
+
+}
 
   useEffect(() => {
     let config = {
@@ -126,15 +285,97 @@ function JobDetail(props) {
       }
     }
 
-    const resultUrl = `${jobQueueServer}/api/v2/results/${id}`;
+    console.log("token",props.auth.token)
+    let requestUrl=""
 
+    if (endpoint==="f"){requestUrl=resultUrl;}
+   else{requestUrl = queueUrl}
+
+  
+    axios(requestUrl, config).then((result)=>{ 
+        setJob(result.data);
+      console.log(result.data)}).catch((error)=>{
+        console.log(error)
+      })
+      
+   
+    
+  }, []);
+
+
+useEffect(()=>{
+  const tagsUrl = apiV2Url + '/tags/?collab_id=' + collab_id;
+  const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
+  let currentAvailableTags = [];
+   axios.get(tagsUrl, config)
+      .then(res => {
+        
+        res.data.objects.forEach(tag => {
+          currentAvailableTags.push(tag.name);
+            }
+        );
+        currentAvailableTags.sort();
+        console.log("current tags",currentAvailableTags.map(String));
+
+          }
+          )
+      .catch(error => {
+        console.log(error)
+        //this.setState({errorMsg: 'Error retreiving data'})
+      })
+/*       this.setState({
+        tagList: availableTags.map(String)
+      }); */
+
+      setAvailableTags(currentAvailableTags)
+      console.log('---taglist?---', availableTags)
+},[]);
+
+
+  function compare( a, b ) {
+    if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
+      return -1;
+    }
+    if ( timeFormat(a.created_time) < timeFormat(b.created_time) ){
+      return 1;
+    }
+    return 0;
+  }
+  useEffect(() => {
+    let config = {
+      headers: {
+        'Authorization': 'Bearer ' + props.auth.token,
+      }
+    }
+    const commentstUrl = apiV2Url +`/comment`;
+    let currentJobComments=[]
+    let currentJobID= `/api/v2/results/${id}`
     const fetchData = async () => {
-      const result = await axios(resultUrl, config);
-      await setJob(result.data);
-      console.log(result.data);
+      const result = await axios(commentstUrl, config);
+      console.log("result",result)
+      
+
+      for ( const comment of result.data.objects) 
+      
+          { 
+            
+            if (comment.job===currentJobID) 
+              {
+                currentJobComments.push(comment)
+                currentJobComments.sort(compare);
+              }
+    
+       }
+
+      await setComments(currentJobComments);
     };
     fetchData();
-  }, []);
+  }, [refreshComments]);
+
+
+
+
+
   const classes = useStyles();
 
   const getLog = async (jobId) => {
@@ -188,16 +429,16 @@ function JobDetail(props) {
 
         <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
         </Box>
-
-        <Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>
-
+        
+        {(job.status==="finished"||job.status==="error")?<Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>:<Box component="span" display="block" fontSize="13px"  > <strong></strong></Box> }
+  
         </p>
 
         </Paper>
 <div style={{ float: 'left', paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%", width:"20%"}} >
         <div style={{  paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
         <Tooltip title="Edit & Resubmit">
-        <Link to={'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
+        <Link to={'/'+collab_id+'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
           </Button> </Link>
           </Tooltip>
        </div>
@@ -229,12 +470,166 @@ function JobDetail(props) {
       </div>
       </div>
               </div>
+
+              <div>
+              {(job.tags?.length!==0)? <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"30%",marginBottom:"1%",}} >
+              <Grid
+  container
+  direction="row"
+  justifyContent="flex-start"
+  alignItems="flex-start"
+> 
+
+<Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
+              
+              <Chip className={classes.chip_styling} 
+              
+                label={"Tags:"}
+                
+              />
+            
+            </Grid>
+            
+            
+            {job.tags?.map((data) => {
+      
+/*               if (data.label === 'React') {
+                icon = <TagFacesIcon />;
+              } */
+      
+              return (
+                <Grid item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+                
+                  <Chip
+                  className={classes.chip_styling}
+                    icon={<LocalOfferIcon sx={{ color: "#FFFFFF" }} />}
+                    label={data}
+                    
+                  />
+                
+                </Grid>
+              );
+            })}
+
+            <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+              
+            <Chip className={classes.chip_styling} 
+            icon={<AddCircleIcon sx={{ color: "#FFFFFF" }} />}
+            onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}}
+              label="Add"
+            />
+          
+          </Grid>
+
+            </Grid>
+
+
+            </Paper>
+            
+          :(        <Tooltip title="Add a tag">
+          <Button onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}} style={{backgroundColor:'#44449E', color:'white' ,textTransform: 'none',width:"30%"}}  variant="contained" startIcon={<EditIcon />} >  Add a tag
+            </Button> 
+            </Tooltip>
+            
+            )}
+
+            <div >
+            <Dialog
+            open={openTagsEdit}
+            onClose={()=>{
+              
+              
+              //handleCloseCommentEdit
+            setOpenTagsEdit(false)
+            }}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={ true } maxWidth={"xl"}
+            >
+            <DialogTitle id="alert-dialog-title">
+            <h5 style={{ display: 'inline' }} >{"Add a tag: "}</h5>
+            
+            </DialogTitle>
+            <DialogContent  >
+            <Autocomplete
+            style={{marginTop:"1%"}}
+            multiple
+            id="Tag"
+            
+            options={availableTags}
+            getOptionLabel={(option) => option}
+            defaultValue={editedTagsList??[]}
+            onChange={(event, newValue)=> {
+             
+              seteditedTagsList([...editedTagsList,newValue]);
+            
+            }}
+            
+            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"   onChange={console.log(availableTags)}     
+             />}
+            />
+
+
+            
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);;console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
+              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);console.log("test")/* handleEditComment */}}  color="success">
+                Add
+              </Button>
+            </DialogActions>
+            </Dialog>
+
+            </div>
+
+          </div>
         <Accordion defaultExpanded={true} >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.expansion_panel_summary}>
           <Typography className={classes.heading}><DescriptionIcon /> Output files </Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.expansion_panel_details}>
-        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =><Box component="span" display="block"> <AttachFileIcon /> <a href= {String(out_file.url)} > {"Output file "+(index+1)} </a> </Box>))
+        {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =>
+        
+        
+        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}}>
+        <div style={{display:"inline-block",float:"left"}}>
+        <Button style={{  backgroundColor: '#404188',
+    color:'#FFFFFF', textTransform: 'none',width:"100%"}} variant="contained" onClick={handlePopoverClick}>
+         <AttachFileIcon />  
+         
+        {"Output file "+(index+1)} </Button> 
+        <Popover
+  id={popoverid}
+  open={openPopover}
+  anchorEl={anchorEl}
+  onClose={handlePopoverClose}
+  anchorOrigin={{
+    vertical: 'bottom',
+    horizontal: 'left',
+  }}
+>
+  <Typography sx={{ p: 2 }}> {String(out_file.url)}</Typography>
+</Popover>
+
+
+</div>
+<div style={{display:"inline-block",float:"left" }}>
+        <Button style={{  backgroundColor: '#2F3178',
+    color:'#FFFFFF', textTransform: 'none',width:"100%",}} variant="contained" >
+
+<a style={{textTransform:'none',color:'#FFFFFF',textDecoration:'none',}} href= {String(out_file.url)} >
+
+<DownloadIcon />
+
+
+
+</a>
+
+    </Button>
+    </div>
+        
+        </div>
+        ))
           : ('No files available')}
 
 
@@ -329,9 +724,119 @@ function JobDetail(props) {
     </AccordionDetails>
   </Accordion>
 
+  <Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
+  
+</div>
+<div>
+  <Paper elevation={2} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"}} >
 
 
+  <Box
+  component="form"
+  sx={{
+    '& > :not(style)': { m: 10, width: '100ch' },
+
+  }}
+  noValidate
+  autoComplete="off"
+>
+
+  <TextField 
+  style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
+  id="outlined-basic" 
+  multiline
+  value={commentField}
+  onChange={(event) => {setCommentField(event.target.value)}}
+  label={"Comment on Job "+job.id} 
+  
+  variant="outlined" />
+
+</Box>
+
+
+  <Button
+  onClick={handlesubmit}
+  variant="contained"
+  style={{marginBottom:"1%",textTransform: 'none',}}
+  className={classes.button}
+  endIcon={<SendIcon />}
+
+>
+  Post Comment
+</Button>
+
+</Paper>
       </div>
+
+        
+  
+  {comments.map ((comment)=> (
+  <div >
+  <Paper elevation={3} className={classes.comments_panel} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"
+
+}} >
+  <Grid container wrap="nowrap" spacing={2}  >
+  <Grid item>
+    <Avatar alt="Remy Sharp" src={imgLink} />
+  </Grid>
+  <Grid justifyContent="left" item xs zeroMinWidth onClick={()=>{if (props.auth.tokenParsed["preferred_username"]===comment.user){setOpenCommentEdit(true);setEditedCommentId(comment.id);setEditedCommentField(comment.content)}}}>
+    <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
+    <p style={{ textAlign: "left" }}>
+    <Typography style={{whiteSpace: "pre-line"}}>
+      {comment.content}
+      </Typography>
+    </p>
+    <p style={{ textAlign: "left", color: "gray" }}>
+      {"Posted on "+ timeFormat(comment.created_time)}
+    </p>
+  </Grid>
+</Grid>
+</Paper>
+
+<Dialog
+open={openCommentEdit}
+onClose={()=>{
+  
+  
+  //handleCloseCommentEdit
+setOpenCommentEdit(false)
+}}
+aria-labelledby="alert-dialog-title"
+aria-describedby="alert-dialog-description"
+fullWidth={ true } maxWidth={"xl"}
+>
+<DialogTitle id="alert-dialog-title">
+<h5 style={{ display: 'inline' }} >{"Edit the selected comment: "}</h5>
+
+</DialogTitle>
+<DialogContent  >
+<TextField 
+  style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
+  id="outlined-basic" 
+  multiline
+  value={editedCommentField}
+  onChange={(event) => {setEditedCommentField(event.target.value)}}
+  label={"Edited comment "+editedCommentId+ " on Job "+job.id} 
+  
+  variant="outlined" />
+
+</DialogContent>
+<DialogActions>
+  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
+  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();console.log("test")/* handleEditComment */}}  color="success">
+    Edit
+  </Button>
+</DialogActions>
+</Dialog>
+
+
+</div>
+  
+))}
+  
+  
+  
+
     </div>
     </ThemeProvider>
   );

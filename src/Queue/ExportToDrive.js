@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DriveFilesExplorer from'./DriveFilesExplorer'
+import DriveFilesExplorerExport from'./DriveFilesExplorerExport'
 
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -316,7 +316,8 @@ export default function ExportToDrive(props) {
 
       </DialogTitle>
       <DialogContent  >
-      <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorer>
+      {/* <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorer> */}
+      <DriveFilesExplorerExport RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorerExport>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
