@@ -177,8 +177,8 @@ function JobDetail(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openPopover = Boolean(anchorEl);
   const popoverid = open ? 'simple-popover' : undefined;
-  let queueUrl=apiV2Url +`/queue/${id}`;
-  let resultUrl = apiV2Url +`/results/${id}`
+  let queueUrl= `${jobQueueServer}/api/v2/` +`/queue/${id}`;
+  let resultUrl = `${jobQueueServer}/api/v2/` +`/results/${id}`
 
   const handlePopoverClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -304,7 +304,7 @@ function handleEditcomment()
 
 
 useEffect(()=>{
-  const tagsUrl = apiV2Url + '/tags/?collab_id=' + collab_id;
+  const tagsUrl = `${jobQueueServer}/api/v2/` + '/tags/?collab_id=' + collab_id;
   const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
   let currentAvailableTags = [];
    axios.get(tagsUrl, config)
@@ -347,7 +347,7 @@ useEffect(()=>{
         'Authorization': 'Bearer ' + props.auth.token,
       }
     }
-    const commentstUrl = apiV2Url +`/comment`;
+    const commentstUrl = `${jobQueueServer}/api/v2/` +`/comment`;
     let currentJobComments=[]
     let currentJobID= `/api/v2/results/${id}`
     const fetchData = async () => {
