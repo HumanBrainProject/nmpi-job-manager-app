@@ -126,60 +126,57 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const config_example = {
-  "SpiNNaker": {
-      example: 
-`{
+  SpiNNaker: {
+    example: `{
 "spynnaker_version": "master",
 "spinnaker_tools_version": "3.1.0",
 "extra_pip_installs": ["elephant"],
 "extra_git_repositories": ["https://github.com/SpiNNakerManchester/SpiNNakerGraphFrontEnd"],
 "extra_makes": ["SpiNNakerGraphFrontEnd/spinnaker_graph_front_end/examples"],
 "extra_python_setups": ["SpiNNakerGraphFrontEnd"]
-}`
+}`,
   },
-  "BrainScaleS": {
-      example : 
-`{
-"WAFER_MODULE": 33, 
-"HICANN": 297, 
+  BrainScaleS: {
+    example: `{
+"WAFER_MODULE": 33,
+"HICANN": 297,
 "SOFTWARE_VERSION":'nmpm_software/current'
-}`
+}`,
   },
   "BrainScaleS-ESS": {
-    example: 
-``
-},
-  "Spikey": {
-    example : 
-``
-}
+    example: ``,
+  },
+  Spikey: {
+    example: ``,
+  },
+  "BrainScaleS-2": {
+    example: ``,
+  },
 };
 
 const command_example = {
-  "SpiNNaker": {
-      example: `run.py {system} --option1=42`
+  SpiNNaker: {
+    example: `run.py {system} --option1=42`,
   },
-  "BrainScaleS": {
-      example : `run.py {system} --option1=42`
+  BrainScaleS: {
+    example: `run.py {system} --option1=42`,
   },
   "BrainScaleS-ESS": {
-    example: ``
-},
-  "Spikey": {
-    example : ``
-}
+    example: ``,
+  },
+  Spikey: {
+    example: ``,
+  },
+  "BrainScaleS-2": {
+    example: ``,
+  },
 };
 
 
+const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-2", "BrainScaleS-ESS", "Spikey"];
 
 
 
-  
-
-
-
-
-const hw_options = ["BrainScaleS", "SpiNNaker", "BrainScaleS-ESS", "Spikey"];
 
 
 export default function CreateJob(props) {
@@ -578,8 +575,8 @@ function handleSubmit(){
     // job.selected_tab = "code_editor";
     // job.tags = [];
     // job.input_data = [];
-    // job.output_data = []; 
-    // job.resource_uri = ""; 
+    // job.output_data = [];
+    // job.resource_uri = "";
     // inputs = [];
     }
     if (hardwareConfig) {
@@ -650,7 +647,7 @@ function handleSubmit(){
         </Tabs>
       {/* </AppBar> */}
       <TabPanel value={tab} index={0}>
-         
+
       <div>
 
         <Editor
@@ -664,7 +661,7 @@ function handleSubmit(){
         
         />
       </div>
-      
+
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <TextField
@@ -803,9 +800,9 @@ function handleSubmit(){
         />
       </div>
       <br/>
-                
+
       <h5>Hardware Configuration</h5>
-      
+
       <div>
       {/* <AppBar position="static" color="default"> */}
       <TextField
@@ -830,7 +827,7 @@ function handleSubmit(){
       </div>
 
       <br/>
-                
+
       <h5>Tags</h5>
       <div>
         <TextField
@@ -851,7 +848,7 @@ function handleSubmit(){
       </div>
 
       <br/>
-                
+
       {/* <h5>Input Files</h5>
       <div>
       <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
