@@ -218,10 +218,10 @@ export default function CreateJob(props) {
     let fileIndex=isItemInArray(downloadQueue,link)
     if(fileIndex!==-1){
       
-      setDownloadQueue([
-        ...downloadQueue.slice(0, fileIndex),
-        ...downloadQueue.slice(fileIndex + 1)
-      ]);
+      // setDownloadQueue([
+      //   ...downloadQueue.slice(0, fileIndex),
+      //   ...downloadQueue.slice(fileIndex + 1)
+      // ]);
       setSourceFiles([
         ...sourceFiles.slice(0, fileIndex),
         ...sourceFiles.slice(fileIndex + 1)
@@ -293,6 +293,7 @@ export default function CreateJob(props) {
        headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
      };
     if (element[1]==="file"){
+      // Get file details
       let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
                                                             + "/api2/repos/" + element[3]
                                                             + "/file/detail/?p=/" + element[0];
@@ -305,16 +306,35 @@ export default function CreateJob(props) {
                     size: formatBytes(res.data.size)
                   }
         setSourceFiles(sourceFiles=>[...sourceFiles,file]);
-        console.log('sourcefile',sourceFiles)
-        setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
+        // console.log('sourcefile',sourceFiles)
+        // setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
    
        })
     }
 
-  //   else {
-  //     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/repos/"+element[2];
+    else {
+      // get list of items
+      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
+                                                            + "/api/v2.1/repos/"+element[3]
+                                                            + "/dir/?p=/" + element[0] + '&t=f&recursive=1';
 
-  //     axios.get(query_url, config).then(function(res) {  
+      axios.get(query_url, config).then(function(res) {  
+        console.log('resOfrequest',res)
+        let folder_size = 0
+        for(let j=0;j<res.data.dirent_list.length;j++){
+          console.log(res.data.dirent_list[j].size)
+          folder_size += res.data.dirent_list[j].size
+          console.log(folder_size)
+        }
+        let folder = {
+          name: element[0], 
+          size: formatBytes(folder_size)
+        }
+        setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
+        // console.log(sourceFiles)
+        // setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
+
+        
         
   //       let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
 
@@ -336,21 +356,21 @@ export default function CreateJob(props) {
   //       setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
 
 
-  //     /*       axios.get(downlaod_zip_url, config).then(function(res) {
-  //         console.log("final result",res,element[0])
-  //         const blob = new Blob([res], {type: 'application/octet-stream'});
-  //         const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
+      /*       axios.get(downlaod_zip_url, config).then(function(res) {
+          console.log("final result",res,element[0])
+          const blob = new Blob([res], {type: 'application/octet-stream'});
+          const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
 
 
-  //         currentFilesList.push(file)
-  //         console.log("array result",currentFilesList[0],element[0])
+          currentFilesList.push(file)
+          console.log("array result",currentFilesList[0],element[0])
             
-  //                 })  */
+                  })  */
 
 
-  //    } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+     } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
 
-  //   }
+    }
   
   }
 
@@ -412,9 +432,9 @@ setCode("# write your code here")
       }
       }, [code]);
 
-useEffect(()=> {setCode(downloadQueue.toString())
+// useEffect(()=> {setCode(downloadQueue.toString())
 
-},[downloadQueue]);
+// },[downloadQueue]);
 
 
   useEffect(() => {
@@ -727,7 +747,7 @@ function handleSubmit(){
         fullWidth={ true } maxWidth={"xl"}
       >
         <DialogTitle id="alert-dialog-title">
-        <h5 style={{ display: 'inline' }} >{"Select the destination folder: "}</h5>
+        <h5 style={{ display: 'inline' }} >{"Select files and/or folders: "}</h5>
         <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
           
         </DialogTitle>
@@ -779,7 +799,7 @@ function handleSubmit(){
          <ListItem
            secondaryAction={
              <IconButton edge="end" aria-label="delete"              onClick={() => {
-              handleExcludeFile(file.link);
+              handleExcludeFile(file.name);
             }}>
                <DeleteIcon />
              </IconButton>
