@@ -792,7 +792,7 @@ function handleSubmit(){
            </ListItemAvatar>
            <ListItemText
              primary={file.name}
-             secondary={file.size+" Kb"}
+             secondary={file.size}
            />
          </ListItem>
        ))}
