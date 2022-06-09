@@ -71,6 +71,18 @@ const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
 // const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
 
 
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -252,6 +264,7 @@ export default function CreateJob(props) {
   const [hasError, setHasError] = React.useState(false);
   const [hwlabel, set_hwlabel] = React.useState('');
   const [tab, setTab] = React.useState(0);
+  const [selectedtab, setSelectedTab] = React.useState('"code_editor"');
   const [code, setCode] = React.useState("# write your code here");
   const [configExample, setConfigExample] = React.useState('');
   const [commExample, setCommExample] = React.useState('');
@@ -273,76 +286,71 @@ export default function CreateJob(props) {
   useEffect(() => {
 
 
-  for ( const element of checkedFiles)
-  {
-
-
-    let config = {
-       
+  for ( const element of checkedFiles) {
+    console.log('importFiles', importFiles)
+    console.log('checkedfile', checkedFiles)
+    let config = { 
        headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
      };
-if (element[1]==="file")
-    {    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+element[2];
-
-       axios.get(query_url, config).then(function(res) {
-
-
-           let file = {name: element[0],link:res.data}
-
-
-setSourceFiles(sourceFiles=>[...sourceFiles,file]);
-setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
-   
-   
+    if (element[1]==="file"){
+      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
+                                                            + "/api2/repos/" + element[3]
+                                                            + "/file/detail/?p=/" + element[0];
+      console.log('queryurl',query_url)
+      axios.get(query_url, config).then(function(res) {
+        console.log('resOfrequest',res)
+        console.log(formatBytes(123455678))
+        let file = {
+                    name: element[0], 
+                    size: formatBytes(res.data.size)
+                  }
+        setSourceFiles(sourceFiles=>[...sourceFiles,file]);
+        console.log('sourcefile',sourceFiles)
+        setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
    
        })
-  }
+    }
 
-  else {
-    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/repos/"+element[2];
+  //   else {
+  //     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/repos/"+element[2];
 
+  //     axios.get(query_url, config).then(function(res) {  
+        
+  //       let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
 
-    axios.get(query_url, config).then(function(res) {  
-      
-
-      let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
-
-axios.get(query_task_progress_url, config).then( function(res){console.log("zip return",res.data.zipped===res.data.total) }).catch((err) => {console.log("Task progress request Error: ", err.message) });
-/*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
-     console.log("progress",progress)
-        progress=(res.data.zipped===res.data.total)
-      console.log("zip return",progress) }) } */
-    let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
-
-
-
-let folder = {name: element[0],link:downlaod_zip_url}
-
-setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
-setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
-
-
-    /*       axios.get(downlaod_zip_url, config).then(function(res) {
-        console.log("final result",res,element[0])
-        const blob = new Blob([res], {type: 'application/octet-stream'});
-        const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
-
-
-        currentFilesList.push(file)
-        console.log("array result",currentFilesList[0],element[0])
-           
-                 })  */
-
-
-     } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
-
-    
+  //       axios.get(query_task_progress_url, config)
+  //         .then(function(res){console.log("zip return",res.data.zipped===res.data.total) })
+  //         .catch((err) => {console.log("Task progress request Error: ", err.message) });
+  // /*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
+  //     console.log("progress",progress)
+  //         progress=(res.data.zipped===res.data.total)
+  //       console.log("zip return",progress) }) } */
+  //       let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
 
 
 
+  //       let folder = {name: element[0],link:downlaod_zip_url}
 
-  }
+  //       setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
+  //       console.log(sourceFiles)
+  //       setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
 
+
+  //     /*       axios.get(downlaod_zip_url, config).then(function(res) {
+  //         console.log("final result",res,element[0])
+  //         const blob = new Blob([res], {type: 'application/octet-stream'});
+  //         const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
+
+
+  //         currentFilesList.push(file)
+  //         console.log("array result",currentFilesList[0],element[0])
+            
+  //                 })  */
+
+
+  //    } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+
+  //   }
   
   }
 
@@ -410,15 +418,25 @@ useEffect(()=> {setCode(downloadQueue.toString())
 
 
   useEffect(() => {
-    if(tab === 0) setModel(code);
-    if(tab === 1) setModel(git);
-    if(tab === 2) setModel(code)
-
-  }, [tab, code, git,sourceFiles]);
+    if(tab === 0) {
+      setModel(code)
+      setSelectedTab("code_editor")
+    };
+    if(tab === 1) {
+      setModel(git)
+      setSelectedTab("upload_link")
+    };
+    if(tab === 2) {
+      console.log('submit', checkedFiles)
+      setModel(checkedFiles)
+      setSelectedTab("upload_script")
+    };
+  }, [tab, code, git, checkedFiles]);
 
   // Job resubmission
   let { collabid ,id} = useParams();
   useEffect(() => {
+
 if (props.resubmit==="true")
 
     {
@@ -427,7 +445,6 @@ if (props.resubmit==="true")
             'Authorization': 'Bearer ' + props.auth.token,
         }
         }
-        // const resultUrl = `https://raw.githubusercontent.com/jonathanduperrier/nmpi-job-manager-app-reactjs/master/db_${id}.json`;
         
         const resultUrl = jobQueueServer +`/api/v2/results/${id}`;
 
@@ -485,10 +502,14 @@ if (props.resubmit==="true")
             }
             if(responses[i].data[j].type==="file")
             {
-              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})}
-              
-              else{
-              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/zip-task/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name,repoid:repoid})
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
+              console.log({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
+            }
+            else{
+              // repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/zip-task/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name,repoid:repoid})
+              repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,repoid:repoid,getpath:repoid+"/dir/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name})
+              // repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:"/"+parent_dir+'/'+responses[i].data[j].name,repoid:repoid})
+              // console.log('test',{name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:"/"+parent_dir+'/'+responses[i].data[j].name,repoid:repoid})
             }
 
           }
@@ -496,8 +517,6 @@ if (props.resubmit==="true")
 
         setFolderContent(repoContent)
       }))
-
-      
 
       
 
@@ -538,8 +557,9 @@ if (props.resubmit==="true")
   const handleChangeTab = (event, newValue) => {
 
     setTab(newValue);
-    //if(newValue===2){handleClickOpen()}
+
   };
+
 function handleSubmitClick()
 {
   setHasError(!hwIsSelected)
@@ -559,7 +579,8 @@ function handleClickCollabType(currentCollabType)
 }
 
 function handleSubmit(){
-    const Url = jobQueueServer + '/api/v2/queue';
+    // const Url = jobQueueServer
+    const Url = 'https://127.0.0.1:8000' + '/api/v2/queue';
 
     const requestConfig = {
       headers: {
@@ -577,8 +598,8 @@ function handleSubmit(){
     hardware_platform : hw,
     collab_id: props.collab??collabid,
     tags : tags,
-    user_id: props.auth.tokenParsed["preferred_username"]
-    // job.selected_tab = "code_editor";
+    user_id: props.auth.tokenParsed["preferred_username"],
+    selected_tab : selectedtab
     // job.tags = [];
     // job.input_data = [];
     // job.output_data = []; 
@@ -728,7 +749,7 @@ function handleSubmit(){
         </DialogActions>
       </Dialog>
   
-      <Box sx={{ width: '100%' }}>
+      {/* <Box sx={{ width: '100%' }}>
       <Collapse in={openAlert}>
         <Alert
           action={
@@ -749,7 +770,7 @@ function handleSubmit(){
         </Alert>
       </Collapse>
   
-    </Box>
+    </Box> */}
         
        <Box>
        <Paper elevation={(sourceFiles.length===0)?0:3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",marginTop:"1%"}} >

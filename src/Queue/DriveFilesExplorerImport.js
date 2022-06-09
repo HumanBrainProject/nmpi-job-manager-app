@@ -81,6 +81,7 @@ export default function DriveFilesExplorerImport(props) {
     }
 
     setChecked(newChecked);
+    
     console.log("checked",newChecked)
     props.setCheckedFiles(newChecked)
     
@@ -91,9 +92,9 @@ export default function DriveFilesExplorerImport(props) {
     <div sx={styleList} >
     <Box style={{ float: 'left', paddingLeft:"50%", paddingTop:"10%" ,color:'gray' }} >
     <CircularProgress /> 
-    <p>
+    {/* <p>
     Retrieving data
-    </p>
+    </p> */}
   </Box>
   </div>
   );}else{
@@ -105,7 +106,7 @@ export default function DriveFilesExplorerImport(props) {
         {currentDirFliter(props.RepoContent,).map(d=>(
         
         <ListItem    >
-        <ListItemButton onClick={() => {props.updatecurrentDirAndopencode(d.name,d.type,d.getpath);console.log("type",d.type)}}    >
+        <ListItemButton onClick={() => {props.updatecurrentDirAndopencode(d.name,d.type,d.getpath);console.log("type",d.type, 'getpath', d.getpath)}}    >
         {(d.type ==="repo"||d.type ==="dir"||d.type ==="grepo") &&       <FolderIcon sx={styleIcon}></FolderIcon>      }
         {(d.type ==="file" && d.name.split('.').pop()!=="py") &&       <CodeIcon sx={styleIcon}></CodeIcon>        }
         {(d.type ==="file" && d.name.split('.').pop()==="py") &&       <CodeIcon sx={styleFileIcon}></CodeIcon>        }
@@ -115,9 +116,11 @@ export default function DriveFilesExplorerImport(props) {
         { (d.type !=="repo"&& d.type !=="grepo") && 
         <Checkbox
         edge="end"
-        onChange={handleToggle([d.name,d.type,d.getpath,d.repoid])}
-        checked={isItemInArray(checked,[d.name,d.type,d.getpath,d.repoid]) !== -1}
-       
+        // onChange={handleToggle([d.name,d.type,d.getpath,d.repoid])}
+        onChange={handleToggle([d.name,d.type,d.parent_dir,d.repoid, d.getpath])}
+        // checked={isItemInArray(checked,[d.name,d.type,d.getpath,d.repoid]) !== -1}
+        checked={isItemInArray(checked,[d.name,d.type,d.parent_dir,d.repoid, d.getpath]) !== -1}
+
       />
 
         }
