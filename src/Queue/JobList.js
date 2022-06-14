@@ -494,8 +494,8 @@ onCollabChange= async (newValue)=>{
     <div style={{ marginLeft :"1%" ,height: "60%" ,
               display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
               <Tooltip title="Reload Jobs">
-              <Button style={{ marginLeft :"1%" ,height: "100%" ,
-              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
+              <Button disabled={this.state.refreshState} style={{ marginLeft :"1%" ,height: "100%" ,
+              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
               </Button>
               </Tooltip>
               </div>
@@ -583,7 +583,7 @@ onCollabChange= async (newValue)=>{
                           <Link to={"/"+this.currentCollab+"/new"} ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
+                          <Button disabled={this.state.refreshState} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />        
                            </Button>
                            </Tooltip>
                            </StyledTableCell>
@@ -616,7 +616,7 @@ onCollabChange= async (newValue)=>{
                             // used striped rows shading
                             <TableRow    key={job.id} hover='true' style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
                             
-                            <StyledTableCell  component="td" scope="row"><Link to={{pathname:'/'+job.collab_id+'/' +(job.status==="finished"||job.status==="error"?"f":"q")+'/'+ job.id,state:{jobStatus:job.status}}}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
+                            <StyledTableCell  component="td" scope="row"><Link to={{pathname:'/'+job.collab_id+'/' +(job.status==="finished"||job.status==="error"?"f":"q")+'/'+ job.id,state:{jobStatus:job.status}}}> <SearchIcon /></Link> <Link to={'/'+job.collab_id+'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
                             <StyledTableCell   component="td" scope="row"  >
 
                             {job.id}
