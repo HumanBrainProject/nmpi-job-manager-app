@@ -213,9 +213,19 @@ export default function CreateJob(props) {
   const handleClose = () => {
     setOpen(false);
   };
-  function handleExcludeFile(link)
+
+  function handleExcludeFile(name)
   {
-    let fileIndex=isItemInArray(downloadQueue,link)
+    console.log('test ', sourceFiles)
+
+    let fileIndex=-1
+    for(let j=0;j<sourceFiles.length;j++){
+      if(sourceFiles[j].name == name){
+        console.log('jai trouve', j)
+        fileIndex = j
+      }
+    }
+    console.log('fileidex', fileIndex)
     if(fileIndex!==-1){
       
       // setDownloadQueue([
@@ -226,6 +236,19 @@ export default function CreateJob(props) {
         ...sourceFiles.slice(0, fileIndex),
         ...sourceFiles.slice(fileIndex + 1)
       ]);
+
+      setCheckedFiles([
+        ...checkedFiles.slice(0, fileIndex),
+        ...checkedFiles.slice(fileIndex + 1)
+      ]);
+
+      // setImportFiles(importFiles-1)
+
+      console.log([
+        ...sourceFiles.slice(0, fileIndex),
+        ...sourceFiles.slice(fileIndex + 1)
+      ])
+      console.log(sourceFiles)
 
     }
 
@@ -380,7 +403,14 @@ export default function CreateJob(props) {
 
 }, [importFiles]);
 
+  // useEffect((name) => {
+  //   handleExcludeFile(name);
+  //   console.log('tst', console.log(sourceFiles))
+  // }, [importFiles]);
 
+  // useEffect(() => {
+  //   setSourceFiles();
+  // }, []);
 
   function updatecurrentDirAndopencode(dir,type,getlink){
     if (type==="file" && dir.split('.').pop()!=="py") {return}
