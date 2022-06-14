@@ -220,7 +220,7 @@ export default function CreateJob(props) {
 
     let fileIndex=-1
     for(let j=0;j<sourceFiles.length;j++){
-      if(sourceFiles[j][0] == name){
+      if(sourceFiles[j].name == name){
         console.log('jai trouve', j)
         fileIndex = j
       }
@@ -319,7 +319,7 @@ export default function CreateJob(props) {
   for ( const element of checkedFiles) {
     let fileIndex=-1
     for(let j=0;j<sourceFiles.length;j++){
-      if(sourceFiles[j][0] == element[0]){
+      if(sourceFiles[j].name == element[0]){
         console.log('jai trouve', j)
         fileIndex = j
       }
@@ -339,13 +339,18 @@ export default function CreateJob(props) {
         axios.get(query_url, config).then(function(res) {
           console.log('resOfrequest',res)
           console.log(formatBytes(123455678))
-          let file = [
-                      element[0],
-                      element[1],
-                      element[2],
-                      element[3],
-                      formatBytes(res.data.size)
-          ]
+          let file = 
+          {
+            name: element[0], 
+            size: formatBytes(res.data.size)
+          }
+          // [
+          //             element[0],
+          //             element[1],
+          //             element[2],
+          //             element[3],
+          //             formatBytes(res.data.size)
+          // ]
           setSourceFiles(sourceFiles=>[...sourceFiles,file]);
           // console.log('sourcefile',sourceFiles)
           // setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
@@ -368,17 +373,17 @@ export default function CreateJob(props) {
             console.log(folder_size)
           }
           let folder = 
-          //{
-          //   name: element[0], 
-          //   size: formatBytes(folder_size)
-          // }
-          [
-            element[0],
-            element[1],
-            element[2],
-            element[3],
-            formatBytes(folder_size)
-          ]
+          {
+            name: element[0], 
+            size: formatBytes(folder_size)
+          }
+          // [
+          //   element[0],
+          //   element[1],
+          //   element[2],
+          //   element[3],
+          //   formatBytes(folder_size)
+          // ]
           setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
           // console.log(sourceFiles)
           // setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
@@ -864,7 +869,7 @@ function handleSubmit(){
          <ListItem
            secondaryAction={
              <IconButton edge="end" aria-label="delete"              onClick={() => {
-              handleExcludeFile(file[0]);
+              handleExcludeFile(file.name);
             }}>
                <DeleteIcon />
              </IconButton>
@@ -876,8 +881,8 @@ function handleSubmit(){
              </Avatar>
            </ListItemAvatar>
            <ListItemText
-             primary={file[0]}
-             secondary={file[4]}
+             primary={file.name}
+             secondary={file.size}
            />
          </ListItem>
        ))}

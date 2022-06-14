@@ -84,7 +84,7 @@ export default function DriveFilesExplorerImport(props) {
       const newSelected = [...props.sourceFiles];
       let Index=-1
       for(let j=0;j<newSelected.length;j++){
-        if(newSelected[j][0] == value[0]){
+        if(newSelected[j].name == value[0]){
           console.log('jai trouve new', j)
           Index = j
         }
