@@ -39,7 +39,7 @@ const styleFileIcon = {
 
 export default function DriveFilesExplorerImport(props) {
 
-  const [checked, setChecked] = React.useState([]);
+  const [checked, setChecked] = React.useState(props.checkedFiles);
   let currentDir=props.currentDir
   if(props.currentDir===""){
      currentDir='/'
@@ -66,25 +66,38 @@ export default function DriveFilesExplorerImport(props) {
           {return i; }
         }
     }
-
     return -1;   // Not found
 }
   const handleToggle = (value) => () => {
     const currentIndex = isItemInArray(checked,value)
+    console.log('index',currentIndex)
     console.log("checked 2",isItemInArray(checked,value))
     const newChecked = [...checked];
+    console.log('newchecked', newChecked)
 
     if (currentIndex === -1) {
       newChecked.push(value);
+      console.log(newChecked)
     } else {
       newChecked.splice(currentIndex, 1);
+      console.log('je retire de la liste',newChecked)
+      const newSelected = [...props.sourceFiles];
+      let Index=-1
+      for(let j=0;j<newSelected.length;j++){
+        if(newSelected[j][0] == value[0]){
+          console.log('jai trouve new', j)
+          Index = j
+        }
+      }
+      newSelected.splice(Index, 1)
+      props.setSourceFiles(newSelected)
     }
 
     setChecked(newChecked);
     
     console.log("checked",newChecked)
     props.setCheckedFiles(newChecked)
-    
+  
  
   };
 
@@ -117,9 +130,9 @@ export default function DriveFilesExplorerImport(props) {
         <Checkbox
         edge="end"
         // onChange={handleToggle([d.name,d.type,d.getpath,d.repoid])}
-        onChange={handleToggle([d.name,d.type,d.parent_dir,d.repoid, d.getpath])}
+        onChange={handleToggle([d.name,d.type,d.parent_dir,d.repoid])}
         // checked={isItemInArray(checked,[d.name,d.type,d.getpath,d.repoid]) !== -1}
-        checked={isItemInArray(checked,[d.name,d.type,d.parent_dir,d.repoid, d.getpath]) !== -1}
+        checked={isItemInArray(checked,[d.name,d.type,d.parent_dir,d.repoid]) !== -1}
 
       />
 

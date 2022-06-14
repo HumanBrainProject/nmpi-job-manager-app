@@ -220,7 +220,7 @@ export default function CreateJob(props) {
 
     let fileIndex=-1
     for(let j=0;j<sourceFiles.length;j++){
-      if(sourceFiles[j].name == name){
+      if(sourceFiles[j][0] == name){
         console.log('jai trouve', j)
         fileIndex = j
       }
@@ -237,9 +237,16 @@ export default function CreateJob(props) {
         ...sourceFiles.slice(fileIndex + 1)
       ]);
 
+      let fileIndex2=-1
+      for(let j=0;j<checkedFiles.length;j++){
+      if(checkedFiles[j][0] == name){
+        console.log('jai trouve', j)
+        fileIndex2 = j
+      }
+    }
       setCheckedFiles([
-        ...checkedFiles.slice(0, fileIndex),
-        ...checkedFiles.slice(fileIndex + 1)
+        ...checkedFiles.slice(0, fileIndex2),
+        ...checkedFiles.slice(fileIndex2 + 1)
       ]);
 
       // setImportFiles(importFiles-1)
@@ -310,89 +317,109 @@ export default function CreateJob(props) {
 
 
   for ( const element of checkedFiles) {
-    console.log('importFiles', importFiles)
-    console.log('checkedfile', checkedFiles)
-    let config = { 
-       headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-     };
-    if (element[1]==="file"){
-      // Get file details
-      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
-                                                            + "/api2/repos/" + element[3]
-                                                            + "/file/detail/?p=/" + element[0];
-      console.log('queryurl',query_url)
-      axios.get(query_url, config).then(function(res) {
-        console.log('resOfrequest',res)
-        console.log(formatBytes(123455678))
-        let file = {
-                    name: element[0], 
-                    size: formatBytes(res.data.size)
-                  }
-        setSourceFiles(sourceFiles=>[...sourceFiles,file]);
-        // console.log('sourcefile',sourceFiles)
-        // setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
-   
-       })
+    let fileIndex=-1
+    for(let j=0;j<sourceFiles.length;j++){
+      if(sourceFiles[j][0] == element[0]){
+        console.log('jai trouve', j)
+        fileIndex = j
+      }
     }
+    if(fileIndex==-1){
+      console.log('importFiles', importFiles)
+      console.log('checkedfile', checkedFiles)
+      let config = { 
+        headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+      };
+      if (element[1]==="file"){
+        // Get file details
+        let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
+                                                              + "/api2/repos/" + element[3]
+                                                              + "/file/detail/?p=/" + element[0];
+        console.log('queryurl',query_url)
+        axios.get(query_url, config).then(function(res) {
+          console.log('resOfrequest',res)
+          console.log(formatBytes(123455678))
+          let file = [
+                      element[0],
+                      element[1],
+                      element[2],
+                      element[3],
+                      formatBytes(res.data.size)
+          ]
+          setSourceFiles(sourceFiles=>[...sourceFiles,file]);
+          // console.log('sourcefile',sourceFiles)
+          // setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
+    
+        })
+      }
 
-    else {
-      // get list of items
-      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
-                                                            + "/api/v2.1/repos/"+element[3]
-                                                            + "/dir/?p=/" + element[0] + '&t=f&recursive=1';
+      else {
+        // get list of items
+        let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
+                                                              + "/api/v2.1/repos/"+element[3]
+                                                              + "/dir/?p=/" + element[0] + '&t=f&recursive=1';
 
-      axios.get(query_url, config).then(function(res) {  
-        console.log('resOfrequest',res)
-        let folder_size = 0
-        for(let j=0;j<res.data.dirent_list.length;j++){
-          console.log(res.data.dirent_list[j].size)
-          folder_size += res.data.dirent_list[j].size
-          console.log(folder_size)
-        }
-        let folder = {
-          name: element[0], 
-          size: formatBytes(folder_size)
-        }
-        setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
-        // console.log(sourceFiles)
-        // setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
+        axios.get(query_url, config).then(function(res) {  
+          console.log('resOfrequest',res)
+          let folder_size = 0
+          for(let j=0;j<res.data.dirent_list.length;j++){
+            console.log(res.data.dirent_list[j].size)
+            folder_size += res.data.dirent_list[j].size
+            console.log(folder_size)
+          }
+          let folder = 
+          //{
+          //   name: element[0], 
+          //   size: formatBytes(folder_size)
+          // }
+          [
+            element[0],
+            element[1],
+            element[2],
+            element[3],
+            formatBytes(folder_size)
+          ]
+          setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
+          // console.log(sourceFiles)
+          // setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
 
-        
-        
-  //       let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
+          
+          
+    //       let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
 
-  //       axios.get(query_task_progress_url, config)
-  //         .then(function(res){console.log("zip return",res.data.zipped===res.data.total) })
-  //         .catch((err) => {console.log("Task progress request Error: ", err.message) });
-  // /*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
-  //     console.log("progress",progress)
-  //         progress=(res.data.zipped===res.data.total)
-  //       console.log("zip return",progress) }) } */
-  //       let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
-
-
-
-  //       let folder = {name: element[0],link:downlaod_zip_url}
-
-  //       setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
-  //       console.log(sourceFiles)
-  //       setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
-
-
-      /*       axios.get(downlaod_zip_url, config).then(function(res) {
-          console.log("final result",res,element[0])
-          const blob = new Blob([res], {type: 'application/octet-stream'});
-          const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
+    //       axios.get(query_task_progress_url, config)
+    //         .then(function(res){console.log("zip return",res.data.zipped===res.data.total) })
+    //         .catch((err) => {console.log("Task progress request Error: ", err.message) });
+    // /*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
+    //     console.log("progress",progress)
+    //         progress=(res.data.zipped===res.data.total)
+    //       console.log("zip return",progress) }) } */
+    //       let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
 
 
-          currentFilesList.push(file)
-          console.log("array result",currentFilesList[0],element[0])
-            
-                  })  */
+
+    //       let folder = {name: element[0],link:downlaod_zip_url}
+
+    //       setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
+    //       console.log(sourceFiles)
+    //       setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
 
 
-     } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+        /*       axios.get(downlaod_zip_url, config).then(function(res) {
+            console.log("final result",res,element[0])
+            const blob = new Blob([res], {type: 'application/octet-stream'});
+            const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
 
+
+            currentFilesList.push(file)
+            console.log("array result",currentFilesList[0],element[0])
+              
+                    })  */
+
+
+      } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+
+      }
     }
   
   }
@@ -788,7 +815,15 @@ function handleSubmit(){
       <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
       Shared directories
     </Button>
-        <DriveFilesExplorerImport RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} setCheckedFiles={setCheckedFiles} setCollabType={setCollabType} ></DriveFilesExplorerImport>
+        <DriveFilesExplorerImport RepoContent={FolderContent} 
+                                  currentDir={currentDir} 
+                                  updatecurrentDirAndopencode={updatecurrentDirAndopencode} 
+                                  backout={backout} 
+                                  checkedFiles={checkedFiles}
+                                  setCheckedFiles={setCheckedFiles}
+                                  sourceFiles={sourceFiles}
+                                  setSourceFiles={setSourceFiles}
+                                  setCollabType={setCollabType} ></DriveFilesExplorerImport>
 
         </DialogContent>
         <DialogActions>
@@ -829,7 +864,7 @@ function handleSubmit(){
          <ListItem
            secondaryAction={
              <IconButton edge="end" aria-label="delete"              onClick={() => {
-              handleExcludeFile(file.name);
+              handleExcludeFile(file[0]);
             }}>
                <DeleteIcon />
              </IconButton>
@@ -841,8 +876,8 @@ function handleSubmit(){
              </Avatar>
            </ListItemAvatar>
            <ListItemText
-             primary={file.name}
-             secondary={file.size}
+             primary={file[0]}
+             secondary={file[4]}
            />
          </ListItem>
        ))}
