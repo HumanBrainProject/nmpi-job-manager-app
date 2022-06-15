@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'
 import {
   useParams
 } from "react-router-dom";
@@ -11,7 +10,6 @@ import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
-import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
@@ -19,12 +17,9 @@ import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ScheduleIcon from '@material-ui/icons/Schedule';
 import CodeIcon from '@material-ui/icons/Code';
 import StorageIcon from '@material-ui/icons/Storage';
 import red from '@material-ui/core/colors/red';
-import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -34,11 +29,8 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import LaunchIcon from '@material-ui/icons/Launch';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import Button from '@mui/material/Button';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -47,15 +39,12 @@ import { Link } from "react-router-dom";
 import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
 import ExportToDrive from './ExportToDrive';
-import Modal from '@mui/material/Modal';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
-import { palette } from '@mui/system';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -158,11 +147,7 @@ const style = {
 function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
- // const handleClose = () => setOpen(false);
   let { collab_id,endpoint,id } = useParams();
-/*  const location = useLocation();
-  const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
-  console.log("job status",jobStatus) */
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -190,7 +175,6 @@ function JobDetail(props) {
 
 
 function handlesubmit(){
-  console.log("comment ",commentField)
   const jobUrl=`/api/v2/results/${id}`;
 
   const options = {
@@ -209,7 +193,6 @@ function handlesubmit(){
   
   axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
     setCommentField("");
-    console.log(response.data);
   }).catch(function (error) {
     console.error(error);
   });
@@ -351,9 +334,7 @@ useEffect(()=>{
     let currentJobComments=[]
     let currentJobID= `/api/v2/results/${id}`
     const fetchData = async () => {
-      const result = await axios(commentstUrl, config);
-      console.log("result",result)
-      
+      const result = await axios(commentstUrl, config);      
 
       for ( const comment of result.data.objects) 
       

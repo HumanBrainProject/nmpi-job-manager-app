@@ -34,6 +34,7 @@ export default function ExportToDrive(props) {
   const [oversizeFiles, setOversizeFile] = useState([])
   const [allfiles, setAllFiles] = useState(true);
   const [size_error, setError] = useState(false);
+  const [driveTarget, setDriveTarget] = React.useState("");
 
 
   const handleClickOpen = () => {
@@ -121,7 +122,6 @@ export default function ExportToDrive(props) {
         };
 
         axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
-          console.log("post result",res)
         }.catch((errPost)=>{
         })
         )
@@ -173,6 +173,8 @@ export default function ExportToDrive(props) {
     // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
     // const rr = axios.get(ids_query_url, config2)
     // console.log(rr)
+    console.log(path)
+    setDriveTarget(path)
     const response = await axios.get(url, config)
     setOpenAlertCopy(false)
     setOpenAlertDone(true)
@@ -212,6 +214,7 @@ export default function ExportToDrive(props) {
           break
         } 
       }
+      console.log(currentDir)
       handleCopy(currentDir)
       handleClose()
       setOpenAlertCopy(true)
@@ -256,7 +259,6 @@ export default function ExportToDrive(props) {
             let axios_requests=[];
             let repoContent=[]
             let ids=[]
-            console.log('useeffect: after axios.get - res', res)
             for(let i=0;i<res.data.length;i++){
                 if(res.data[i].permission=='rw'){
                   ids.push(res.data[i].id)
@@ -341,7 +343,8 @@ export default function ExportToDrive(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <h4>Target repository <strong>/{currentDir.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>
+            {console.log(driveTarget.split('/').slice(2).join('/'))}
+            <h4>Target repository <strong>/{driveTarget.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>
             <br></br>
           </DialogContentText>
             {(() => {

@@ -66,7 +66,7 @@ export default function DriveFilesExplorerExport(props) {
         {currentDirFliter(props.RepoContent,).map(d=>(
         
         <ListItem button onClick={() => props.updatecurrentDirAndopencode(d.name,d.type,d.getpath)} >
-        {console.log('listitem',d.name,d.type,d.getpath)}
+        {/* {console.log('listitem',d.name,d.type,d.getpath)} */}
         {(d.type ==="repo"||d.type ==="dir"||d.type ==="srepo"||d.type ==="grepo") &&       <FolderIcon sx={styleIcon}></FolderIcon>      }
         {(d.type ==="file" && d.name.split('.').pop()!=="py") &&       <CodeIcon sx={styleIcon}></CodeIcon>        }
         {(d.type ==="file" && d.name.split('.').pop()==="py") &&       <CodeIcon sx={styleFileIcon}></CodeIcon>        }

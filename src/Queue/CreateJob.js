@@ -1,23 +1,20 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import DriveFilesExplorerImport from'./DriveFilesExplorerImport'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+
 import Paper from '@material-ui/core/Paper';
 
 import FolderIcon from '@mui/icons-material/Folder';
@@ -26,11 +23,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CodeIcon from '@material-ui/icons/Code';
@@ -40,22 +35,14 @@ import CreateIcon from '@material-ui/icons/Create';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import axios from 'axios';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Editor from "@monaco-editor/react";
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { DropzoneDialogBase } from 'material-ui-dropzone';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import CloseIcon from '@material-ui/icons/Close';
-import Collapse from '@mui/material/Collapse';
 import Alert from '@mui/material/Alert';
 import AlertTitle from "@mui/material/AlertTitle";
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
-import Icon from '@material-ui/core/Icon';
 import { jobQueueServer, hw_options } from "../globals-prod";
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import BackupIcon from '@mui/icons-material/Backup';
@@ -216,22 +203,14 @@ export default function CreateJob(props) {
 
   function handleExcludeFile(name)
   {
-    console.log('test ', sourceFiles)
-
     let fileIndex=-1
     for(let j=0;j<sourceFiles.length;j++){
       if(sourceFiles[j].name == name){
-        console.log('jai trouve', j)
         fileIndex = j
       }
     }
-    console.log('fileidex', fileIndex)
     if(fileIndex!==-1){
-      
-      // setDownloadQueue([
-      //   ...downloadQueue.slice(0, fileIndex),
-      //   ...downloadQueue.slice(fileIndex + 1)
-      // ]);
+    
       setSourceFiles([
         ...sourceFiles.slice(0, fileIndex),
         ...sourceFiles.slice(fileIndex + 1)
@@ -240,7 +219,6 @@ export default function CreateJob(props) {
       let fileIndex2=-1
       for(let j=0;j<checkedFiles.length;j++){
       if(checkedFiles[j][0] == name){
-        console.log('jai trouve', j)
         fileIndex2 = j
       }
     }
@@ -249,41 +227,14 @@ export default function CreateJob(props) {
         ...checkedFiles.slice(fileIndex2 + 1)
       ]);
 
-      // setImportFiles(importFiles-1)
-
-      console.log([
-        ...sourceFiles.slice(0, fileIndex),
-        ...sourceFiles.slice(fileIndex + 1)
-      ])
-      console.log(sourceFiles)
-
     }
 
   }
   function importSelected()
   {
     setImportFiles(importFiles+1)
-    //downloadFiles()
-    //setCode(downloadQueue.toString())
-    
-  handleClose()
-  setOpenAlert(true)
-  
-  
-  
-  }
-
-  function handleCloseErrorAlert()
-  {
-
-    setHasError(!hasError)
-  }
-  
-//////////
-
-  function updateFolderContent(folderstructuer ,path=''){
-    setFolderContent(({isRoot:true,Reop:[ {Folder:true,Name:'Dependecey'},{Folder:false,Name:'Ai.py'},{Folder:true,Name:'Test'},{Folder:true,Name:'Production'}]}))
-
+    handleClose()
+    setOpenAlert(true)
   }
   
   const classes = useStyles();
@@ -308,10 +259,6 @@ export default function CreateJob(props) {
   const [FolderContent, setFolderContent] = React.useState({});
   const [allRepos, setAllRepos] = React.useState([]);
   const [currentDir,setcurrentDir]= React.useState('/')
-  const [downloadQueue,setDownloadQueue]= React.useState([])
-
-
-  // download hook
 
   useEffect(() => {
 
@@ -320,13 +267,10 @@ export default function CreateJob(props) {
     let fileIndex=-1
     for(let j=0;j<sourceFiles.length;j++){
       if(sourceFiles[j].name == element[0]){
-        console.log('jai trouve', j)
         fileIndex = j
       }
     }
     if(fileIndex==-1){
-      console.log('importFiles', importFiles)
-      console.log('checkedfile', checkedFiles)
       let config = { 
         headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
       };
@@ -335,26 +279,13 @@ export default function CreateJob(props) {
         let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" 
                                                               + "/api2/repos/" + element[3]
                                                               + "/file/detail/?p=/" + element[0];
-        console.log('queryurl',query_url)
         axios.get(query_url, config).then(function(res) {
-          console.log('resOfrequest',res)
-          console.log(formatBytes(123455678))
           let file = 
           {
             name: element[0], 
             size: formatBytes(res.data.size)
           }
-          // [
-          //             element[0],
-          //             element[1],
-          //             element[2],
-          //             element[3],
-          //             formatBytes(res.data.size)
-          // ]
           setSourceFiles(sourceFiles=>[...sourceFiles,file]);
-          // console.log('sourcefile',sourceFiles)
-          // setDownloadQueue(downloadQueue=>[...downloadQueue,res.data]);
-    
         })
       }
 
@@ -365,84 +296,26 @@ export default function CreateJob(props) {
                                                               + "/dir/?p=/" + element[0] + '&t=f&recursive=1';
 
         axios.get(query_url, config).then(function(res) {  
-          console.log('resOfrequest',res)
           let folder_size = 0
           for(let j=0;j<res.data.dirent_list.length;j++){
-            console.log(res.data.dirent_list[j].size)
             folder_size += res.data.dirent_list[j].size
-            console.log(folder_size)
           }
           let folder = 
           {
             name: element[0], 
             size: formatBytes(folder_size)
           }
-          // [
-          //   element[0],
-          //   element[1],
-          //   element[2],
-          //   element[3],
-          //   formatBytes(folder_size)
-          // ]
           setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
-          // console.log(sourceFiles)
-          // setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
 
-          
-          
-    //       let query_task_progress_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api/v2.1/query-zip-progress/?token="+res.data.zip_token
-
-    //       axios.get(query_task_progress_url, config)
-    //         .then(function(res){console.log("zip return",res.data.zipped===res.data.total) })
-    //         .catch((err) => {console.log("Task progress request Error: ", err.message) });
-    // /*    while (progress!==true) { axios.get(query_task_progress_url, config).then( function(res){
-    //     console.log("progress",progress)
-    //         progress=(res.data.zipped===res.data.total)
-    //       console.log("zip return",progress) }) } */
-    //       let downlaod_zip_url ="https://drive.ebrains.eu" +"/seafhttp/zip/"+res.data.zip_token
-
-
-
-    //       let folder = {name: element[0],link:downlaod_zip_url}
-
-    //       setSourceFiles(sourceFiles=>[...sourceFiles,folder]);
-    //       console.log(sourceFiles)
-    //       setDownloadQueue(downloadQueue=>[...downloadQueue,downlaod_zip_url]);
-
-
-        /*       axios.get(downlaod_zip_url, config).then(function(res) {
-            console.log("final result",res,element[0])
-            const blob = new Blob([res], {type: 'application/octet-stream'});
-            const file = new File([blob], element[0]+".zip", {type: 'application/zip'});
-
-
-            currentFilesList.push(file)
-            console.log("array result",currentFilesList[0],element[0])
-              
-                    })  */
-
-
-      } ).catch((err) => {console.log("folder zip request Error: ", err.message) });
+      } ).catch((err) => {console.log("folder request Error: ", err.message) });
 
       }
     }
   
-  }
-
-
-
- 
+  }   
 
 }, [importFiles]);
 
-  // useEffect((name) => {
-  //   handleExcludeFile(name);
-  //   console.log('tst', console.log(sourceFiles))
-  // }, [importFiles]);
-
-  // useEffect(() => {
-  //   setSourceFiles();
-  // }, []);
 
   function updatecurrentDirAndopencode(dir,type,getlink){
     if (type==="file" && dir.split('.').pop()!=="py") {return}
@@ -488,16 +361,12 @@ export default function CreateJob(props) {
       setCommExample(command_example[hw].example);
     }
     }, [hw]);
-    useEffect(() => {
-      if(code==="") {
-setCode("# write your code here")
-      }
-      }, [code]);
-
-// useEffect(()=> {setCode(downloadQueue.toString())
-
-// },[downloadQueue]);
-
+  
+  useEffect(() => {
+    if(code==="") {
+      setCode("# write your code here")
+    }
+  }, [code]);
 
   useEffect(() => {
     if(tab === 0) {
@@ -509,7 +378,6 @@ setCode("# write your code here")
       setSelectedTab("upload_link")
     };
     if(tab === 2) {
-      console.log('submit', checkedFiles)
       setModel(checkedFiles)
       setSelectedTab("upload_script")
     };
@@ -558,10 +426,7 @@ if (props.resubmit==="true")
     let ids_query_url=query_url+"/?type="+collabType
     //let ids_query_url=query_url+"/?type=mine"
     axios.get(ids_query_url, config).then(function(res) {
-      console.log("res",res)
-      console.log("token",props.auth.token)
-      console.log("collab",props.collab)
-      console.log("collab",collabid)
+    
       let axios_requests=[];
       
       let repoContent=[]
@@ -585,13 +450,11 @@ if (props.resubmit==="true")
             if(responses[i].data[j].type==="file")
             {
               repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
-              console.log({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/file/?p="+responses[i].data[j].parent_dir+"/"+responses[i].data[j].name,repoid:repoid})
             }
             else{
               // repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:repoid+"/zip-task/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name,repoid:repoid})
               repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,repoid:repoid,getpath:repoid+"/dir/?parent_dir="+responses[i].data[j].parent_dir+"&dirents="+responses[i].data[j].name})
               // repoContent.push({name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:"/"+parent_dir+'/'+responses[i].data[j].name,repoid:repoid})
-              // console.log('test',{name:responses[i].data[j].name,type:responses[i].data[j].type,parent_dir:"/"+parent_dir,getpath:"/"+parent_dir+'/'+responses[i].data[j].name,repoid:repoid})
             }
 
           }
@@ -656,8 +519,7 @@ function handleClickCollabType(currentCollabType)
   setcurrentDir('/');
   setRefreshRepoContent(refreshRepoContent+1);
   setCollabType(currentCollabType);
-  console.log(collabType)
-
+  
 }
 
 function handleSubmit(){
@@ -699,8 +561,6 @@ function handleSubmit(){
       setSubmitStatus(true);
     })
     .catch(error => {
-      console.log("current job",job)
-      console.log(error)
       setErrorMessage(error);
     })
   }
@@ -710,7 +570,6 @@ function handleSubmit(){
 
     <h2>New job</h2>
 
-    {/* */}
       <h5>Hardware Platform</h5>
 
       <div>
@@ -737,7 +596,6 @@ function handleSubmit(){
 
       <h5>Code</h5>
 
-      {/* <AppBar position="static" color="default"> */}
         <Tabs
           value={tab}
           onChange={handleChangeTab}
@@ -754,7 +612,6 @@ function handleSubmit(){
           <Tab label="From the Drive"  icon={<StorageIcon />} {...a11yProps(2)} />
           <Tab label="Graphical model builder" disabled icon={<CreateIcon />} {...a11yProps(3)} />
         </Tabs>
-      {/* </AppBar> */}
       <TabPanel value={tab} index={0}>
          
       <div>
@@ -791,106 +648,79 @@ function handleSubmit(){
       <TabPanel value={tab} index={2}>
         <div>
 
-        <Button
-        onClick={handleClickOpen}
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        startIcon={<BackupIcon />}
-      >
-        Import Files or Folders
-      </Button>
-      
-        <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        fullWidth={ true } maxWidth={"xl"}
-      >
-        <DialogTitle id="alert-dialog-title">
-        <h5 style={{ display: 'inline' }} >{"Select files and/or folders: "}</h5>
-        <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
-          
-        </DialogTitle>
-        <DialogContent  >
-        <Button startIcon={<FolderSharedIcon />} variant={(collabType==="mine")?"contained":"outlined"} onClick={()=>{handleClickCollabType("mine")}} >
-        My libraries
-      </Button>
-      <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
-      Shared directories
-    </Button>
-        <DriveFilesExplorerImport RepoContent={FolderContent} 
-                                  currentDir={currentDir} 
-                                  updatecurrentDirAndopencode={updatecurrentDirAndopencode} 
-                                  backout={backout} 
-                                  checkedFiles={checkedFiles}
-                                  setCheckedFiles={setCheckedFiles}
-                                  sourceFiles={sourceFiles}
-                                  setSourceFiles={setSourceFiles}
-                                  setCollabType={setCollabType} ></DriveFilesExplorerImport>
-
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-          <Button onClick={importSelected}  color="success">
-            Import Selected
+          <Button
+            onClick={handleClickOpen}
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            startIcon={<BackupIcon />}
+          >
+            Import Files or Folders
           </Button>
-        </DialogActions>
-      </Dialog>
-  
-      {/* <Box sx={{ width: '100%' }}>
-      <Collapse in={openAlert}>
-        <Alert
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpenAlert(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 2 }}
-        >
-          Files imported successfully
-        </Alert>
-      </Collapse>
-  
-    </Box> */}
         
-       <Box>
-       <Paper elevation={(sourceFiles.length===0)?0:3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",marginTop:"1%"}} >
-       <List>
-       {sourceFiles.map(file=>(
-         <ListItem
-           secondaryAction={
-             <IconButton edge="end" aria-label="delete"              onClick={() => {
-              handleExcludeFile(file.name);
-            }}>
-               <DeleteIcon />
-             </IconButton>
-           }
-         >
-           <ListItemAvatar>
-             <Avatar>
-               <FolderIcon />
-             </Avatar>
-           </ListItemAvatar>
-           <ListItemText
-             primary={file.name}
-             secondary={file.size}
-           />
-         </ListItem>
-       ))}
-     </List>
-       
-       
-     </Paper> 
-       </Box>     
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={ true } maxWidth={"xl"}
+           >
+            <DialogTitle id="alert-dialog-title">
+              <h5 style={{ display: 'inline' }} >{"Select files and/or folders: "}</h5>
+              <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
+                
+            </DialogTitle>
+            <DialogContent  >
+              <Button startIcon={<FolderSharedIcon />} variant={(collabType==="mine")?"contained":"outlined"} onClick={()=>{handleClickCollabType("mine")}} >
+                My libraries
+              </Button>
+            <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
+                Shared directories
+            </Button>
+            <DriveFilesExplorerImport RepoContent={FolderContent} 
+                                      currentDir={currentDir} 
+                                      updatecurrentDirAndopencode={updatecurrentDirAndopencode} 
+                                      backout={backout} 
+                                      checkedFiles={checkedFiles}
+                                      setCheckedFiles={setCheckedFiles}
+                                      sourceFiles={sourceFiles}
+                                      setSourceFiles={setSourceFiles}
+                                      setCollabType={setCollabType} ></DriveFilesExplorerImport>
+
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Close</Button>
+              <Button onClick={importSelected}  color="success"> Import Selected </Button>
+            </DialogActions>
+          </Dialog>
+          
+          <Box>
+            <Paper elevation={(sourceFiles.length===0)?0:3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",marginTop:"1%"}} >
+              <List>
+                {sourceFiles.map(file=>(
+                  <ListItem
+                    secondaryAction={
+                      <IconButton edge="end" aria-label="delete"              onClick={() => {
+                        handleExcludeFile(file.name);
+                      }}>
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <FolderIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={file.name}
+                      secondary={file.size}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper> 
+          </Box>     
 
         </div>
       </TabPanel>
@@ -921,7 +751,6 @@ function handleSubmit(){
       <h5>Hardware Configuration</h5>
       
       <div>
-      {/* <AppBar position="static" color="default"> */}
       <TextField
           id="hw-config-field"
           label="Hardware config"
@@ -940,7 +769,6 @@ function handleSubmit(){
           onChange={handleHardwareConfig}
         />
 
-      {/* </AppBar> */}
       </div>
 
       <br/>
@@ -966,36 +794,6 @@ function handleSubmit(){
 
       <br/>
                 
-      {/* <h5>Input Files</h5>
-      <div>
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Add Files
-      </Button>
-
-      <DropzoneDialogBase
-        dialogTitle={dialogTitle()}
-        acceptedFiles={['image/*']}
-        fileObjects={fileObjects}
-        cancelButtonText={"cancel"}
-        submitButtonText={"submit"}
-        maxFileSize={5000000}
-        open={open}
-        onAdd={newFileObjs => {
-          console.log('onAdd', newFileObjs);
-          setFileObjects([].concat(fileObjects, newFileObjs));
-        }}
-        onDelete={deleteFileObj => {
-          console.log('onDelete', deleteFileObj);
-        }}
-        onClose={() => dialogTitle.setOpen(false)}
-        onSave={() => {
-          console.log('onSave', fileObjects);
-          dialogTitle.setOpen(false);
-        }}
-        showPreviews={true}
-        showFileNamesInPreview={true}
-      />
-    </div> */}
       <div>
       <Button
         variant="contained"
