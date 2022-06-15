@@ -436,19 +436,19 @@ useEffect(()=>{
 
 
       </div>
-      <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
+      {/* <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
        <Tooltip title="Copy output files to the Bucket">
         
        <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Export to the Bucket
          </Button> 
          </Tooltip>
 
-         <Box sx={style}>
+         <Box sx={style}> */}
          {/* <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} collab={job.collab_id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/> */}
-         </Box>
+         {/* </Box>
 
 
-      </div>
+      </div> */}
       </div>
               </div>
 
