@@ -173,7 +173,6 @@ export default function ExportToDrive(props) {
     // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://data-proxy.ebrains.eu/api/buckets/nmpi-testing-msenoville"
     // const rr = axios.get(ids_query_url, config2)
     // console.log(rr)
-    console.log(path)
     setDriveTarget(path)
     const response = await axios.get(url, config)
     setOpenAlertCopy(false)
@@ -214,7 +213,6 @@ export default function ExportToDrive(props) {
           break
         } 
       }
-      console.log(currentDir)
       handleCopy(currentDir)
       handleClose()
       setOpenAlertCopy(true)
@@ -343,7 +341,6 @@ export default function ExportToDrive(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {console.log(driveTarget.split('/').slice(2).join('/'))}
             <h4>Target repository <strong>/{driveTarget.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>
             <br></br>
           </DialogContentText>
