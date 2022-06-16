@@ -49,6 +49,9 @@ export default function DriveFilesExplorerImport(props) {
       filestorender.push(Files[i])
     }
     }
+    if(props.currentDir===""){
+      filestorender.sort((a, b) => a.name.normalize().localeCompare(b.name.normalize()))
+    }
     return filestorender
   }
   function isItemInArray(array, item) {
@@ -105,7 +108,9 @@ export default function DriveFilesExplorerImport(props) {
 
           
       <List sx={styleList} component="nav" aria-label="Reop">
-        {currentDir !=='/' &&  <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Back' />  </ListItem>}
+        {/* {currentDir !=='/' &&  <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Back' />  </ListItem>} */}
+        {currentDir !=='/' && currentDir.substring(0,currentDir.lastIndexOf("/"))!=='' && <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Back' />  </ListItem>}
+        {currentDir !=='/' && currentDir.substring(0,currentDir.lastIndexOf("/"))==='' && <ListItem button onClick={() => props.backout()}><ArrowBackIcon sx={styleIcon}></ArrowBackIcon  > <ListItemText primary='Select another Library/Collab' />  </ListItem>}
         {currentDirFliter(props.RepoContent,).map(d=>(
       
           <ListItem    >
@@ -113,7 +118,8 @@ export default function DriveFilesExplorerImport(props) {
           {(d.type ==="repo"||d.type ==="dir"||d.type ==="grepo") &&       <FolderIcon sx={styleIcon}></FolderIcon>      }
           {(d.type ==="file" && d.name.split('.').pop()!=="py") &&       <CodeIcon sx={styleIcon}></CodeIcon>        }
           {(d.type ==="file" && d.name.split('.').pop()==="py") &&       <CodeIcon sx={styleFileIcon}></CodeIcon>        }
-          <ListItemText primary={d.name} />
+          {currentDir =='/' && d.name==props.Collab && <ListItemText style={{ color: "blue" }} primary={d.name+' (current Collab)'} />  }
+          {d.name!==props.Collab && <ListItemText primary={d.name} /> }
           </ListItemButton>
 
           { (d.type !=="repo"&& d.type !=="grepo") && 

@@ -189,7 +189,7 @@ export default function CreateJob(props) {
   const [open, setOpen] = React.useState(false);
   const [openAlert, setOpenAlert] = React.useState(false);
   const [importFiles, setImportFiles] = React.useState(0);
-  const [collabType, setCollabType] = React.useState("mine");
+  const [collabType, setCollabType] = React.useState("group");
   const [refreshRepoContent, setRefreshRepoContent] = React.useState(0);
 
 
@@ -258,7 +258,9 @@ export default function CreateJob(props) {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [FolderContent, setFolderContent] = React.useState({});
   const [allRepos, setAllRepos] = React.useState([]);
-  const [currentDir,setcurrentDir]= React.useState('/')
+  const [currentDir,setcurrentDir]= React.useState(props.collab);
+  const [addDetail,setaddDetails]= React.useState('')
+
 
   useEffect(() => {
 
@@ -341,17 +343,24 @@ export default function CreateJob(props) {
       return
     }
     if (currentDir==="/"){    
-    setcurrentDir(currentDir+dir)
-    return
+      setcurrentDir(currentDir+dir)
+      if((currentDir+dir)===('/'+props.collab)) setaddDetails(' (current Collab)')
+      else setaddDetails(' ')
+      return
     }
     setcurrentDir(currentDir+"/"+dir)
+    if((currentDir+"/"+dir)===('/'+props.collab)) setaddDetails(' (current Collab)')
+    else setaddDetails(' ')
   }
   function backout(){
     if(currentDir.substring(0,currentDir.lastIndexOf("/").length!==0||currentDir.substring(0,currentDir.lastIndexOf("/"))==="")){
       setcurrentDir(currentDir.substring(0,currentDir.lastIndexOf("/")))
+      if(currentDir.substring(0,currentDir.lastIndexOf("/"))===('/'+props.collab)) setaddDetails(' (current Collab)')
+      else setaddDetails(' ')
       return null
     }
     setcurrentDir("/")
+    setaddDetails(' ')
   }
 
 
@@ -417,7 +426,9 @@ if (props.resubmit==="true")
 
 // drive part
    useEffect(() => {
- 
+    setcurrentDir('/'+props.collab)
+    setaddDetails(' (current Collab)')
+
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
     let config = {
       
@@ -519,7 +530,6 @@ function handleClickCollabType(currentCollabType)
   setcurrentDir('/');
   setRefreshRepoContent(refreshRepoContent+1);
   setCollabType(currentCollabType);
-  
 }
 
 function handleSubmit(){
@@ -668,6 +678,7 @@ function handleSubmit(){
             <DialogTitle id="alert-dialog-title">
               <h5 style={{ display: 'inline' }} >{"Select files and/or folders: "}</h5>
               <h5 style={{ color: 'blue',display: 'inline' }}>{currentDir}</h5>
+              <h5 style={{ display: 'inline' }}>{addDetail}</h5> 
                 
             </DialogTitle>
             <DialogContent  >
@@ -685,7 +696,8 @@ function handleSubmit(){
                                       setCheckedFiles={setCheckedFiles}
                                       sourceFiles={sourceFiles}
                                       setSourceFiles={setSourceFiles}
-                                      setCollabType={setCollabType} ></DriveFilesExplorerImport>
+                                      setCollabType={setCollabType}
+                                      Collab={props.collab} ></DriveFilesExplorerImport>
 
             </DialogContent>
             <DialogActions>
