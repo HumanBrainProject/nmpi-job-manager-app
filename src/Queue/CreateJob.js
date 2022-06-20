@@ -192,8 +192,34 @@ export default function CreateJob(props) {
   const [collabType, setCollabType] = React.useState("group");
   const [refreshRepoContent, setRefreshRepoContent] = React.useState(0);
 
+  const classes = useStyles();
+  const [checkedFiles, setCheckedFiles] = React.useState([]);
+  const [hw, set_hw] = React.useState('');
+  const [hwIsSelected, set_hwIsSelected] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
+  const [hwlabel, set_hwlabel] = React.useState('');
+  const [tab, setTab] = React.useState(0);
+  const [selectedtab, setSelectedTab] = React.useState('"code_editor"');
+  const [code, setCode] = React.useState("# write your code here");
+  const [configExample, setConfigExample] = React.useState('');
+  const [commExample, setCommExample] = React.useState('');
+  const [hardwareConfig, setHardwareConfig] = React.useState('');
+  const [command, setCommand] = React.useState('');
+  const [git, setGit] = React.useState('');
+  const [mymodel, setModel] = React.useState('');
+  const [tags, setTags] = React.useState([])
+  const [sourceFiles, setSourceFiles] = React.useState([])
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [FolderContent, setFolderContent] = React.useState({});
+  const [allRepos, setAllRepos] = React.useState([]);
+  const [currentDir,setcurrentDir]= React.useState('/'+props.collab);
+  const [addDetail,setaddDetails]= React.useState(' (current Collab)')
+
 
   const handleClickOpen = () => {
+    setRefreshRepoContent(refreshRepoContent+1);
+    setcurrentDir('/'+props.collab)
     setOpen(true);
   };
 
@@ -236,30 +262,6 @@ export default function CreateJob(props) {
     handleClose()
     setOpenAlert(true)
   }
-  
-  const classes = useStyles();
-  const [checkedFiles, setCheckedFiles] = React.useState([]);
-  const [hw, set_hw] = React.useState('');
-  const [hwIsSelected, set_hwIsSelected] = React.useState(false);
-  const [submitStatus, setSubmitStatus] = React.useState(false);
-  const [hasError, setHasError] = React.useState(false);
-  const [hwlabel, set_hwlabel] = React.useState('');
-  const [tab, setTab] = React.useState(0);
-  const [selectedtab, setSelectedTab] = React.useState('"code_editor"');
-  const [code, setCode] = React.useState("# write your code here");
-  const [configExample, setConfigExample] = React.useState('');
-  const [commExample, setCommExample] = React.useState('');
-  const [hardwareConfig, setHardwareConfig] = React.useState('');
-  const [command, setCommand] = React.useState('');
-  const [git, setGit] = React.useState('');
-  const [mymodel, setModel] = React.useState('');
-  const [tags, setTags] = React.useState([])
-  const [sourceFiles, setSourceFiles] = React.useState([])
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [FolderContent, setFolderContent] = React.useState({});
-  const [allRepos, setAllRepos] = React.useState([]);
-  const [currentDir,setcurrentDir]= React.useState(props.collab);
-  const [addDetail,setaddDetails]= React.useState('')
 
 
   useEffect(() => {
@@ -426,8 +428,11 @@ if (props.resubmit==="true")
 
 // drive part
    useEffect(() => {
-    setcurrentDir('/'+props.collab)
-    setaddDetails(' (current Collab)')
+    if (refreshRepoContent==0){
+      setcurrentDir('/'+props.collab)
+      setaddDetails(' (current Collab)')
+     }
+    console.log('curentdir', currentDir)
 
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
     let config = {
@@ -527,7 +532,8 @@ function handleClickCollabType(currentCollabType)
 {
 
   setFolderContent({});
-  setcurrentDir('/');
+  setcurrentDir('');
+  setaddDetails('');
   setRefreshRepoContent(refreshRepoContent+1);
   setCollabType(currentCollabType);
 }
@@ -686,7 +692,7 @@ function handleSubmit(){
                 My libraries
               </Button>
             <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
-                Shared directories
+                Shared libraries
             </Button>
             <DriveFilesExplorerImport RepoContent={FolderContent} 
                                       currentDir={currentDir} 

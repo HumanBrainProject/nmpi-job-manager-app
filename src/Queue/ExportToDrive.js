@@ -6,6 +6,8 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
 
+
+import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -20,11 +22,35 @@ import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {timeFormat,currentDate,currentDateFileFormat} from '../utils';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import GroupIcon from '@mui/icons-material/Group';
 
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    margin: theme.spacing(2),
+    backgroundColor: theme.palette.background.paper,
+  },
+  textField: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    width: 'auto',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
 export default function ExportToDrive(props) {
 
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [openAlertCopy, setOpenAlertCopy] = useState(false);
   const [openAlertDone, setOpenAlertDone] = useState(false);
@@ -35,37 +61,45 @@ export default function ExportToDrive(props) {
   const [allfiles, setAllFiles] = useState(true);
   const [size_error, setError] = useState(false);
   const [driveTarget, setDriveTarget] = React.useState("");
-
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    props.setDriveFilesExplorerStatus(false);
-  };
+  const [collabType, setCollabType] = React.useState("group");
+  const [refreshRepoContent, setRefreshRepoContent] = React.useState(0);
 
   const [FolderContent, setFolderContent] = React.useState({});
   //const [filesList, setfilesList] = React.useState({});
   let filesList =[];
-  const [currentDir,setcurrentDir]= React.useState('/')
-  const [addDetail,setaddDetails]= React.useState('')
+  const [currentDir,setcurrentDir]= React.useState('/'+props.collab);
+  const [addDetail,setaddDetails]= React.useState(' (current Collab)')
+
+
+  const handleClose = () => {
+    // setOpen(false);
+    props.setDriveFilesExplorerStatus(false);
+  };
+
+  function handleClickCollabType(currentCollabType)
+  {
+    setFolderContent({});
+    setcurrentDir('');
+    setaddDetails(' ')
+    setRefreshRepoContent(refreshRepoContent+1);
+    setCollabType(currentCollabType);
+  }
+
   //const [currentDirUrl,setcurrentDirUrl]= React.useState('')
   let currentDirUrl = ''
 
   function updatecurrentDirAndopencode(dir,type,getlink){
 
-    if(type==="file" && dir.split('.').pop()!=="py") {return}
-    if(type==="file"){
+    // if(type==="file" && dir.split('.').pop()!=="py") {return}
+    // if(type==="file"){
 
-      let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+getlink;
-      let config = {
-        headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-      };
+    //   let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+getlink;
+    //   let config = {
+    //     headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+    //   };
 
-      return
-    }
+    //   return
+    // }
     if (currentDir==="/"){    
       setcurrentDir(currentDir+dir)
       if((currentDir+dir)===('/'+props.collab)) setaddDetails(' (current Collab)')
@@ -88,70 +122,70 @@ export default function ExportToDrive(props) {
     setaddDetails(' ')
   }
 
-  function uploadFile(destination,singularFile,fileName){
+  // function uploadFile(destination,singularFile,fileName){
 
-    let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+currentDirUrl+'/upload-link/';
-    let config = {
-      headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-    };
+  //   let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/"+currentDirUrl+'/upload-link/';
+  //   let config = {
+  //     headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+  //   };
 
-    //let iterableFileslist = filesList
+  //   //let iterableFileslist = filesList
 
-    const FormData = require('form-data');
-    const fileData = new FormData() 
-    const newBlob = new Blob([singularFile.data], {
-      type: 'text/plain'
-    });
-
-
-    let currentFolder =currentDir.split('/').slice(2).join('/');
-
-    let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
-    if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
-
-    fileData.append("parent_dir", '/');
-    fileData.append("relative_path", relativePath);
-    fileData.append("replace", "1");
-    fileData.append("file",newBlob,fileName)
-
-    axios.get(query_url, config)
-      .then(function(res) {
-
-        let configPost = {
-          headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-        };
-
-        axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
-        }.catch((errPost)=>{
-        })
-        )
-      }).catch((err) =>{
-      })
-
-  }
+  //   const FormData = require('form-data');
+  //   const fileData = new FormData() 
+  //   const newBlob = new Blob([singularFile.data], {
+  //     type: 'text/plain'
+  //   });
 
 
+  //   let currentFolder =currentDir.split('/').slice(2).join('/');
 
-  function downloadFiles(destination){
-    let config = {
-      headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
-    };
-    let currentFilesList=[]
-    for ( const file of props.files){
-      let fileName= file.url.split('/').pop()
+  //   let relativePath= currentFolder+'/Exported_Job_'+props.jobId+'_'+currentDateFileFormat()
+  //   if (relativePath.indexOf('/') === 0){relativePath = relativePath.substring(1);}
+
+  //   fileData.append("parent_dir", '/');
+  //   fileData.append("relative_path", relativePath);
+  //   fileData.append("replace", "1");
+  //   fileData.append("file",newBlob,fileName)
+
+  //   axios.get(query_url, config)
+  //     .then(function(res) {
+
+  //       let configPost = {
+  //         headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+  //       };
+
+  //       axios.post("https://corsproxy-sa.herokuapp.com/"+res.data,fileData, configPost).then(function(res) {
+  //       }.catch((errPost)=>{
+  //       })
+  //       )
+  //     }).catch((err) =>{
+  //     })
+
+  // }
+
+
+
+  // function downloadFiles(destination){
+  //   let config = {
+  //     headers: {crossDomain: true , Authorization: "Bearer " + props.auth.token },
+  //   };
+  //   let currentFilesList=[]
+  //   for ( const file of props.files){
+  //     let fileName= file.url.split('/').pop()
     
-      axios.get("https://corsproxy-sa.herokuapp.com/"+file.url, config)
-        .then(function(res) {  
-          uploadFile(destination,res,fileName)
-          currentFilesList.push(res)
+  //     axios.get("https://corsproxy-sa.herokuapp.com/"+file.url, config)
+  //       .then(function(res) {  
+  //         uploadFile(destination,res,fileName)
+  //         currentFilesList.push(res)
 
-        })
+  //       })
 
-    } 
+  //   } 
 
-    filesList = currentFilesList
+  //   filesList = currentFilesList
  
-  }
+  // }
 
   const handleCloseResult = () => {
     setOpenResult(false);
@@ -220,8 +254,6 @@ export default function ExportToDrive(props) {
   }
 
   useEffect(() => {
-    setcurrentDir('/'+props.collab)
-    setaddDetails(' (current Collab)')
 
     let query_url = "https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos/";
     let config = {
@@ -250,7 +282,7 @@ export default function ExportToDrive(props) {
         let config2 = {
           headers: { Authorization: "Bearer " + props.auth.token },
         };
-        let ids_query_url2=query_url//+"/?type=group&type=mine"
+        let ids_query_url2=query_url+"/?type="+collabType
         // let ids_query_url="https://corsproxy-sa.herokuapp.com/" + "https://drive.ebrains.eu" + "/api2/repos" + "?nameContains=" + props.collab
         axios.get(ids_query_url2, config)
           .then(function(res) {
@@ -289,15 +321,25 @@ export default function ExportToDrive(props) {
 
       }).catch((err) => {console.log("Error: ", err.message) });
 
-    }, [props.DriveFilesExplorerStatus]);
-    
+    // }, [collabType, props.DriveFilesExplorerStatus, refreshRepoContent]);
+  }, [collabType, refreshRepoContent]);
+
+
     useEffect(() => 
       {
-
         setOpen(props.DriveFilesExplorerStatus)
-
       }, [props.DriveFilesExplorerStatus]);
 
+      useEffect(() =>
+      {
+        setRefreshRepoContent(refreshRepoContent+1);
+        if (refreshRepoContent==1){
+            setcurrentDir('/'+props.collab)
+            setaddDetails(' (current Collab)')
+        }
+      }
+      , [open]
+      );
 
     return (
       <div className="ExportToDrive">
@@ -315,10 +357,25 @@ export default function ExportToDrive(props) {
       <h5 style={{ display: 'inline' }}>{addDetail}</h5> 
 
       </DialogTitle>
+
       <DialogContent  >
-      {/* <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorer> */}
-      <DriveFilesExplorerExport RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorerExport>
+          <div style={{ display: "flex" }}>
+            <Button startIcon={<FolderSharedIcon />} variant={(collabType==="mine")?"contained":"outlined"} onClick={()=>{handleClickCollabType("mine")}} >
+                My libraries
+            </Button>
+            <Button startIcon={<GroupIcon />} variant={(collabType==="group")?"contained":"outlined"}  onClick={()=>{handleClickCollabType("group")}} >
+              Shared libraries
+            </Button>
+          </div>
+                {/* <DriveFilesExplorer RepoContent={FolderContent} currentDir={currentDir} updatecurrentDirAndopencode={updatecurrentDirAndopencode} backout={backout} Collab={props.collab}></DriveFilesExplorer> */}
+            <DriveFilesExplorerExport RepoContent={FolderContent} 
+                                      currentDir={currentDir} 
+                                      updatecurrentDirAndopencode={updatecurrentDirAndopencode} 
+                                      backout={backout}
+                                      setCollabType={setCollabType} 
+                                      Collab={props.collab}></DriveFilesExplorerExport>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
         <Button onClick={exportToDrive} autoFocus>
