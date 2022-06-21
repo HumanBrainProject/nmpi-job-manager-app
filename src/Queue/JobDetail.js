@@ -39,6 +39,7 @@ import { Link } from "react-router-dom";
 import { jobQueueServer } from "../globals-prod";
 import {timeFormat} from '../utils';
 import ExportToDrive from './ExportToDrive';
+import ExportToBucket from './ExportToBucket';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -50,6 +51,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Popover from '@mui/material/Popover';
 import DownloadIcon from '@mui/icons-material/Download';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
 
@@ -147,6 +155,8 @@ const style = {
 function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
+  const [copy2bucket, setCopy2Bucket] = React.useState(false);
+  const handleCopy2Bucket = () => setCopy2Bucket(true);
   let { collab_id,endpoint,id } = useParams();
   const [job, setJob] = useState({});
   const [comments, setComments] = useState([]);
@@ -160,6 +170,11 @@ function JobDetail(props) {
   const [editedCommentId, setEditedCommentId] = useState(0);
   const [openTagsEdit, setOpenTagsEdit] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openAlertCopy, setOpenAlertCopy] = useState(false);
+  const [openAlertDone, setOpenAlertDone] = useState(false);
+  const [openAlertSize, setOpenAlertSize] = useState(false);
+  const [openAlertCopy2, setOpenAlertCopy2] = useState(false);
+  const [openAlertDone2, setOpenAlertDone2] = useState(false);
   const openPopover = Boolean(anchorEl);
   const popoverid = open ? 'simple-popover' : undefined;
   let queueUrl= `${jobQueueServer}/api/v2/` +`/queue/${id}`;
@@ -423,32 +438,143 @@ useEffect(()=>{
           </Button> </Link>
           </Tooltip>
        </div>
-       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}} key='drive' className="drive-button">
+       <Box sx={style}>
+
        <Tooltip title="Copy output files to the Drive">
         
        <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Export to the Drive
          </Button> 
          </Tooltip>
 
-         <Box sx={style}>
-         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} collab={job.collab_id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/>
+        <ExportToDrive auth={props.auth} 
+                      files={job.output_data} 
+                      jobId={job.id} collab={job.collab_id} 
+                      DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}
+                      openAlertCopy={openAlertCopy} setOpenAlertCopy={setOpenAlertCopy}
+                      openAlertDone={openAlertDone} setOpenAlertDone={setOpenAlertDone}
+                      openAlertSize={openAlertSize} setOpenAlertSize={setOpenAlertSize}/>
+        <Collapse in={openAlertCopy} >
+            <Alert severity="info" 
+              icon={<CircularProgress size="1.3rem" />}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpenAlertCopy(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+            File copy in progress
+            </Alert>
+        </Collapse>
+        <Collapse in={openAlertDone} >
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertDone(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+          File copy done with success
+          </Alert>
+        </Collapse>
+        <Collapse in={openAlertSize} >
+          <Alert
+            severity="warning"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertSize(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Some files exceed the size limit of 1 GB. 
+            Please use the Bucket. 
+          </Alert>
+        </Collapse>
          </Box>
 
 
       </div>
-      {/* <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
-       <Tooltip title="Copy output files to the Bucket">
+      
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}} key='bucket' className="bucket-button">
+       <Box sx={style}>
+
+       <Tooltip title="Copy output files to the Collab's Bucket">
         
-       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Export to the Bucket
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleCopy2Bucket}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Export to the Bucket
          </Button> 
          </Tooltip>
 
-         <Box sx={style}> */}
-         {/* <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} collab={job.collab_id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/> */}
-         {/* </Box>
+         <ExportToBucket auth={props.auth} 
+                        files={job.output_data} 
+                        jobId={job.id} collab={job.collab_id} 
+                        copy2bucket={copy2bucket} // setDriveFilesExplorerStatus={setOpen}
+                        openAlertCopy={openAlertCopy2} setOpenAlertCopy={setOpenAlertCopy2}
+                        openAlertDone={openAlertDone2} setOpenAlertDone={setOpenAlertDone2}/>
+        {console.log(openAlertCopy2)}
+         <Collapse in={openAlertCopy2} >
+            <Alert severity="info" 
+              icon={<CircularProgress size="1.3rem" />}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpenAlertCopy2(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+            File copy in progress
+            </Alert>
+        </Collapse>
+        <Collapse in={openAlertDone2} >
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertDone2(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+          File copy done with success
+          </Alert>
+        </Collapse>
+        </Box>
 
 
-      </div> */}
+      </div>
       </div>
               </div>
 

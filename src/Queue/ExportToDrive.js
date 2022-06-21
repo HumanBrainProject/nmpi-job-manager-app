@@ -52,9 +52,9 @@ export default function ExportToDrive(props) {
 
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [openAlertCopy, setOpenAlertCopy] = useState(false);
-  const [openAlertDone, setOpenAlertDone] = useState(false);
-  const [openAlertSize, setOpenAlertSize] = useState(false);
+  // const [openAlertCopy, setOpenAlertCopy] = useState(false);
+  // const [openAlertDone, setOpenAlertDone] = useState(false);
+  // const [openAlertSize, setOpenAlertSize] = useState(false);
   const [openResult, setOpenResult] = useState(false);
   const [existingFiles, setExistingFiles] = useState([])
   const [oversizeFiles, setOversizeFile] = useState([])
@@ -209,8 +209,8 @@ export default function ExportToDrive(props) {
     // console.log(rr)
     setDriveTarget(path)
     const response = await axios.get(url, config)
-    setOpenAlertCopy(false)
-    setOpenAlertDone(true)
+    props.setOpenAlertCopy(false)
+    props.setOpenAlertDone(true)
     for (let i = 0; i < response.data[1].length; i++) {
       if (response.data[1][i] != 'Copied') {
         setAllFiles(false)
@@ -220,8 +220,8 @@ export default function ExportToDrive(props) {
         else{
           setError(true)
           oversizeFiles.push([response.data[0][i], parseFloat(response.data[1][i][1]).toFixed(2)])
-          setOpenAlertDone(false)
-          setOpenAlertSize(true)
+          props.setOpenAlertDone(false)
+          props.setOpenAlertSize(true)
         }
       }
     }
@@ -249,7 +249,7 @@ export default function ExportToDrive(props) {
       }
       handleCopy(currentDir)
       handleClose()
-      setOpenAlertCopy(true)
+      props.setOpenAlertCopy(true)
 
   }
 
@@ -398,7 +398,8 @@ export default function ExportToDrive(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <h4>Target repository <strong>/{driveTarget.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>
+            {driveTarget.split('/').length == 2 && <h4>Target repository <strong>/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>}
+            {driveTarget.split('/').length > 2 && <h4>Target repository <strong>/{driveTarget.split('/').slice(2).join('/')}/job_{props.jobId}</strong> in Library <strong>{props.collab}</strong></h4>}
             <br></br>
           </DialogContentText>
             {(() => {
@@ -447,66 +448,6 @@ export default function ExportToDrive(props) {
           </Button>
         </DialogActions>
       </Dialog>  
-    <Collapse in={openAlertCopy}>
-      <Alert
-        severity="info"
-        icon={<CircularProgress size="1.3rem" />}
-        action={
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            size="small"
-            onClick={() => {
-              setOpenAlertCopy(false);
-            }}
-          >
-            <CloseIcon fontSize="inherit" />
-          </IconButton>
-        }
-      >
-      File copy in progress
-      </Alert>
-    </Collapse>
-    <Collapse in={openAlertDone}>
-      <Alert
-        severity="success"
-        action={
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            size="small"
-            onClick={() => {
-              setOpenAlertDone(false);
-            }}
-          >
-            <CloseIcon fontSize="inherit" />
-          </IconButton>
-        }
-      >
-       File copy done with success
-      </Alert>
-    </Collapse>
-    <Collapse in={openAlertSize}>
-      <Alert
-        severity="warning"
-        action={
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            size="small"
-            onClick={() => {
-              setOpenAlertSize(false);
-            }}
-          >
-            <CloseIcon fontSize="inherit" />
-          </IconButton>
-        }
-      >
-        Some files exceed the size limit of 1 GB. 
-        Please use the Bucket. 
-      </Alert>
-    </Collapse>
-
       </div>
     );
   }
