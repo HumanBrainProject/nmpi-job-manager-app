@@ -1,7 +1,5 @@
 import React from 'react';
 
-import DriveFilesExplorerExport from'./DriveFilesExplorerExport'
-
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
@@ -13,17 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import LinearProgress from '@mui/material/LinearProgress'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton';
-import Collapse from '@mui/material/Collapse';
-import CloseIcon from '@mui/icons-material/Close';
-import { useState, useRef, useEffect, useCallback } from 'react'
-import {timeFormat,currentDate,currentDateFileFormat} from '../utils';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import GroupIcon from '@mui/icons-material/Group';
+import { jobQueueServer }  from "../globals-prod";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,7 +69,7 @@ export default function ExportToBucket(props) {
 
   const handleCopy = async(path) =>{
     let target = 'bucket'
-    const url = 'https://127.0.0.1:8000/copydata/' + target + '/' + `${props.jobId}`;
+    const url = {jobQueueServer} + '/copydata/' + target + '/' + `${props.jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token},
                     params: {
                       path: path
