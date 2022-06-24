@@ -441,13 +441,13 @@ onCollabChange= async (newValue)=>{
               <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
               <Autocomplete
 
-              id="Filter by platform"
+              id="Filter by system"
               options={["BrainScaleS","SpiNNaker"]}
               getOptionLabel={(option) => option}
               defaultValue={null}
               onChange={(event, newValue)=> { console.log("the new value is "+newValue);this.filterJobs(this.state.statusFilter,newValue);}}
 
-              renderInput={(params) => <TextField {...params} label="Filter by platform" variant="outlined" />}
+              renderInput={(params) => <TextField {...params} label="Filter by system" variant="outlined" />}
               />
 
               </div>
