@@ -4,13 +4,11 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { useForm, Controller } from "react-hook-form";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
 
 import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CodeIcon from '@material-ui/icons/Code';
@@ -20,27 +18,16 @@ import CreateIcon from '@material-ui/icons/Create';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import axios from 'axios';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Editor from "@monaco-editor/react";
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { DropzoneDialogBase } from 'material-ui-dropzone';
+import { useEffect } from 'react'
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import CancelIcon from '@material-ui/icons/Cancel';
-import Icon from '@material-ui/core/Icon';
 import { jobQueueServer, hw_options } from "../globals";
 import {
     useParams
   } from "react-router-dom";
-
-
-const ebrainsCollabUrl = "https://validation-v2.brainsimulation.eu/";
-// const ebrainsCollabUrl = "https://wiki.ebrains.eu/rest/v1/";
 
 
 function TabPanel(props) {

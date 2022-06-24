@@ -1,9 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import { MdSearch, MdAddCircle, MdRefresh } from 'react-icons/md';
+import { MdAddCircle } from 'react-icons/md';
 import Button from '@material-ui/core/Button';
 import { Link } from "react-router-dom";
-import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRedo } from '@fortawesome/free-solid-svg-icons'
 import TextField from '@material-ui/core/TextField';
@@ -11,21 +10,17 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import FaceIcon from '@material-ui/icons/Face';
-import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { createMuiTheme, makeStyles, ThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import red from '@material-ui/core/colors/red';
-import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import CodeIcon from '@material-ui/icons/Code';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import StorageIcon from '@material-ui/icons/Storage';
 import Table from '@material-ui/core/Table';
@@ -37,7 +32,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
-import { withRouter } from 'react-router-dom';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import { timeFormat,currentDate } from '../utils';
 import { jobQueueServer, validationServer } from "../globals";
@@ -440,7 +434,7 @@ onCollabChange= async (newValue)=>{
               display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
               <Tooltip title="Reload Jobs">
               <Button style={{ marginLeft :"1%" ,height: "100%" ,
-              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
+              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
               </Button>
               </Tooltip>
               </div>
@@ -486,7 +480,7 @@ onCollabChange= async (newValue)=>{
                           <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary ">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
+                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
                            </Button>
                            </Tooltip>
                            </StyledTableCell>
@@ -517,7 +511,7 @@ onCollabChange= async (newValue)=>{
                           this.state.filteredJobs.slice(this.state.page * this.state.rowsPerPage,this.state.page * this.state.rowsPerPage +this.state.rowsPerPage ).map((job,index) =>
                           // if(this.state.jobs.tags==this.selectedTag){
                             // used striped rows shading
-                            <TableRow    key={job.id} hover='true' style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
+                            <TableRow    key={job.id} hover={true} style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
 
                             <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
                             <StyledTableCell   component="td" scope="row"  >
@@ -564,7 +558,7 @@ onCollabChange= async (newValue)=>{
 
 
 
-                    <div Style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
+                    <div style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
                     <TablePagination
 
                     component="div"
