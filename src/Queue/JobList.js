@@ -132,7 +132,7 @@ class JobList extends React.Component {
       currentCollab:'neuromorphic-testing-private',
       collabList:[],
       page :0,
-      rowsPerPage:10,
+      rowsPerPage:20,
       orderBy:'jobID',
       order:'desc',
       filterBy:'',
@@ -562,7 +562,7 @@ onCollabChange= async (newValue)=>{
                     <TablePagination
 
                     component="div"
-                    rowsPerPageOptions={[10,15,20,50]}
+                    rowsPerPageOptions={[10,20,50,100]}
                     count={this.state.filteredJobs.length}
                     rowsPerPage={this.state.rowsPerPage}
                     page={this.state.page}
