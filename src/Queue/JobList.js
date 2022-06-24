@@ -34,7 +34,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
 import { timeFormat,currentDate } from '../utils';
-import { jobQueueServer, validationServer } from "../globals";
+import { hw_options, jobQueueServer, validationServer } from "../globals";
 
 const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
 const baseQueueUrl = jobQueueServer + '/api/v2/queue/?collab_id=';
@@ -442,7 +442,7 @@ onCollabChange= async (newValue)=>{
               <Autocomplete
 
               id="Filter by system"
-              options={["BrainScaleS","SpiNNaker"]}
+              options={hw_options}
               getOptionLabel={(option) => option}
               defaultValue={null}
               onChange={(event, newValue)=> { console.log("the new value is "+newValue);this.filterJobs(this.state.statusFilter,newValue);}}
