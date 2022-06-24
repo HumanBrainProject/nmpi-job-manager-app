@@ -9,7 +9,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm ci --silent
+RUN npm ci --silent --legacy-peer-deps
 COPY . ./
 COPY ./src/globals-staging.js ./src/globals.js
 RUN npm run build
