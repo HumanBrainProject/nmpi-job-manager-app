@@ -33,8 +33,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import WatchLaterIcon from '@material-ui/icons/WatchLater';
-import { timeFormat,currentDate } from '../utils';
 import { hw_options, jobQueueServer, validationServer } from "../globals";
+import {timeFormat,currentDate,isItemInArray} from '../utils';
 
 const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
 const baseQueueUrl = jobQueueServer + '/api/v2/queue/?collab_id=';
@@ -138,40 +138,41 @@ class JobList extends React.Component {
       filterBy:'',
       statusFilter:null,
       hardwareSystemFilter:null,
+      tagsFilter:[],
     }
     this.routeChange = this.routeChange.bind(this);
 
   }
 
   getTagsList = async()=> {
-    const tagsUrl = baseUrl + 'tags/?collab_id=' + this.props.collab;
+    const tagsUrl = `${jobQueueServer}/api/v2/tags/?collab_id=${this.props.collab}`;
     const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
+    let availableTags = [];
     await axios.get(tagsUrl, config)
         .then(res => {
-          let availableTags = [];
+
           res.data.objects.forEach(tag => {
-              console.log(tag.name);
               availableTags.push(tag.name);
               }
           );
           availableTags.sort();
-          console.log(availableTags);
-          this.setState({
-            tagList: availableTags.map(String)
-          });
+          console.log(availableTags.map(String));
+
             }
             )
         .catch(error => {
           console.log(error)
           this.setState({errorMsg: 'Error retreiving data'})
         })
-
-        console.log('---taglist?---', this.tagList)
+        this.setState({
+          tagList: availableTags.map(String)
+        });
+        console.log('---taglist?---', this.state.tagList)
 }
 
 
-async filterJobs(statusFilter,hardwareSystemFilter){
-
+async filterJobs(statusFilter,hardwareSystemFilter,tagsFilter){
+let currentFilteredJobs=this.state.jobs
     function isStatus(x) {
 
       return x.status===statusFilter;
@@ -181,69 +182,59 @@ async filterJobs(statusFilter,hardwareSystemFilter){
     return String(x.hardware_platform)===hardwareSystemFilter;
 
   }
+  function isTagged(x) {
+    for(const tag of tagsFilter)
 
-  if ((statusFilter===null )  && (hardwareSystemFilter===null ))
+    {
+      let index=isItemInArray(x.tags,tag)
+      if (index===-1){return false}
+
+
+    }
+    return true
+
+  }
+
+
+if (statusFilter!==null )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isStatus);
+
+}
+
+if (hardwareSystemFilter!==null )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isHardware);
+
+}
+if (tagsFilter!==[] )
+{
+  currentFilteredJobs = currentFilteredJobs.filter(isTagged);
+
+}
+this.setState({
+  filteredJobs: currentFilteredJobs,
+
+
+});
+
+
+  }
+
+
+  handleReload ()
+
   {
 
 
+    this.fetchData();this.setState({refreshState:true,
+      statusFilter:null,
+      hardwareSystemFilter:null,
+      tagsFilter:[],
 
-    await this.setState({
+    });
 
-    filteredJobs: this.state.jobs,
-    hardwareSystemFilter:null,
-    statusFilter:null,
-  });
-
-
-  }
-  else {
-
-    if (statusFilter===null ) {
-      await this.setState({
-        statusFilter:null,
-        filteredJobs: this.state.jobs,
-      });
-
-
-     }
-
-     if (hardwareSystemFilter===null ) {
-      console.log("here null hardware")
-      await this.setState({
-        hardwareSystemFilter:null,
-        filteredJobs: this.state.jobs,
-      });
-
-
-     }
-    if (statusFilter!==null )
-  {var filteredJobsByStatus;
-    filteredJobsByStatus = this.state.filteredJobs.filter(isStatus);
-  await this.setState({
-    filterBy: "status",
-    filteredJobs: filteredJobsByStatus,
-    statusFilter:statusFilter,
-
-  });
-  }
-
-  if (hardwareSystemFilter!==null )
-  {var filteredJobsByStatusByHard;
-
-    filteredJobsByStatusByHard = this.state.filteredJobs.filter(isHardware);
-  await this.setState({
-    filterBy: "hardware",
-    filteredJobs: filteredJobsByStatusByHard,
-    hardwareSystemFilter:hardwareSystemFilter,
-
-  });
-  console.log(this.state.hardwareSystemFilter)
-  }
-
-
-  }
-  }
-
+  };
   routeChange(id) {
     let path = '/'+String(id);
     this.props.history.push(path);
@@ -282,7 +273,6 @@ handleChangeRowsPerPage = (event) => {
  let nextRowsPerPage =parseInt(event.target.value, 10);
  this.setState({rowsPerPage:nextRowsPerPage});
  this.setState({page:0});
- //let currEmptyRows = this.state.rowsPerPage - Math.min(this.state.rowsPerPage, rows.length - page * rowsPerPage);
 };
 
 sortData = (sortBy, sortOrder) => {
@@ -303,21 +293,6 @@ sortData = (sortBy, sortOrder) => {
        }
      };
      break;
-/*     case "creator":
-     compareFn = (i, j) => {
-       var indexOfI = monthMap.indexOf(i.bmonth);
-       var indexOfJ = monthMap.indexOf(j.bmonth);
-       if (indexOfI < indexOfJ) {
-         return sortOrder === "asc" ? -1 : 1;
-       } else {
-         if (indexOfI > indexOfJ) {
-           return sortOrder === "asc" ? 1 : -1;
-         } else {
-           return 0;
-         }
-       }
-     };
-     break; */
    default:
      break;
  }
@@ -366,9 +341,6 @@ requestSort(pSortBy) {
       var date = mydate.toString("jj/MM/yyyy");
       console.log("date : " + date);
       this.setState({date: date});
-      // this.state.jobs.map(job => {
-      //   handleTags(job, this.tagList)
-      // })
       console.log(this.state.date)
       this.setState({refreshState:false});
       this.setState({refreshDate:fetchDataDate})
@@ -409,12 +381,11 @@ onCollabChange= async (newValue)=>{
 }
 
   async componentDidMount(){
-    //this.setState({authToken: this.props.auth.token});
     await this.getCollabList();
     if (this.props.collab) {
       await this.fetchData();
     }
-
+    this.getTagsList();
     console.log(this.state.collabList);
 
 
@@ -433,11 +404,38 @@ onCollabChange= async (newValue)=>{
     <div style={{ marginLeft :"1%" ,height: "60%" ,
               display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
               <Tooltip title="Reload Jobs">
-              <Button style={{ marginLeft :"1%" ,height: "100%" ,
+              <Button disabled={this.state.refreshState} style={{ marginLeft :"1%" ,height: "100%" ,
               display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
               </Button>
               </Tooltip>
               </div>
+
+              <div style={{ width: 400 ,display:"inline-block",float:"right",marginRight:"1%",marginBottom:"1%"}}>
+
+              <Autocomplete
+              multiple
+              id="Filter by tags"
+
+              options={this.state.tagList}
+              getOptionLabel={(option) => option}
+              defaultValue={[]}
+              onChange={(event, newValue)=> {
+                this.setState({
+                  tagsFilter: newValue,
+
+
+                });
+
+
+                this.filterJobs(this.state.statusFilter,this.state.hardwareSystemFilter,newValue);}}
+
+              renderInput={(params) => <TextField {...params} label="Filter by tags" variant="outlined"
+               />}
+              />
+
+              </div>
+
+
               <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
               <Autocomplete
 
@@ -445,7 +443,15 @@ onCollabChange= async (newValue)=>{
               options={hw_options}
               getOptionLabel={(option) => option}
               defaultValue={null}
-              onChange={(event, newValue)=> { console.log("the new value is "+newValue);this.filterJobs(this.state.statusFilter,newValue);}}
+              onChange={(event, newValue)=> {
+                this.setState({
+                  hardwareSystemFilter: newValue,
+
+
+                });
+
+
+                this.filterJobs(this.state.statusFilter,newValue,this.state.tagsFilter);}}
 
               renderInput={(params) => <TextField {...params} label="Filter by system" variant="outlined" />}
               />
@@ -458,7 +464,14 @@ onCollabChange= async (newValue)=>{
               options={["finished","error","submitted","running"]}
               getOptionLabel={(option) => option}
               defaultValue={null}
-              onChange={(event, newValue)=> { this.filterJobs(newValue,this.state.hardwareSystemFilter);}}
+              onChange={(event, newValue)=> {
+                this.setState({
+                  statusFilter: newValue,
+
+
+                });
+
+                this.filterJobs(newValue,this.state.hardwareSystemFilter,this.state.tagsFilter);}}
 
               renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
               />
@@ -480,7 +493,7 @@ onCollabChange= async (newValue)=>{
                           <Link to="/new" ><MdAddCircle /></Link>
                           </Tooltip>
                           <Tooltip title="Reload Jobs">
-                          <Button onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
+                          <Button disabled={this.state.refreshState} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
                            </Button>
                            </Tooltip>
                            </StyledTableCell>

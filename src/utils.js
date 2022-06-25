@@ -33,3 +33,19 @@ export function currentDateFileFormat()
     + currentdate.getSeconds();
 
 }
+
+export function isItemInArray(array, item) {
+  for (var i = 0; i < array.length; i++) {
+    var count=0;
+    for (var j = 0; j < item.length; j++) { 
+
+      if (array[i][j] === item[j]) {
+            count++;
+        }
+        if(count===item.length)
+        {return i; }
+      }
+  }
+
+  return -1;   // Not found
+}

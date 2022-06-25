@@ -415,7 +415,7 @@ function handleSubmit(){
           InputLabelProps={{
             shrink: true,
           }}
-          loatingLabelText="MultiLine and FloatingLabel"
+          floatingLabelText="MultiLine and FloatingLabel"
           autoFocus = {false}
           multiline
           variant="outlined"
