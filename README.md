@@ -1,6 +1,6 @@
 # Job Manager app (version 2) for the EBRAINS Neuromorphic Computing Service
 
-This app is currently in development and has not yet been deployed.
+Available online at https://job-manager.hbpneuromorphic.eu and as an app in the EBRAINS Collaboratory.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
