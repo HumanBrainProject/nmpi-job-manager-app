@@ -395,6 +395,7 @@ function handleSubmit(){
             shrink: true,
           }}
           variant="outlined"
+          value={command}
           onChange={handleCommand}
         />
       </div>

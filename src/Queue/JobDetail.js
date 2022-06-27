@@ -7,7 +7,7 @@ import {
 import { makeStyles } from '@material-ui/core';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
@@ -25,7 +25,6 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import DescriptionIcon from '@material-ui/icons/Description';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
 import LaunchIcon from '@material-ui/icons/Launch';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import List from '@material-ui/core/List';
@@ -44,12 +43,16 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Popover from '@mui/material/Popover';
+import Autocomplete from '@mui/material/Autocomplete';
 import DownloadIcon from '@mui/icons-material/Download';
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
+
+
+function extractFileNameFromUrl(url) {
+  return url.substring(url.lastIndexOf('/')+1)
+};
+
 
 const theme = createMuiTheme({
   palette: {
@@ -147,6 +150,7 @@ function JobDetail(props) {
   const handleOpen = () => setOpen(true);
   let { id } = useParams();
   const [job, setJob] = useState({comments: []});
+  const [comments, setComments] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [editedTagsList, seteditedTagsList] = useState([]);
   const [log, setLog] = useState(null);
@@ -156,17 +160,6 @@ function JobDetail(props) {
   const [openCommentEdit, setOpenCommentEdit] = useState(false);
   const [editedCommentId, setEditedCommentId] = useState(0);
   const [openTagsEdit, setOpenTagsEdit] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const openPopover = Boolean(anchorEl);
-  const popoverid = open ? 'simple-popover' : undefined;
-
-  const handlePopoverClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
 
   function compareByTimeStamp( a, b ) {
     if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
@@ -178,10 +171,15 @@ function JobDetail(props) {
     return 0;
   }
 
-function handlesubmit(){
+function handleSubmitComment(){
   console.log("comment ",commentField)
   const jobUrl = job.resource_uri;
 
+  let commentData = {
+    content: commentField,
+    job: jobUrl,
+    user: props.auth.tokenParsed["preferred_username"]
+  };
   const options = {
     method: 'POST',
     url: `${jobQueueServer}/api/v2/comment/`,
@@ -189,17 +187,15 @@ function handlesubmit(){
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + props.auth.token,
     },
-    data: {
-      content: commentField,
-      job: jobUrl,
-      user: props.auth.tokenParsed["preferred_username"]
-    }
+    data: commentData
   };
 
   axios.request(options).then(function (response) {;
     setCommentField("");
-    console.log(response.data);
-    job.comments.push(response.data);
+    commentData["created_time"] = Date.now();
+    let updatedComments = [...job.comments];
+    updatedComments.push(commentData);
+    setComments(updatedComments);
   }).catch(function (error) {
     console.error(error);
   });
@@ -209,17 +205,15 @@ function handlesubmit(){
 function handleAddTag()
 {
   let requestUrl = `${jobQueueServer}${job.resource_uri}`;
-
+  job.tags = [...editedTagsList];
   const options = {
-    method: 'patch',
+    method: 'put',
     url: requestUrl,
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + props.auth.token,
     },
-    data: {
-tags:[...job.tags,...editedTagsList],
-    }
+    data: job
   };
 
   axios.request(options).then(function (response) {
@@ -254,12 +248,18 @@ function handleEditcomment()
   };
 
   axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+
+    let updatedComments = [...comments];
+    updatedComments.forEach((comment) => {
+      if (comment.id === editedCommentId) {
+        comment.content = editedCommentField;
+      }
+    });
+    setComments(updatedComments);
     setEditedCommentField("");
-    console.log(response.data);
   }).catch(function (error) {
     console.error(error);
   });
-
 
 }
 
@@ -275,15 +275,23 @@ function handleEditcomment()
 
     axios(resultUrl, config)
     .then((result)=>{
+        console.log(result.data);
         setJob(result.data);
-        console.log(result.data)
+        if (result.data.comments) {
+          result.data.comments.sort(compareByTimeStamp);
+          setComments(result.data.comments);
+        }
     })
     .catch((error)=>{
+      console.log(error);
       axios(queueUrl, config)
       .then((result)=>{
-        result.data.comments.sort(compareByTimeStamp);
+        console.log(result.data);
         setJob(result.data);
-        console.log(result.data)
+        if (result.data.comments) {
+          result.data.comments.sort(compareByTimeStamp);
+          setComments(result.data.comments);
+        }
       })
       .catch((error) => {
         console.log(error)
@@ -378,7 +386,7 @@ useEffect(()=>{
 <div style={{ float: 'left', paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%"}} >
         <div style={{  paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
         <Tooltip title="Edit & Resubmit">
-        <Link to={'/'+job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
+        <Link to={'/'+job.id+'/resubmit'}> <Button  style={{textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Create a new job based on this one
           </Button> </Link>
           </Tooltip>
        </div>
@@ -394,23 +402,14 @@ useEffect(()=>{
   alignItems="flex-start"
 >
 
-<Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
-
-              <Chip className={classes.chip_styling}
-
-                label={"Tags:"}
-
-              />
-
-            </Grid>
 
 
             {job.tags?.map((data) => {
 
               return (
-                <Grid item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+                <Grid key={data} item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
 
-                  <Chip
+                  <Chip size="small"
                   className={classes.chip_styling}
                     icon={<LocalOfferIcon sx={{ color: "#FFFFFF" }} />}
                     label={data}
@@ -423,11 +422,15 @@ useEffect(()=>{
 
             <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
 
-            <Chip className={classes.chip_styling}
-            icon={<AddCircleIcon sx={{ color: "#FFFFFF" }} />}
+            <Button
+            variant="contained"
+            size="small"
+            style={{textTransform: 'none'}}
+            startIcon={<EditIcon sx={{ color: "#FFFFFF" }} />}
             onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}}
-              label="Add"
-            />
+            >
+              Edit tags
+            </Button>
 
           </Grid>
 
@@ -456,13 +459,14 @@ useEffect(()=>{
             fullWidth={ true } maxWidth={"xl"}
             >
             <DialogTitle id="alert-dialog-title">
-            <h5 style={{ display: 'inline' }} >{"Add a tag: "}</h5>
+            <h5 style={{ display: 'inline' }} >{"Add or remove tags: "}</h5>
 
             </DialogTitle>
             <DialogContent  >
             <Autocomplete
             style={{marginTop:"1%"}}
             multiple
+            freeSolo
             id="Tag"
 
             options={availableTags}
@@ -470,11 +474,11 @@ useEffect(()=>{
             defaultValue={editedTagsList??[]}
             onChange={(event, newValue)=> {
 
-              seteditedTagsList([...editedTagsList,newValue]);
+              seteditedTagsList(newValue);
 
             }}
 
-            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"   onChange={console.log(availableTags)}
+            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"
              />}
             />
 
@@ -482,9 +486,9 @@ useEffect(()=>{
 
             </DialogContent>
             <DialogActions>
-              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);;console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
-              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);console.log("test")/* handleEditComment */}}  color="success">
-                Add
+              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);}}>Cancel</Button>
+              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);}}  color="success">
+                Save changes
               </Button>
             </DialogActions>
             </Dialog>
@@ -500,32 +504,11 @@ useEffect(()=>{
         {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =>
 
 
-        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}}>
-        <div style={{display:"inline-block",float:"left"}}>
-        <Button style={{  backgroundColor: '#404188',
-    color:'#FFFFFF', textTransform: 'none',width:"100%"}} variant="contained" onClick={handlePopoverClick}>
-         <AttachFileIcon />
-
-        {"Output file "+(index+1)} </Button>
-        <Popover
-  id={popoverid}
-  open={openPopover}
-  anchorEl={anchorEl}
-  onClose={handlePopoverClose}
-  anchorOrigin={{
-    vertical: 'bottom',
-    horizontal: 'left',
-  }}
->
-  <Typography sx={{ p: 2 }}> {String(out_file.url)}</Typography>
-</Popover>
-
-
-</div>
+        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}} key={out_file.url}>
 <div style={{display:"inline-block",float:"left" }}>
         <Button style={{  backgroundColor: '#2F3178',
     color:'#FFFFFF', textTransform: 'none',width:"100%",}} variant="contained" >
-
+{extractFileNameFromUrl(out_file.url)}
 <a style={{textTransform:'none',color:'#FFFFFF',textDecoration:'none',}} href= {String(out_file.url)} >
 
 <DownloadIcon />
@@ -633,7 +616,7 @@ useEffect(()=>{
     </AccordionDetails>
   </Accordion>
 
-  <Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
+  <Box component="span" marginTop="3%" display="block" fontSize="h5.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
 
 </div>
 <div>
@@ -664,7 +647,7 @@ useEffect(()=>{
 
 
   <Button
-  onClick={handlesubmit}
+  onClick={handleSubmitComment}
   variant="contained"
   style={{marginBottom:"1%",textTransform: 'none',}}
   className={classes.button}
@@ -679,25 +662,24 @@ useEffect(()=>{
 
 
 
-  {job.comments.map ((comment)=> (
-  <div >
+  {comments.map ((comment)=> (
+  <div key={comment.id}>
   <Paper elevation={3} className={classes.comments_panel} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"
 
 }} >
   <Grid container wrap="nowrap" spacing={2}  >
   <Grid item>
-    <Avatar alt="Remy Sharp" src={imgLink} />
+    <Avatar src={imgLink} />
   </Grid>
   <Grid justifyContent="left" item xs zeroMinWidth onClick={()=>{if (props.auth.tokenParsed["preferred_username"]===comment.user){setOpenCommentEdit(true);setEditedCommentId(comment.id);setEditedCommentField(comment.content)}}}>
-    <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
-    <p style={{ textAlign: "left" }}>
-    <Typography style={{whiteSpace: "pre-line"}}>
+
+    <Typography variant="body1" style={{whiteSpace: "pre-line"}}>
       {comment.content}
       </Typography>
-    </p>
-    <p style={{ textAlign: "left", color: "gray" }}>
-      {"Posted on "+ timeFormat(comment.created_time)}
-    </p>
+    <Typography variant="body2" color="gray">
+      {`Posted on ${timeFormat(comment.created_time)} by ${comment.user}`}
+    </Typography>
+
   </Grid>
 </Grid>
 </Paper>
@@ -731,9 +713,9 @@ fullWidth={ true } maxWidth={"xl"}
 
 </DialogContent>
 <DialogActions>
-  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
-  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();console.log("test")/* handleEditComment */}}  color="success">
-    Edit
+  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");}}>Cancel</Button>
+  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();}}  color="success">
+    Save changes
   </Button>
 </DialogActions>
 </Dialog>
