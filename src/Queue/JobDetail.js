@@ -16,6 +16,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import CodeIcon from '@material-ui/icons/Code';
 import StorageIcon from '@material-ui/icons/Storage';
 import red from '@material-ui/core/colors/red';
@@ -36,6 +37,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
 import { jobQueueServer } from "../globals";
 import {timeFormat} from '../utils';
+import ExportToBucket from './ExportToBucket';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -45,6 +47,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Autocomplete from '@mui/material/Autocomplete';
 import DownloadIcon from '@mui/icons-material/Download';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
 
@@ -150,6 +159,8 @@ function JobDetail(props) {
   const handleOpen = () => setOpen(true);
   let { id } = useParams();
   const [job, setJob] = useState({comments: []});
+  const [copy2bucket, setCopy2Bucket] = React.useState(false);
+  const handleCopy2Bucket = () => setCopy2Bucket(true);
   const [comments, setComments] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [editedTagsList, seteditedTagsList] = useState([]);
@@ -160,6 +171,11 @@ function JobDetail(props) {
   const [openCommentEdit, setOpenCommentEdit] = useState(false);
   const [editedCommentId, setEditedCommentId] = useState(0);
   const [openTagsEdit, setOpenTagsEdit] = useState(false);
+  const [openAlertCopy, setOpenAlertCopy] = useState(false);
+  const [openAlertDone, setOpenAlertDone] = useState(false);
+  const [openAlertSize, setOpenAlertSize] = useState(false);
+  const [openAlertCopy2, setOpenAlertCopy2] = useState(false);
+  const [openAlertDone2, setOpenAlertDone2] = useState(false);
 
   function compareByTimeStamp( a, b ) {
     if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
@@ -390,6 +406,66 @@ useEffect(()=>{
           </Button> </Link>
           </Tooltip>
        </div>
+
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}} key='bucket' className="bucket-button">
+       <Box sx={style}>
+
+       <Tooltip title="Copy output files to the Collab's Bucket">
+
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleCopy2Bucket}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} >
+        Export output files to Bucket
+         </Button>
+         </Tooltip>
+
+         <ExportToBucket auth={props.auth}
+                        files={job.output_data}
+                        jobId={job.id} collab={job.collab_id}
+                        copy2bucket={copy2bucket} // setDriveFilesExplorerStatus={setOpen}
+                        openAlertCopy={openAlertCopy2} setOpenAlertCopy={setOpenAlertCopy2}
+                        openAlertDone={openAlertDone2} setOpenAlertDone={setOpenAlertDone2}/>
+        {console.log(openAlertCopy2)}
+         <Collapse in={openAlertCopy2} >
+            <Alert severity="info"
+              icon={<CircularProgress size="1.3rem" />}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpenAlertCopy2(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+            File copy in progress
+            </Alert>
+        </Collapse>
+        <Collapse in={openAlertDone2} >
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertDone2(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+          File copy succeeded
+          </Alert>
+        </Collapse>
+        </Box>
+
+
+      </div>
       </div>
               </div>
 
