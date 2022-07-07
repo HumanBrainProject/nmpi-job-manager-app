@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ExportToBucket(props) {
+export default function ExportToDrive(props) {
 
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -62,7 +62,7 @@ export default function ExportToBucket(props) {
 
 
   const handleCopy = async(path) =>{
-    let target = 'bucket'
+    let target = 'drive'
     const url = `${jobQueueServer}/copydata/${target}/${props.jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token},
                     params: {
@@ -104,12 +104,12 @@ export default function ExportToBucket(props) {
 
     useEffect(() =>
         {
-        if(props.copy2bucket == true) {handleCopy(props.collab)
+        if(props.copy2drive == true) {handleCopy("/" + props.collab)
         props.setOpenAlertCopy(true) }
-    }, [props.copy2bucket]);
+    }, [props.copy2drive]);
 
     return (
-      <div className="ExportToBucket">
+      <div className="ExportToDrive">
 
     <Dialog
         open={openResult}
@@ -120,14 +120,14 @@ export default function ExportToBucket(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          <h3>Copy output files to the collab's Bucket </h3>
+          <h3>Copy output files to the collab's Drive </h3>
           <hr></hr>
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <h4>
               Target repository <strong>/job_{props.jobId}</strong> in
-              the <a href={`https://wiki.ebrains.eu/bin/view/Collabs/${props.collab}/Bucket`}>Bucket</a> of
+              the <a href={`https://wiki.ebrains.eu/bin/view/Collabs/${props.collab}/Drive`}>Drive</a> of
               collab <strong>{props.collab}</strong>
             </h4>
             <br></br>
@@ -137,7 +137,7 @@ export default function ExportToBucket(props) {
               return (
                 <DialogContentText id="alert-dialog-description2">
                   <h5>
-                    All output files have been copied to the Bucket.
+                    All output files have been copied to the Drive.
                   </h5>
                 </DialogContentText>
               )
@@ -152,7 +152,7 @@ export default function ExportToBucket(props) {
           {(() => {
             if (existingFiles.length >=1) {
               const listItems1 = existingFiles.map((f) =>
-                  <li>{f} : already exists in the Bucket</li>
+                  <li>{f} : already exists in the Drive</li>
               );
               return (
                   <DialogContentText id="alert-dialog-description4">

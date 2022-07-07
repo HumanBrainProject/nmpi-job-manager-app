@@ -37,6 +37,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
 import { jobQueueServer } from "../globals";
 import {timeFormat} from '../utils';
+import ExportToDrive from './ExportToDrive';
 import ExportToBucket from './ExportToBucket';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
@@ -159,7 +160,9 @@ function JobDetail(props) {
   const handleOpen = () => setOpen(true);
   let { id } = useParams();
   const [job, setJob] = useState({comments: []});
+  const [copy2drive, setCopy2Drive] = React.useState(false);
   const [copy2bucket, setCopy2Bucket] = React.useState(false);
+  const handleCopy2Drive = () => setCopy2Drive(true);
   const handleCopy2Bucket = () => setCopy2Bucket(true);
   const [comments, setComments] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -405,14 +408,91 @@ useEffect(()=>{
         <Link to={'/'+job.id+'/resubmit'}> <Button  style={{textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Create a new job based on this one
           </Button> </Link>
           </Tooltip>
-       </div>
+      </div>
+       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}} key='drive' className="drive-button">
+       <Box sx={style}>
+
+       <Tooltip title="Copy output files to the Drive">
+
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleCopy2Drive} style={{color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} >
+        Export output files to the Drive
+         </Button>
+         </Tooltip>
+
+         <ExportToDrive auth={props.auth}
+                        files={job.output_data}
+                        jobId={job.id} collab={job.collab_id}
+                        copy2drive={copy2drive}
+                        openAlertCopy={openAlertCopy} setOpenAlertCopy={setOpenAlertCopy}
+                        openAlertDone={openAlertDone} setOpenAlertDone={setOpenAlertDone}
+                        openAlertSize={openAlertSize} setOpenAlertSize={setOpenAlertSize}/>
+        <Collapse in={openAlertCopy} >
+            <Alert severity="info"
+              icon={<CircularProgress size="1.3rem" />}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpenAlertCopy(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+            File copy in progress
+            </Alert>
+        </Collapse>
+        <Collapse in={openAlertDone} >
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertDone(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+          File copy done with success
+          </Alert>
+        </Collapse>
+        <Collapse in={openAlertSize} >
+          <Alert
+            severity="warning"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlertSize(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Some files exceed the size limit of 1 GB.
+            Please use the Bucket.
+          </Alert>
+        </Collapse>
+         </Box>
+      </div>
 
        <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}} key='bucket' className="bucket-button">
        <Box sx={style}>
 
        <Tooltip title="Copy output files to the Collab's Bucket">
 
-       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleCopy2Bucket}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} >
+       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleCopy2Bucket}  style={{color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} >
         Export output files to Bucket
          </Button>
          </Tooltip>
@@ -464,8 +544,8 @@ useEffect(()=>{
         </Collapse>
         </Box>
 
+        </div>
 
-      </div>
       </div>
               </div>
 
@@ -800,9 +880,6 @@ fullWidth={ true } maxWidth={"xl"}
 </div>
 
 ))}
-
-
-
 
     </div>
     </ThemeProvider>
