@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+  nmpi-job-manager-app-staging:
+    image: docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:staging
+    container_name: nmpi-job-manager-app-staging
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.staging
+    volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt"
+    ports:
+      - '443:443'

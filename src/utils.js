@@ -1,5 +1,6 @@
 
 
+
 export function timeFormat(defaultFormatDate)
 {
 let formattedDate = String(defaultFormatDate).slice(0,4)+"/"+String(defaultFormatDate).slice(5,7)+"/"+String(defaultFormatDate).slice(8,10)+" "+String(defaultFormatDate).slice(11,19);

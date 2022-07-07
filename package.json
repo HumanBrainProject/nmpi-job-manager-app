@@ -3,8 +3,6 @@
   "version": "2.0.0dev",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.5.0",
-    "@emotion/styled": "^11.3.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
@@ -14,9 +12,6 @@
     "@monaco-editor/react": "^4.0.7",
     "@mui/icons-material": "^5.0.4",
     "@mui/material": "^5.0.4",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
     "axios": "^0.21.4",
     "bootstrap": "^4.4.1",
     "highlight.js": "^10.5.0",
@@ -30,10 +25,15 @@
     "react-hook-form": "6.15.4",
     "react-icons": "^3.9.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^4.0.1",
     "react-syntax-highlighter": "^15.4.3",
     "react-useanimations": "^2.0.6",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "react-scripts": "^4.0.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

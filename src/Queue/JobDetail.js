@@ -1,68 +1,58 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'
 import {
   useParams
 } from "react-router-dom";
 
-import { makeStyles,withStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createMuiTheme,ThemeProvider } from '@material-ui/core/styles';
-import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
 import EditIcon from '@mui/icons-material/Edit';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ScheduleIcon from '@material-ui/icons/Schedule';
 import CodeIcon from '@material-ui/icons/Code';
 import StorageIcon from '@material-ui/icons/Storage';
 import red from '@material-ui/core/colors/red';
-import green from '@material-ui/core/colors/green';
 import yellow from '@material-ui/core/colors/yellow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import DescriptionIcon from '@material-ui/icons/Description';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
 import LaunchIcon from '@material-ui/icons/Launch';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import Button from '@mui/material/Button';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import { Link } from "react-router-dom";
-import {apiV2Url} from '../Globals';
-import {timeFormat} from '../Utils';
-import ExportToDrive from './ExportToDrive';
-import Modal from '@mui/material/Modal';
+import { jobQueueServer } from "../globals";
+import {timeFormat} from '../utils';
 import SendIcon from '@material-ui/icons/Send';
 import TextField from '@material-ui/core/TextField';
-import { palette } from '@mui/system';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Popover from '@mui/material/Popover';
+import Autocomplete from '@mui/material/Autocomplete';
 import DownloadIcon from '@mui/icons-material/Download';
 const imgLink =
   "https://drive.ebrains.eu/media/avatars/default.png";
+
+
+function extractFileNameFromUrl(url) {
+  return url.substring(url.lastIndexOf('/')+1)
+};
+
 
 const theme = createMuiTheme({
   palette: {
@@ -79,6 +69,9 @@ const theme = createMuiTheme({
   },
 
   });
+
+
+
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -88,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     //fontWeight: theme.typography.fontWeightRegular,
     fontWeight: '550',
-    
+
 
 
 
@@ -155,12 +148,8 @@ const style = {
 function JobDetail(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
- // const handleClose = () => setOpen(false);
-  let { collab_id,endpoint,id } = useParams();
-/*  const location = useLocation();
-  const [jobStatus, setJobStatus] = useState(location.state?.jobStatus ?? 'finished');
-  console.log("job status",jobStatus) */
-  const [job, setJob] = useState({});
+  let { id } = useParams();
+  const [job, setJob] = useState({comments: []});
   const [comments, setComments] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [editedTagsList, seteditedTagsList] = useState([]);
@@ -171,42 +160,42 @@ function JobDetail(props) {
   const [openCommentEdit, setOpenCommentEdit] = useState(false);
   const [editedCommentId, setEditedCommentId] = useState(0);
   const [openTagsEdit, setOpenTagsEdit] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const openPopover = Boolean(anchorEl);
-  const popoverid = open ? 'simple-popover' : undefined;
-  let queueUrl=apiV2Url +`/queue/${id}`;
-  let resultUrl = apiV2Url +`/results/${id}`
 
-  const handlePopoverClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  function compareByTimeStamp( a, b ) {
+    if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
+      return -1;
+    }
+    if ( timeFormat(a.created_time) < timeFormat(b.created_time) ){
+      return 1;
+    }
+    return 0;
+  }
 
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-
-function handlesubmit(){
+function handleSubmitComment(){
   console.log("comment ",commentField)
-  const jobUrl=`/api/v2/results/${id}`;
+  const jobUrl = job.resource_uri;
 
+  let commentData = {
+    content: commentField,
+    job: jobUrl,
+    user: props.auth.tokenParsed["preferred_username"]
+  };
   const options = {
     method: 'POST',
-    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/',
+    url: `${jobQueueServer}/api/v2/comment/`,
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + props.auth.token,
     },
-    data: {
-      content: commentField,
-      job: jobUrl,
-      user: props.auth.tokenParsed["preferred_username"]
-    }
+    data: commentData
   };
-  
-  axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+
+  axios.request(options).then(function (response) {;
     setCommentField("");
-    console.log(response.data);
+    commentData["created_time"] = Date.now();
+    let updatedComments = [...job.comments];
+    updatedComments.push(commentData);
+    setComments(updatedComments);
   }).catch(function (error) {
     console.error(error);
   });
@@ -215,22 +204,18 @@ function handlesubmit(){
 }
 function handleAddTag()
 {
-  const jobUrl=`/api/v2/results/${id}`;
-  let requestUrl="";
-  if (endpoint==="f"){requestUrl=resultUrl;}
-  else{requestUrl = queueUrl}
+  let requestUrl = `${jobQueueServer}${job.resource_uri}`;
+  job.tags = [...editedTagsList];
   const options = {
-    method: 'patch',
+    method: 'put',
     url: requestUrl,
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + props.auth.token,
     },
-    data: {
-tags:[...job.tags,...editedTagsList],
-    }
+    data: job
   };
-  
+
   axios.request(options).then(function (response) {
 
     console.log(response.data);
@@ -246,11 +231,11 @@ tags:[...job.tags,...editedTagsList],
 function handleEditcomment()
 
 {
-  const jobUrl=`/api/v2/results/${id}`;
+  const jobUrl = job.resource_uri;
 
   const options = {
     method: 'patch',
-    url: 'https://nmpi.hbpneuromorphic.eu/api/v2/comment/'+editedCommentId,
+    url: `${jobQueueServer}/api/v2/comment/${editedCommentId}`,
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + props.auth.token,
@@ -261,16 +246,20 @@ function handleEditcomment()
       user: props.auth.tokenParsed["preferred_username"]
     }
   };
-  
+
   axios.request(options).then(function (response) {setRefreshComments(refreshComments+1);
+
+    let updatedComments = [...comments];
+    updatedComments.forEach((comment) => {
+      if (comment.id === editedCommentId) {
+        comment.content = editedCommentField;
+      }
+    });
+    setComments(updatedComments);
     setEditedCommentField("");
-    console.log(response.data);
   }).catch(function (error) {
     console.error(error);
   });
-
-
-
 
 }
 
@@ -280,31 +269,44 @@ function handleEditcomment()
         'Authorization': 'Bearer ' + props.auth.token,
       }
     }
-    console.log("token",props.auth.token)
-    let requestUrl=""
 
-    if (endpoint==="f"){requestUrl=resultUrl;}
-   else{requestUrl = queueUrl}
+    const resultUrl = `${jobQueueServer}/api/v2/results/${id}`;
+    const queueUrl = `${jobQueueServer}/api/v2/queue/${id}`;
 
-  
-    axios(requestUrl, config).then((result)=>{ 
+    axios(resultUrl, config)
+    .then((result)=>{
+        console.log(result.data);
         setJob(result.data);
-      console.log(result.data)}).catch((error)=>{
+        if (result.data.comments) {
+          result.data.comments.sort(compareByTimeStamp);
+          setComments(result.data.comments);
+        }
+    })
+    .catch((error)=>{
+      console.log(error);
+      axios(queueUrl, config)
+      .then((result)=>{
+        console.log(result.data);
+        setJob(result.data);
+        if (result.data.comments) {
+          result.data.comments.sort(compareByTimeStamp);
+          setComments(result.data.comments);
+        }
+      })
+      .catch((error) => {
         console.log(error)
       })
-      
-   
-    
+    });
   }, []);
 
 
 useEffect(()=>{
-  const tagsUrl = apiV2Url + '/tags/?collab_id=' + collab_id;
+  const tagsUrl = `${jobQueueServer}/api/v2/tags/?collab_id=${job.collab_id}`;
   const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
   let currentAvailableTags = [];
    axios.get(tagsUrl, config)
       .then(res => {
-        
+
         res.data.objects.forEach(tag => {
           currentAvailableTags.push(tag.name);
             }
@@ -316,65 +318,16 @@ useEffect(()=>{
           )
       .catch(error => {
         console.log(error)
-        //this.setState({errorMsg: 'Error retreiving data'})
       })
-/*       this.setState({
-        tagList: availableTags.map(String)
-      }); */
 
       setAvailableTags(currentAvailableTags)
       console.log('---taglist?---', availableTags)
 },[]);
 
-
-  function compare( a, b ) {
-    if ( timeFormat(a.created_time) > timeFormat(b.created_time)){
-      return -1;
-    }
-    if ( timeFormat(a.created_time) < timeFormat(b.created_time) ){
-      return 1;
-    }
-    return 0;
-  }
-  useEffect(() => {
-    let config = {
-      headers: {
-        'Authorization': 'Bearer ' + props.auth.token,
-      }
-    }
-    const commentstUrl = apiV2Url +`/comment`;
-    let currentJobComments=[]
-    let currentJobID= `/api/v2/results/${id}`
-    const fetchData = async () => {
-      const result = await axios(commentstUrl, config);
-      console.log("result",result)
-      
-
-      for ( const comment of result.data.objects) 
-      
-          { 
-            
-            if (comment.job===currentJobID) 
-              {
-                currentJobComments.push(comment)
-                currentJobComments.sort(compare);
-              }
-    
-       }
-
-      await setComments(currentJobComments);
-    };
-    fetchData();
-  }, [refreshComments]);
-
-
-
-
-
   const classes = useStyles();
 
   const getLog = async (jobId) => {
-    const logUrl = apiV2Url + `/log/${jobId}`;
+    const logUrl = `${jobQueueServer}/api/v2/log/${jobId}`;
     const config = {headers: {'Authorization': 'Bearer ' + props.auth.token}};
     return axios.get(logUrl, config)
   };
@@ -395,11 +348,11 @@ useEffect(()=>{
 
   return(
     <ThemeProvider theme={theme}>
-      
+
     <div style={{marginBottom:"2%",marginTop:"1%"}}>
 
-    
-      
+
+
         <div style={{marginLeft:"1%",marginRight:"2%",}}>
         <div style={{ display: 'flex'}}>
         <Paper elevation={3} style={{paddingLeft:"1%", paddingBottom:"0.1%",width:"30%",marginBottom:"1%"}} >
@@ -408,11 +361,11 @@ useEffect(()=>{
         <p>
         <div style={{ display: 'flex'}}>
           <div style={{ float: 'left'}}>
-            {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished" 
-              color="primary"  /> :job.status === 'error' 
-            ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status} 
+            {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished"
+              color="primary"  /> :job.status === 'error'
+            ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status}
               color="secondary" /> ) :
-              (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status} 
+              (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status}
                 style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
           </div>
 
@@ -424,32 +377,19 @@ useEffect(()=>{
 
         <Box hover="true" component="span" display="block" fontSize="13px"  > Submitted on <strong >{timeFormat(job.timestamp_submission)}</strong> by <strong >{job.user_id}</strong> to <strong >{job.hardware_platform}</strong>
         </Box>
-        
+
         {(job.status==="finished"||job.status==="error")?<Box component="span" display="block" fontSize="13px"  > Completed on <strong> {timeFormat(job.timestamp_completion)}</strong></Box>:<Box component="span" display="block" fontSize="13px"  > <strong></strong></Box> }
-  
+
         </p>
 
         </Paper>
 <div style={{ float: 'left', paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%"}} >
         <div style={{  paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
         <Tooltip title="Edit & Resubmit">
-        <Link to={'/'+collab_id+'/'+ job.id+'/resubmit'}> <Button  style={{backgroundColor:'#134e6f', color:'white' ,textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Resubmit
+        <Link to={'/'+job.id+'/resubmit'}> <Button  style={{textTransform: 'none',width:"100%"}}  variant="contained" startIcon={<EditIcon />} > Create a new job based on this one
           </Button> </Link>
           </Tooltip>
        </div>
-       <div style={{paddingBottom:"5%",paddingLeft:"2%",paddingTop:"0.5%"}}>
-       <Tooltip title="Export files to Drive">
-        
-       <Button disabled={(job.output_data && job.output_data.length>0)? false:true} onClick={handleOpen}  style={{backgroundColor:'#101b54', color:'white',disabledBackground: 'grey' ,textTransform: 'none' ,width:"100%"}}  variant="contained" startIcon={<CloudDownloadIcon />} > Output
-         </Button> 
-         </Tooltip>
-
-         <Box sx={style}>
-         <ExportToDrive auth={props.auth} files={job.output_data} jobId={job.id} DriveFilesExplorerStatus={open} setDriveFilesExplorerStatus={setOpen}/>
-         </Box>
-
-
-      </div>
       </div>
               </div>
 
@@ -460,68 +400,58 @@ useEffect(()=>{
   direction="row"
   justifyContent="flex-start"
   alignItems="flex-start"
-> 
+>
 
-<Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"2%",marginBottom:"1%",}}>
-              
-              <Chip className={classes.chip_styling} 
-              
-                label={"Tags:"}
-                
-              />
-            
-            </Grid>
-            
-            
+
+
             {job.tags?.map((data) => {
-      
-/*               if (data.label === 'React') {
-                icon = <TagFacesIcon />;
-              } */
-      
+
               return (
-                <Grid item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
-                
-                  <Chip
+                <Grid key={data} item xs="auto" style={{paddingTop:"2%",paddingLeft:"1%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
+
+                  <Chip size="small"
                   className={classes.chip_styling}
                     icon={<LocalOfferIcon sx={{ color: "#FFFFFF" }} />}
                     label={data}
-                    
+
                   />
-                
+
                 </Grid>
               );
             })}
 
             <Grid item xs="auto"   style={{paddingTop:"2%",paddingLeft:"0.5%", paddingBottom:"1%",paddingRight:"1%",marginBottom:"1%",}}>
-              
-            <Chip className={classes.chip_styling} 
-            icon={<AddCircleIcon sx={{ color: "#FFFFFF" }} />}
+
+            <Button
+            variant="contained"
+            size="small"
+            style={{textTransform: 'none'}}
+            startIcon={<EditIcon sx={{ color: "#FFFFFF" }} />}
             onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}}
-              label="Add"
-            />
-          
+            >
+              Edit tags
+            </Button>
+
           </Grid>
 
             </Grid>
 
 
             </Paper>
-            
+
           :(        <Tooltip title="Add a tag">
           <Button onClick={()=>{setOpenTagsEdit(true);seteditedTagsList(job.tags)}} style={{backgroundColor:'#44449E', color:'white' ,textTransform: 'none',width:"30%"}}  variant="contained" startIcon={<EditIcon />} >  Add a tag
-            </Button> 
+            </Button>
             </Tooltip>
-            
+
             )}
 
             <div >
             <Dialog
             open={openTagsEdit}
             onClose={()=>{
-              
-              
-              //handleCloseCommentEdit
+
+
             setOpenTagsEdit(false)
             }}
             aria-labelledby="alert-dialog-title"
@@ -529,35 +459,36 @@ useEffect(()=>{
             fullWidth={ true } maxWidth={"xl"}
             >
             <DialogTitle id="alert-dialog-title">
-            <h5 style={{ display: 'inline' }} >{"Add a tag: "}</h5>
-            
+            <h5 style={{ display: 'inline' }} >{"Add or remove tags: "}</h5>
+
             </DialogTitle>
             <DialogContent  >
             <Autocomplete
             style={{marginTop:"1%"}}
             multiple
+            freeSolo
             id="Tag"
-            
+
             options={availableTags}
             getOptionLabel={(option) => option}
             defaultValue={editedTagsList??[]}
             onChange={(event, newValue)=> {
-             
-              seteditedTagsList([...editedTagsList,newValue]);
-            
+
+              seteditedTagsList(newValue);
+
             }}
-            
-            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"   onChange={console.log(availableTags)}     
+
+            renderInput={(params) => <TextField {...params} label="Attributed tags" variant="outlined"
              />}
             />
 
 
-            
+
             </DialogContent>
             <DialogActions>
-              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);;console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
-              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);console.log("test")/* handleEditComment */}}  color="success">
-                Add
+              <Button onClick={()=>{setOpenTagsEdit(false);seteditedTagsList([]);}}>Cancel</Button>
+              <Button onClick={()=>{setOpenTagsEdit(false);handleAddTag();seteditedTagsList([]);}}  color="success">
+                Save changes
               </Button>
             </DialogActions>
             </Dialog>
@@ -571,34 +502,13 @@ useEffect(()=>{
         </AccordionSummary>
         <AccordionDetails className={classes.expansion_panel_details}>
         {(job.output_data && job.output_data.length>0)? ( job.output_data.map((out_file,index) =>
-        
-        
-        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}}>
-        <div style={{display:"inline-block",float:"left"}}>
-        <Button style={{  backgroundColor: '#404188',
-    color:'#FFFFFF', textTransform: 'none',width:"100%"}} variant="contained" onClick={handlePopoverClick}>
-         <AttachFileIcon />  
-         
-        {"Output file "+(index+1)} </Button> 
-        <Popover
-  id={popoverid}
-  open={openPopover}
-  anchorEl={anchorEl}
-  onClose={handlePopoverClose}
-  anchorOrigin={{
-    vertical: 'bottom',
-    horizontal: 'left',
-  }}
->
-  <Typography sx={{ p: 2 }}> {String(out_file.url)}</Typography>
-</Popover>
 
 
-</div>
+        <div style={{marginTop:"0.5%",display:"flex",marginLeft:"1%"}} key={out_file.url}>
 <div style={{display:"inline-block",float:"left" }}>
         <Button style={{  backgroundColor: '#2F3178',
     color:'#FFFFFF', textTransform: 'none',width:"100%",}} variant="contained" >
-
+{extractFileNameFromUrl(out_file.url)}
 <a style={{textTransform:'none',color:'#FFFFFF',textDecoration:'none',}} href= {String(out_file.url)} >
 
 <DownloadIcon />
@@ -609,7 +519,7 @@ useEffect(()=>{
 
     </Button>
     </div>
-        
+
         </div>
         ))
           : ('No files available')}
@@ -641,7 +551,7 @@ useEffect(()=>{
         <Typography className={classes.heading} >     <LaunchIcon /> Command</Typography>
       </AccordionSummary>
       <AccordionDetails  className={classes.expansion_panel_details}>
- 
+
         <Typography>
         <SyntaxHighlighter language="bash" style={docco}>
         {String(job.command)}
@@ -660,7 +570,7 @@ useEffect(()=>{
       <ListItem Box>
       <Box component="div" display="inline" width="300px">Platform:</Box>
 <Box component="div" display="inline">{job.hardware_platform} </Box>
- 
+
       </ListItem>
 
       <ListItem Box>
@@ -671,11 +581,11 @@ useEffect(()=>{
 
 
 
-        
+
       </AccordionDetails>
     </Accordion>
 
-    
+
 
 
     <Accordion defaultExpanded={true} >
@@ -706,8 +616,8 @@ useEffect(()=>{
     </AccordionDetails>
   </Accordion>
 
-  <Box component="span" marginTop="3%" display="block" fontSize="h4.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
-  
+  <Box component="span" marginTop="3%" display="block" fontSize="h5.fontSize"  fontWeight="fontWeightMedium">Comments </Box>
+
 </div>
 <div>
   <Paper elevation={2} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"}} >
@@ -723,21 +633,21 @@ useEffect(()=>{
   autoComplete="off"
 >
 
-  <TextField 
+  <TextField
   style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
-  id="outlined-basic" 
+  id="outlined-basic"
   multiline
   value={commentField}
   onChange={(event) => {setCommentField(event.target.value)}}
-  label={"Comment on Job "+job.id} 
-  
+  label={"Comment on Job "+job.id}
+
   variant="outlined" />
 
 </Box>
 
 
   <Button
-  onClick={handlesubmit}
+  onClick={handleSubmitComment}
   variant="contained"
   style={{marginBottom:"1%",textTransform: 'none',}}
   className={classes.button}
@@ -750,27 +660,26 @@ useEffect(()=>{
 </Paper>
       </div>
 
-        
-  
+
+
   {comments.map ((comment)=> (
-  <div >
+  <div key={comment.id}>
   <Paper elevation={3} className={classes.comments_panel} style={{marginLeft:"1%",paddingLeft:"1%", paddingBottom:"0.1%",width:"90%",marginBottom:"1%",paddingTop:"1%",marginTop:"1%"
 
 }} >
   <Grid container wrap="nowrap" spacing={2}  >
   <Grid item>
-    <Avatar alt="Remy Sharp" src={imgLink} />
+    <Avatar src={imgLink} />
   </Grid>
   <Grid justifyContent="left" item xs zeroMinWidth onClick={()=>{if (props.auth.tokenParsed["preferred_username"]===comment.user){setOpenCommentEdit(true);setEditedCommentId(comment.id);setEditedCommentField(comment.content)}}}>
-    <h4 style={{ margin: 0, textAlign: "left" }}>{comment.user}</h4>
-    <p style={{ textAlign: "left" }}>
-    <Typography style={{whiteSpace: "pre-line"}}>
+
+    <Typography variant="body1" style={{whiteSpace: "pre-line"}}>
       {comment.content}
       </Typography>
-    </p>
-    <p style={{ textAlign: "left", color: "gray" }}>
-      {"Posted on "+ timeFormat(comment.created_time)}
-    </p>
+    <Typography variant="body2" color="gray">
+      {`Posted on ${timeFormat(comment.created_time)} by ${comment.user}`}
+    </Typography>
+
   </Grid>
 </Grid>
 </Paper>
@@ -778,8 +687,8 @@ useEffect(()=>{
 <Dialog
 open={openCommentEdit}
 onClose={()=>{
-  
-  
+
+
   //handleCloseCommentEdit
 setOpenCommentEdit(false)
 }}
@@ -792,32 +701,32 @@ fullWidth={ true } maxWidth={"xl"}
 
 </DialogTitle>
 <DialogContent  >
-<TextField 
+<TextField
   style={{ marginTop: "1%",width:"100%",paddingRight:"1%", marginBottom:"1%", textAlign: "left" }}
-  id="outlined-basic" 
+  id="outlined-basic"
   multiline
   value={editedCommentField}
   onChange={(event) => {setEditedCommentField(event.target.value)}}
-  label={"Edited comment "+editedCommentId+ " on Job "+job.id} 
-  
+  label={"Edited comment "+editedCommentId+ " on Job "+job.id}
+
   variant="outlined" />
 
 </DialogContent>
 <DialogActions>
-  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");console.log("test")/* handleCloseCommentEdit */}}>Close</Button>
-  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();console.log("test")/* handleEditComment */}}  color="success">
-    Edit
+  <Button onClick={()=>{setOpenCommentEdit(false);setEditedCommentField("");}}>Cancel</Button>
+  <Button onClick={()=>{setOpenCommentEdit(false);handleEditcomment();}}  color="success">
+    Save changes
   </Button>
 </DialogActions>
 </Dialog>
 
 
 </div>
-  
+
 ))}
-  
-  
-  
+
+
+
 
     </div>
     </ThemeProvider>

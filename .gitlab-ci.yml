@@ -2,13 +2,29 @@
 stages:
   - build
 
-build_image:
+build_image_production:
   stage: build
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == "main"
   script:
-    - docker build -f deployment/Dockerfile.prod -t docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager .
+    - docker build -f deployment/Dockerfile.prod -t docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:prod .
     - echo $DOCKER_REGISTRY_USER
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_SECRET docker-registry.ebrains.eu
-    - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager
+    - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:prod
   tags:
     - shell-runner
 
+
+build_image_staging:
+  stage: build
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == "staging"
+  script:
+    - docker build -f deployment/Dockerfile.staging -t docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:staging .
+    - echo $DOCKER_REGISTRY_USER
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_SECRET docker-registry.ebrains.eu
+    - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:staging
+  tags:
+    - shell-runner

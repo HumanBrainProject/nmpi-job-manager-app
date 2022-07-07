@@ -9,14 +9,14 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm ci --silent
+RUN npm ci --silent --legacy-peer-deps
 COPY . ./
-COPY ./src/globals-prod.js ./src/globals.js
+COPY ./src/globals-staging.js ./src/globals.js
 RUN npm run build
 
 # production environment
 FROM nginx:stable-alpine
-COPY deployment/nginx-app.conf /etc/nginx/conf.d/default.conf
+COPY deployment/nginx-app-staging.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 EXPOSE 443

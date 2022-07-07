@@ -1,10 +1,10 @@
 import Keycloak from 'keycloak-js';
-
+import { authServer } from './globals';
 
 // We start by configuring the Keycloak javascript client
 // It needs to know your app id in order to authenticate users for it
 const keycloak = Keycloak({
-    url: 'https://iam.ebrains.eu/auth',
+    url: authServer + "/auth",
     realm: 'hbp',
     clientId: 'neuromorphic-remote-access'
 });
@@ -29,7 +29,7 @@ export default function initAuth(main) {
                  console.error('Failed to refresh token '+new Date());
             });
             }
-        
+
 }
 
 function checkAuth(main) {
@@ -103,7 +103,7 @@ function checkAuth(main) {
 
 
 
-    
+
 }
 
 function verifyMessage(event) {
