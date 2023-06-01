@@ -9,5 +9,6 @@ export const hw_options = [
   "BrainScaleS-2",
   "BrainScaleS-ESS",
   "Spikey",
+  "Demo",
   "Test",
 ];
