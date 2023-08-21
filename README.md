@@ -20,3 +20,10 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+## Acknowledgments
+
+This application was developed in the Human Brain Project,
+funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation
+under Specific Grant Agreements No. 720270, No. 785907 and No. 945539
+(Human Brain Project SGA1, SGA2 and SGA3).
