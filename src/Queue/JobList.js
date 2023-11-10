@@ -1,49 +1,47 @@
-import React from 'react';
-import axios from 'axios';
-import { MdAddCircle } from 'react-icons/md';
-import Button from '@material-ui/core/Button';
+import React from "react";
+import axios from "axios";
+import { MdAddCircle } from "react-icons/md";
+import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRedo } from '@fortawesome/free-solid-svg-icons'
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Tooltip from '@material-ui/core/Tooltip';
-import Avatar from '@material-ui/core/Avatar';
-import Chip from '@material-ui/core/Chip';
-import EditIcon from '@mui/icons-material/Edit';
-import SearchIcon from '@mui/icons-material/Search';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
-import red from '@material-ui/core/colors/red';
-import yellow from '@material-ui/core/colors/yellow';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import LoopOutlinedIcon from '@material-ui/icons/LoopOutlined';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import CodeIcon from '@material-ui/icons/Code';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import StorageIcon from '@material-ui/icons/Storage';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Paper from '@material-ui/core/Paper';
-import WatchLaterIcon from '@material-ui/icons/WatchLater';
-import { hw_options, jobQueueServer, validationServer } from "../globals";
-import {timeFormat,currentDate,isItemInArray} from '../utils';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Tooltip from "@material-ui/core/Tooltip";
+import Avatar from "@material-ui/core/Avatar";
+import Chip from "@material-ui/core/Chip";
+import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import { createMuiTheme, ThemeProvider, withStyles } from "@material-ui/core/styles";
+import red from "@material-ui/core/colors/red";
+import yellow from "@material-ui/core/colors/yellow";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+import LoopOutlinedIcon from "@material-ui/icons/LoopOutlined";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import ScheduleIcon from "@material-ui/icons/Schedule";
+import CodeIcon from "@material-ui/icons/Code";
+import DoneAllIcon from "@material-ui/icons/DoneAll";
+import StorageIcon from "@material-ui/icons/Storage";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import Paper from "@material-ui/core/Paper";
+import WatchLaterIcon from "@material-ui/icons/WatchLater";
+import { hw_options, jobQueueServer } from "../globals";
+import { timeFormat, currentDate, isItemInArray } from "../utils";
 
-const baseUrl = jobQueueServer + '/api/v2/results/?collab_id=';
-const baseQueueUrl = jobQueueServer + '/api/v2/queue/?collab_id=';
-
+const baseJobsUrl = jobQueueServer + "/jobs/?collab=";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#0b6623',
+      main: "#0b6623",
     },
     secondary: {
       main: red[500],
@@ -54,22 +52,19 @@ const theme = createMuiTheme({
   },
   tableRow: {
     hover: {
-       /// your styles...
-      },
+      /// your styles...
     },
-    flexBox:{
+  },
+  flexBox: {
+    display: "flex",
 
-      display: "flex",
-
-    flexDirection:"row",
-
-    },
-
+    flexDirection: "row",
+  },
 });
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontSize: 16,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   body: {
     fontSize: 16,
@@ -77,522 +72,616 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
-  head: {
-
-  },
-  body: {
-
-  },
+  head: {},
+  body: {},
 }))(TableRow);
 
-
 function isInCollab() {
-  const isParent = (window.opener == null);
-  const isIframe = (window !== window.parent);
+  const isParent = window.opener == null;
+  const isIframe = window !== window.parent;
   return isIframe && isParent;
 }
 
-
 function CollabSelector(props) {
-
-    if (!isInCollab()) {
-      return (
-        <Autocomplete
+  if (!isInCollab()) {
+    return (
+      <Autocomplete
         data-testid="autocomplete"
-            id="Collab-list"
-            options={props.collabList}
-            getOptionLabel={(option) => option}
-            defaultValue={props.collab}
-            onChange={(event, newValue)=> { props.onCollabChange(newValue);}}
-            style={{ width: 300 ,display:"inline-block"}}
-            renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined"  />}
-            autoHighlight={true}
-        />
-      )
-    } else {
-      return ""
-    }
+        id="Collab-list"
+        options={props.collabList}
+        getOptionLabel={(option) => option}
+        defaultValue={props.collab}
+        onChange={(event, newValue) => {
+          props.onCollabChange(newValue);
+        }}
+        style={{ width: 300, display: "inline-block" }}
+        renderInput={(params) => <TextField {...params} label="Collab List" variant="outlined" />}
+        autoHighlight={true}
+      />
+    );
+  } else {
+    return "";
+  }
 }
 
 class JobList extends React.Component {
-
   constructor(props) {
-
-
-    super(props)
+    super(props);
     this.state = {
       jobs: [],
       provJobList: [],
-      filteredJobs:[],
-      tagList:[],
-      error: '',
+      filteredJobs: [],
+      tagList: [],
+      error: "",
       authToken: props.auth.token,
       refreshState: false,
-      refreshDate :'',
-      currentCollab:'neuromorphic-testing-private',
-      collabList:[],
-      page :0,
-      rowsPerPage:20,
-      orderBy:'jobID',
-      order:'desc',
-      filterBy:'',
-      statusFilter:null,
-      hardwareSystemFilter:null,
-      tagsFilter:[],
-    }
+      refreshDate: "",
+      currentCollab: "neuromorphic-testing-private",
+      collabList: [],
+      page: 0,
+      rowsPerPage: 20,
+      orderBy: "jobID",
+      order: "desc",
+      filterBy: "",
+      statusFilter: null,
+      hardwareSystemFilter: null,
+      tagsFilter: [],
+    };
     this.routeChange = this.routeChange.bind(this);
-
   }
 
-  getTagsList = async()=> {
-    const tagsUrl = `${jobQueueServer}/api/v2/tags/?collab_id=${this.props.collab}`;
-    const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
+  getTagsList = async () => {
     let availableTags = [];
-    await axios.get(tagsUrl, config)
-        .then(res => {
-
-          res.data.objects.forEach(tag => {
-              availableTags.push(tag.name);
-              }
-          );
+    if (this.props.collab) {
+      const tagsUrl = `${jobQueueServer}/tags/?collab=${this.props.collab}`;
+      const config = { headers: { Authorization: "Bearer " + this.state.authToken } };
+      await axios
+        .get(tagsUrl, config)
+        .then((res) => {
+          res.data.forEach((tag) => {
+            availableTags.push(tag);
+          });
           availableTags.sort();
           console.log(availableTags.map(String));
-
-            }
-            )
-        .catch(error => {
-          console.log(error)
-          this.setState({errorMsg: 'Error retreiving data'})
         })
-        this.setState({
-          tagList: availableTags.map(String)
+        .catch((error) => {
+          console.log(error);
+          this.setState({ errorMsg: "Error retreiving data" });
         });
-        console.log('---taglist?---', this.state.tagList)
-}
-
-
-async filterJobs(statusFilter,hardwareSystemFilter,tagsFilter){
-let currentFilteredJobs=this.state.jobs
-    function isStatus(x) {
-
-      return x.status===statusFilter;
-  }
-  function isHardware(x) {
-
-    return String(x.hardware_platform)===hardwareSystemFilter;
-
-  }
-  function isTagged(x) {
-    for(const tag of tagsFilter)
-
-    {
-      let index=isItemInArray(x.tags,tag)
-      if (index===-1){return false}
-
-
     }
-    return true
-
-  }
-
-
-if (statusFilter!==null )
-{
-  currentFilteredJobs = currentFilteredJobs.filter(isStatus);
-
-}
-
-if (hardwareSystemFilter!==null )
-{
-  currentFilteredJobs = currentFilteredJobs.filter(isHardware);
-
-}
-if (tagsFilter!==[] )
-{
-  currentFilteredJobs = currentFilteredJobs.filter(isTagged);
-
-}
-this.setState({
-  filteredJobs: currentFilteredJobs,
-
-
-});
-
-
-  }
-
-
-  handleReload ()
-
-  {
-
-
-    this.fetchData();this.setState({refreshState:true,
-      statusFilter:null,
-      hardwareSystemFilter:null,
-      tagsFilter:[],
-
+    this.setState({
+      tagList: availableTags.map(String),
     });
-
+    console.log("---taglist?---", this.state.tagList);
   };
+
+  async filterJobs(statusFilter, hardwareSystemFilter, tagsFilter) {
+    let currentFilteredJobs = this.state.jobs;
+    function isStatus(x) {
+      return x.status === statusFilter;
+    }
+    function isHardware(x) {
+      return String(x.hardware_platform) === hardwareSystemFilter;
+    }
+    function isTagged(x) {
+      for (const tag of tagsFilter) {
+        let index = isItemInArray(x.tags, tag);
+        if (index === -1) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (statusFilter !== null) {
+      currentFilteredJobs = currentFilteredJobs.filter(isStatus);
+    }
+
+    if (hardwareSystemFilter !== null) {
+      currentFilteredJobs = currentFilteredJobs.filter(isHardware);
+    }
+    if (tagsFilter !== []) {
+      currentFilteredJobs = currentFilteredJobs.filter(isTagged);
+    }
+    this.setState({
+      filteredJobs: currentFilteredJobs,
+    });
+  }
+
+  handleReload() {
+    this.fetchData();
+    this.setState({
+      refreshState: true,
+      statusFilter: null,
+      hardwareSystemFilter: null,
+      tagsFilter: [],
+    });
+  }
   routeChange(id) {
-    let path = '/'+String(id);
+    let path = "/" + String(id);
     this.props.history.push(path);
   }
 
-
-   getCollabList= async()=> {
-    const url = validationServer + "/projects";
-    const config = {headers: {'Authorization': 'Bearer ' + this.state.authToken}};
-    await axios.get(url, config)
-        .then(res => {
-            let editableProjects = [];
-            res.data.forEach(proj => {
-                if (proj.permissions.UPDATE) {
-                    editableProjects.push(proj.project_id);
-                }
-            });
-            editableProjects.sort();
-            this.setState({
-              collabList: editableProjects.map(String)
-            });
-        })
-        .catch(err => {
-            console.log('Error: ', err.message);
+  getCollabList = async () => {
+    const url = jobQueueServer + "/collabs/?size=100";
+    const config = { headers: { Authorization: "Bearer " + this.state.authToken } };
+    await axios
+      .get(url, config)
+      .then((res) => {
+        this.setState({
+          collabList: res.data,
         });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            this.props.auth.login();
+          }
+        }
+        console.log("Error: ", error.message);
+      });
+  };
 
+  handleChangePage = async (event, newPage) => {
+    console.log(this.state.page);
+    console.log("page num");
+    await this.setState({ page: newPage });
+  };
 
-}
-handleChangePage = async (event, newPage) => {
-  console.log(this.state.page);
-  console.log("page num");
- await this.setState({page:newPage});
-};
+  handleChangeRowsPerPage = (event) => {
+    let nextRowsPerPage = parseInt(event.target.value, 10);
+    this.setState({ rowsPerPage: nextRowsPerPage });
+    this.setState({ page: 0 });
+  };
 
-handleChangeRowsPerPage = (event) => {
- let nextRowsPerPage =parseInt(event.target.value, 10);
- this.setState({rowsPerPage:nextRowsPerPage});
- this.setState({page:0});
-};
+  sortData = (sortBy, sortOrder) => {
+    var itemsToSort = this.state.filteredJobs;
+    var sortedItems = [];
+    var compareFn = null;
+    switch (sortBy) {
+      case "jobID":
+        compareFn = (i, j) => {
+          if (i.id < j.id) {
+            return sortOrder === "asc" ? -1 : 1;
+          } else {
+            if (i.id > j.id) {
+              return sortOrder === "asc" ? 1 : -1;
+            } else {
+              return 0;
+            }
+          }
+        };
+        break;
+      default:
+        break;
+    }
+    sortedItems = itemsToSort.sort(compareFn);
+    return sortedItems;
+  };
 
-sortData = (sortBy, sortOrder) => {
- var itemsToSort = this.state.filteredJobs;
- var sortedItems = [];
- var compareFn = null;
- switch (sortBy) {
-   case "jobID":
-     compareFn = (i, j) => {
-       if (i.id < j.id) {
-         return sortOrder === "asc" ? -1 : 1;
-       } else {
-         if (i.id > j.id) {
-           return sortOrder === "asc" ? 1 : -1;
-         } else {
-           return 0;
-         }
-       }
-     };
-     break;
-   default:
-     break;
- }
- sortedItems = itemsToSort.sort(compareFn);
- return sortedItems;
-};
+  requestSort(pSortBy) {
+    var sortBy = this.state.sortBy;
+    var sortOrder = this.state.sortOrder;
+    return (event) => {
+      if (pSortBy === this.state.sortBy) {
+        sortOrder = sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        sortBy = pSortBy;
+        sortOrder = "desc";
+      }
+      var sortedItems = this.sortData(sortBy, sortOrder);
+      this.setState({
+        sortOrder: sortOrder,
+        sortBy: sortBy,
+        filteredJobs: sortedItems,
+      });
+    };
+  }
 
-requestSort(pSortBy) {
- var sortBy = this.state.sortBy;
- var sortOrder = this.state.sortOrder;
- return event => {
-   if (pSortBy === this.state.sortBy) {
-     sortOrder = sortOrder === "asc" ? "desc" : "asc";
-   } else {
-     sortBy = pSortBy;
-     sortOrder = "desc";
-   }
-   var sortedItems = this.sortData(sortBy, sortOrder);
-   this.setState({
-     sortOrder: sortOrder,
-     sortBy: sortBy,
-     filteredJobs:sortedItems
-   });
- };
-}
-
-  fetchData=async ()=>{
-
+  fetchData = async () => {
     let config = {
       headers: {
-        'Authorization': 'Bearer ' + this.state.authToken,
-      }
-    }
-    let resultsUrl = baseUrl+this.props.collab;
-    let queueUrl = baseQueueUrl +this.props.collab;
-
+        Authorization: "Bearer " + this.state.authToken,
+      },
+    };
+    let jobsUrl = baseJobsUrl + this.props.collab + "&size=1000";
 
     let fetchDataDate = "Last updated: " + currentDate();
 
-    await axios.get(resultsUrl, config)
-    .then(response => {
-      let initial_list = []
-      console.log(response);
-      this.setState({provJobList: initial_list.concat(response.data.objects)});
-      var mydate = new Date(response.data.objects.date);
-      var date = mydate.toString("jj/MM/yyyy");
-      console.log("date : " + date);
-      this.setState({date: date});
-      console.log(this.state.date)
-      this.setState({refreshState:false});
-      this.setState({refreshDate:fetchDataDate})
-    })
-    .catch(error => {
-      console.log(error)
-      this.setState({errorMsg: 'Error retreiving data'})
-    })
+    await axios
+      .get(jobsUrl, config)
+      .then((response) => {
+        let initial_list = [];
+        console.log(response);
+        this.setState({ provJobList: initial_list.concat(response.data) });
+        this.setState({ refreshState: false });
+        this.setState({ refreshDate: fetchDataDate });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ errorMsg: "Error retreiving data" });
+      });
 
-   await axios.get(queueUrl, config)
-    .then(response => {
-      console.log(response);
-      console.log("queue response");
-      this.setState({provJobList: this.state.provJobList.concat(response.data.objects)});
-    })
-    .catch(error => {
-      console.log(error)
-      this.setState({errorMsg: 'Error retreiving data'})
-    })
     console.log(this.state.jobs);
     console.log(this.state.provJobList);
-    const sortedJobs = [].concat(this.state.provJobList)
-    .sort((a, b) => parseFloat(b.id) - parseFloat(a.id) );
+    const sortedJobs = []
+      .concat(this.state.provJobList)
+      .sort((a, b) => parseFloat(b.id) - parseFloat(a.id));
 
-    this.setState({jobs: sortedJobs});
-    this.setState({filteredJobs: sortedJobs});
+    this.setState({ jobs: sortedJobs });
+    this.setState({ filteredJobs: sortedJobs });
+  };
 
+  onCollabChange = async (newValue) => {
+    // setState is asynchronous, i added await
+    await this.props.setCollab(newValue);
+    if (newValue) {
+      this.fetchData();
+      this.getTagsList();
+    }
+  };
 
-  }
-
-
-onCollabChange= async (newValue)=>{
-// setState is asynchronous, i added await
-  await this.props.setCollab(newValue);
-  if (newValue) {
-    this.fetchData();
-  }
-}
-
-  async componentDidMount(){
+  async componentDidMount() {
     await this.getCollabList();
     if (this.props.collab) {
       await this.fetchData();
     }
     this.getTagsList();
     console.log(this.state.collabList);
-
-
   }
 
   render() {
     return (
       <ThemeProvider theme={theme}>
-      <div >
-      <Paper elevation={1} style={{marginTop:"1%",paddingTop:"0.5%" ,marginBottom:"1%", marginLeft:"1%", marginRight:"2%"}} >
-      <div style={{position:"relative",}} >
-      <div style={{ height: 80 , marginLeft:"1%", marginTop:"1%",paddingRight:"1%",   position: "relative"}}>
-      <CollabSelector collabList={this.state.collabList} collab={this.props.collab} onCollabChange={this.onCollabChange} />
+        <div>
+          <Paper
+            elevation={1}
+            style={{
+              marginTop: "1%",
+              paddingTop: "0.5%",
+              marginBottom: "1%",
+              marginLeft: "1%",
+              marginRight: "2%",
+            }}
+          >
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  height: 80,
+                  marginLeft: "1%",
+                  marginTop: "1%",
+                  paddingRight: "1%",
+                  position: "relative",
+                }}
+              >
+                <CollabSelector
+                  collabList={this.state.collabList}
+                  collab={this.props.collab}
+                  onCollabChange={this.onCollabChange}
+                />
 
+                <div
+                  style={{
+                    marginLeft: "1%",
+                    height: "60%",
+                    display: "inline-block",
+                    marginRight: "1%",
+                    position: "absolute",
+                    bottom: "30",
+                  }}
+                >
+                  <Tooltip title="Reload Jobs">
+                    <Button
+                      disabled={this.state.refreshState}
+                      style={{ marginLeft: "1%", height: "100%", display: "inline-block" }}
+                      onClick={() => {
+                        this.fetchData();
+                        this.setState({ refreshState: true });
+                      }}
+                      color="primary"
+                    >
+                      {" "}
+                      <FontAwesomeIcon
+                        icon={faRedo}
+                        color="#007bff"
+                        onClick={() => {}}
+                        spin={this.state.refreshState === true ? true : false}
+                      />
+                    </Button>
+                  </Tooltip>
+                </div>
 
-    <div style={{ marginLeft :"1%" ,height: "60%" ,
-              display:"inline-block", marginRight:"1%",position:"absolute", bottom:"30"}} >
-              <Tooltip title="Reload Jobs">
-              <Button disabled={this.state.refreshState} style={{ marginLeft :"1%" ,height: "100%" ,
-              display:"inline-block"}} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
-              </Button>
-              </Tooltip>
+                <div
+                  style={{
+                    width: 400,
+                    display: "inline-block",
+                    float: "right",
+                    marginRight: "1%",
+                    marginBottom: "1%",
+                  }}
+                >
+                  <Autocomplete
+                    multiple
+                    id="Filter by tags"
+                    options={this.state.tagList}
+                    getOptionLabel={(option) => option}
+                    defaultValue={[]}
+                    onChange={(event, newValue) => {
+                      this.setState({
+                        tagsFilter: newValue,
+                      });
+
+                      this.filterJobs(
+                        this.state.statusFilter,
+                        this.state.hardwareSystemFilter,
+                        newValue
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Filter by tags" variant="outlined" />
+                    )}
+                  />
+                </div>
+
+                <div
+                  style={{ width: 200, display: "inline-block", float: "right", marginRight: "1%" }}
+                >
+                  <Autocomplete
+                    id="Filter by system"
+                    options={hw_options}
+                    getOptionLabel={(option) => option}
+                    defaultValue={null}
+                    onChange={(event, newValue) => {
+                      this.setState({
+                        hardwareSystemFilter: newValue,
+                      });
+
+                      this.filterJobs(this.state.statusFilter, newValue, this.state.tagsFilter);
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Filter by system" variant="outlined" />
+                    )}
+                  />
+                </div>
+
+                <div
+                  style={{ width: 200, display: "inline-block", float: "right", marginRight: "1%" }}
+                >
+                  <Autocomplete
+                    id="Filter by status"
+                    options={["finished", "error", "submitted", "running"]}
+                    getOptionLabel={(option) => option}
+                    defaultValue={null}
+                    onChange={(event, newValue) => {
+                      this.setState({
+                        statusFilter: newValue,
+                      });
+
+                      this.filterJobs(
+                        newValue,
+                        this.state.hardwareSystemFilter,
+                        this.state.tagsFilter
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Filter by status" variant="outlined" />
+                    )}
+                  />
+                </div>
               </div>
-
-              <div style={{ width: 400 ,display:"inline-block",float:"right",marginRight:"1%",marginBottom:"1%"}}>
-
-              <Autocomplete
-              multiple
-              id="Filter by tags"
-
-              options={this.state.tagList}
-              getOptionLabel={(option) => option}
-              defaultValue={[]}
-              onChange={(event, newValue)=> {
-                this.setState({
-                  tagsFilter: newValue,
-
-
-                });
-
-
-                this.filterJobs(this.state.statusFilter,this.state.hardwareSystemFilter,newValue);}}
-
-              renderInput={(params) => <TextField {...params} label="Filter by tags" variant="outlined"
-               />}
-              />
-
-              </div>
-
-
-              <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
-              <Autocomplete
-
-              id="Filter by system"
-              options={hw_options}
-              getOptionLabel={(option) => option}
-              defaultValue={null}
-              onChange={(event, newValue)=> {
-                this.setState({
-                  hardwareSystemFilter: newValue,
-
-
-                });
-
-
-                this.filterJobs(this.state.statusFilter,newValue,this.state.tagsFilter);}}
-
-              renderInput={(params) => <TextField {...params} label="Filter by system" variant="outlined" />}
-              />
-
-              </div>
-
-              <div style={{ width: 200 ,display:"inline-block",float:"right",marginRight:"1%",}}>
-              <Autocomplete
-              id="Filter by status"
-              options={["finished","error","submitted","running"]}
-              getOptionLabel={(option) => option}
-              defaultValue={null}
-              onChange={(event, newValue)=> {
-                this.setState({
-                  statusFilter: newValue,
-
-
-                });
-
-                this.filterJobs(newValue,this.state.hardwareSystemFilter,this.state.tagsFilter);}}
-
-              renderInput={(params) => <TextField {...params} label="Filter by status" variant="outlined" />}
-              />
-
-              </div>
-
             </div>
-          </div>
-
           </Paper>
 
-    <div style={{fontSize: '40 px'  ,marginLeft:"1%", marginRight:"2%" }} >
-    <TableContainer component={Paper} >
-      <Table  aria-label="Job list" style={{fontSize: "40px"}}>
-        <TableHead>
-          <TableRow  style={{ height: 'auto !important' }} >
-          <StyledTableCell width="120 px" >
-                        <Tooltip title="Create job">
-                          <Link to="/new" ><MdAddCircle /></Link>
-                          </Tooltip>
-                          <Tooltip title="Reload Jobs">
-                          <Button disabled={this.state.refreshState} onClick={()=>{this.fetchData();this.setState({refreshState:true});   } } color="primary">  <FontAwesomeIcon icon={faRedo} color="#007bff" onClick={() => {}} spin={ this.state.refreshState=== true ? true : false } />
-                           </Button>
-                           </Tooltip>
-                           </StyledTableCell>
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}>
-                           <TableSortLabel
-                           active={this.state.sortBy === "jobID"}
-                           direction={this.state.sortOrder}
-                           onClick={this.requestSort("jobID")}
-                         >
+          <div style={{ fontSize: "40 px", marginLeft: "1%", marginRight: "2%" }}>
+            <TableContainer component={Paper}>
+              <Table aria-label="Job list" style={{ fontSize: "40px" }}>
+                <TableHead>
+                  <TableRow style={{ height: "auto !important" }}>
+                    <StyledTableCell width="120 px">
+                      <Tooltip title="Create job">
+                        <Link to="/new">
+                          <MdAddCircle />
+                        </Link>
+                      </Tooltip>
+                      <Tooltip title="Reload Jobs">
+                        <Button
+                          disabled={this.state.refreshState}
+                          onClick={() => {
+                            this.fetchData();
+                            this.setState({ refreshState: true });
+                          }}
+                          color="primary"
+                        >
+                          {" "}
+                          <FontAwesomeIcon
+                            icon={faRedo}
+                            color="#007bff"
+                            onClick={() => {}}
+                            spin={this.state.refreshState === true ? true : false}
+                          />
+                        </Button>
+                      </Tooltip>
+                    </StyledTableCell>
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      <TableSortLabel
+                        active={this.state.sortBy === "jobID"}
+                        direction={this.state.sortOrder}
+                        onClick={this.requestSort("jobID")}
+                      >
+                        ID
+                      </TableSortLabel>
+                    </StyledTableCell>
 
-                          ID
-
-
-                         </TableSortLabel>
-                           </StyledTableCell>
-
-
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><DoneAllIcon /> Status </StyledTableCell>
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><StorageIcon /> System </StyledTableCell>
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><CodeIcon /> Code  </StyledTableCell>
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}> <ScheduleIcon /> Submitted on</StyledTableCell>
-                           <StyledTableCell component="td" style={{fontSize: "16px", fontWeight: "bold"}}><AccountCircleIcon /> Submitted by </StyledTableCell>
-
-                           </TableRow>
-                         </TableHead>
-                         <TableBody  >
-                         {
-                          this.state.filteredJobs.slice(this.state.page * this.state.rowsPerPage,this.state.page * this.state.rowsPerPage +this.state.rowsPerPage ).map((job,index) =>
-                          // if(this.state.jobs.tags==this.selectedTag){
-                            // used striped rows shading
-                            <TableRow    key={job.id} hover={true} style ={ index % 2? {textDecoration: "none",background : "#f2f2f2" }:{textDecoration: "none", background : "white" }}>
-
-                            <StyledTableCell  component="td" scope="row"><Link to={'/' + job.id}> <SearchIcon /></Link> <Link to={'/'+ job.id+'/resubmit'}> <EditIcon /></Link></StyledTableCell>
-                            <StyledTableCell   component="td" scope="row"  >
-
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      <DoneAllIcon /> Status{" "}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      <StorageIcon /> System{" "}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      <CodeIcon /> Code{" "}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      {" "}
+                      <ScheduleIcon /> Submitted on
+                    </StyledTableCell>
+                    <StyledTableCell
+                      component="td"
+                      style={{ fontSize: "16px", fontWeight: "bold" }}
+                    >
+                      <AccountCircleIcon /> Submitted by{" "}
+                    </StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {
+                    this.state.filteredJobs
+                      .slice(
+                        this.state.page * this.state.rowsPerPage,
+                        this.state.page * this.state.rowsPerPage + this.state.rowsPerPage
+                      )
+                      .map((job, index) => (
+                        // if(this.state.jobs.tags==this.selectedTag){
+                        // used striped rows shading
+                        <TableRow
+                          key={job.id}
+                          hover={true}
+                          style={
+                            index % 2
+                              ? { textDecoration: "none", background: "#f2f2f2" }
+                              : { textDecoration: "none", background: "white" }
+                          }
+                        >
+                          <StyledTableCell component="td" scope="row">
+                            <Link to={"/" + job.id}>
+                              {" "}
+                              <SearchIcon />
+                            </Link>{" "}
+                            <Link to={"/" + job.id + "/resubmit"}>
+                              {" "}
+                              <EditIcon />
+                            </Link>
+                          </StyledTableCell>
+                          <StyledTableCell component="td" scope="row">
                             {job.id}
+                          </StyledTableCell>
 
+                          <StyledTableCell component="td" scope="row">
+                            <div>
+                              {job.status === "finished" ? (
+                                <Chip
+                                  avatar={
+                                    <Avatar>
+                                      <CheckCircleOutlineIcon />
+                                    </Avatar>
+                                  }
+                                  label="Finished"
+                                  color="primary"
+                                />
+                              ) : job.status === "error" ? (
+                                <Chip
+                                  avatar={
+                                    <Avatar>
+                                      <ErrorOutlineIcon />
+                                    </Avatar>
+                                  }
+                                  label={job.status}
+                                  color="secondary"
+                                />
+                              ) : (
+                                <Chip
+                                  avatar={
+                                    <Avatar style={{ backgroundColor: "#dbc300", color: "white" }}>
+                                      <LoopOutlinedIcon />
+                                    </Avatar>
+                                  }
+                                  label={job.status}
+                                  style={{ backgroundColor: "#dbc300", color: "white" }}
+                                />
+                              )}
+                            </div>
+                          </StyledTableCell>
+                          <StyledTableCell component="td" scope="row">
+                            {job.hardware_platform}
+                          </StyledTableCell>
+                          <StyledTableCell component="td" scope="row">
+                            <code>{job.code.substring(0, 50) + "..."}</code>
+                          </StyledTableCell>
+                          <StyledTableCell component="th" scope="row">
+                            {timeFormat(job.timestamp_submission)}
+                          </StyledTableCell>
+                          <StyledTableCell component="td" scope="row">
+                            {job.user_id}
+                          </StyledTableCell>
+                        </TableRow>
+                      ))
+                    // }
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+          <Paper
+            elevation={1}
+            style={{
+              marginTop: "1%",
+              paddingTop: "0.5%",
+              marginBottom: "1%",
+              marginLeft: "1%",
+              marginRight: "2%",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  float: "left",
+                  paddingBottom: "2%",
+                  paddingLeft: "2%",
+                  paddingTop: "0.5%",
+                }}
+              >
+                <WatchLaterIcon /> {this.state.refreshDate}
+              </div>
 
+              <div
+                style={{
+                  paddingLeft: "20%",
+                  paddingBottom: "2%",
+                  paddingRight: "2%",
+                  paddingTop: "2%",
+                }}
+              >
+                <TablePagination
+                  component="div"
+                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  count={this.state.filteredJobs.length}
+                  rowsPerPage={this.state.rowsPerPage}
+                  page={this.state.page}
+                  onChangePage={(e, n) => this.handleChangePage(e, n)}
+                  onChangeRowsPerPage={(e) => this.handleChangeRowsPerPage(e)}
+                />
+              </div>
+            </div>
+          </Paper>
+        </div>
+      </ThemeProvider>
+    );
+  }
+}
 
-                            </StyledTableCell>
-
-                            <StyledTableCell  component="td" scope="row">
-                              <div>
-                                {job.status === 'finished' ? <Chip avatar={<Avatar><CheckCircleOutlineIcon /></Avatar>} label="Finished"
-                                  color="primary"  /> :job.status === 'error'
-                                ? (  <Chip avatar={<Avatar><ErrorOutlineIcon /></Avatar>} label={job.status}
-                                  color="secondary" /> ) :
-                                  (  <Chip avatar={<Avatar style={{backgroundColor:'#dbc300' , color:'white'}}><LoopOutlinedIcon /></Avatar>} label={job.status}
-                                     style={{backgroundColor:'#dbc300', color:'white'}}  /> ) }
-                              </div>
-                            </StyledTableCell>
-                            <StyledTableCell  component="td" scope="row">{job.hardware_platform}</StyledTableCell>
-                            <StyledTableCell  component="td" scope="row"><code>{job.code.substring(0,50) + "..."}</code></StyledTableCell>
-                            <StyledTableCell  component="th" scope="row">{timeFormat(job.timestamp_submission)}</StyledTableCell>
-                            <StyledTableCell  component="td" scope="row">{job.user_id}</StyledTableCell>
-                            </TableRow>)
-                          // }
-                        }
-
-
-
-
-                        </TableBody>
-                       </Table>
-
-                        </TableContainer>
-
-                    </div>
-                    <Paper elevation={1} style={{marginTop:"1%",paddingTop:"0.5%" ,marginBottom:"1%", marginLeft:"1%", marginRight:"2%"}} >
-                <div >
-
-                    <div  style={{ float:"left", paddingBottom:"2%",paddingLeft:"2%",paddingTop:"0.5%" }}  >
-                    <WatchLaterIcon />  { this.state.refreshDate}
-                    </div>
-
-
-
-                    <div style={{  paddingLeft:"20%", paddingBottom:"2%",paddingRight:"2%",paddingTop:"2%"}}>
-                    <TablePagination
-
-                    component="div"
-                    rowsPerPageOptions={[10,20,50,100]}
-                    count={this.state.filteredJobs.length}
-                    rowsPerPage={this.state.rowsPerPage}
-                    page={this.state.page}
-                    onChangePage={(e,n)=>this.handleChangePage(e,n) }
-                    onChangeRowsPerPage={ (e)=>this.handleChangeRowsPerPage(e)}
-
-                  />
-                  </div>
-                  </div>
-                  </Paper>
-                      </div>
-                      </ThemeProvider>
-
-                    )
-                  };
-                }
-
-
-
-                export default JobList;
+export default JobList;
