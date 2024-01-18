@@ -1,10 +1,8 @@
-# FROM nginx:alpine
-
 # this two-stage build makes the final image much smaller
 # as it contains only the final built app
 
 # build environment
-FROM docker-registry.ebrains.eu/neuromorphic/node:18-alpine as build
+FROM docker-registry.ebrains.eu/neuromorphic/node:20-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
