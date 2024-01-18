@@ -1,6 +1,6 @@
 export const jobQueueServer = "https://nmpi-v3-staging.hbpneuromorphic.eu";
-export const authServer = "https://iam.ebrains.eu";
-export const authClientId = "neuromorphic-remote-access";
+export const authServer = "https://iam-int.ebrains.eu";
+export const authClientId = "neuromorphic-remote-access-staging";
 
 export const hw_options = [
   "BrainScaleS",
