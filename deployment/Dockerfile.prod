@@ -4,7 +4,7 @@
 # as it contains only the final built app
 
 # build environment
-FROM node:18-alpine as build
+FROM docker-registry.ebrains.eu/neuromorphic/node:18-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
@@ -15,7 +15,7 @@ COPY ./src/globals-prod.js ./src/globals.js
 RUN npm run build
 
 # production environment
-FROM nginx:stable-alpine
+FROM docker-registry.ebrains.eu/neuromorphic/nginx:stable-alpine
 COPY deployment/nginx-app.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
