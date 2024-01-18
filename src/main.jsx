@@ -1,31 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Keycloak from "keycloak-js";
 
 import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 
-import { authServer, authClientId } from "./globals";
+import initAuth from "./auth.js";
 import ErrorPage from "./components/ErrorPage.jsx";
 import AuthContext from "./AuthContext.js";
 import RequestedCollabContext from "./RequestedCollabContext.js";
-//import initAuth from "./auth.js_";
 
 import Home, { getLoader as collabLoader } from "./routes/home";
-import JobListRoute, {
-  getLoader as jobListLoader,
-  submitJob,
-} from "./routes/jobs";
-import JobDetailRoute, {
-  getLoader as jobLoader,
-  submitComment,
-} from "./routes/job-detail";
-import ProjectListRoute, {
-  getLoader as projectListLoader,
-} from "./routes/projects";
+import JobListRoute, { getLoader as jobListLoader, submitJob } from "./routes/jobs";
+import JobDetailRoute, { getLoader as jobLoader, submitComment } from "./routes/job-detail";
+import ProjectListRoute, { getLoader as projectListLoader } from "./routes/projects";
 import { updateProject } from "./routes/project-detail";
+
+// Define routes
 
 function getRouter(keycloak) {
   return createBrowserRouter([
@@ -59,6 +51,8 @@ function getRouter(keycloak) {
   ]);
 }
 
+// Define theme
+
 const theme = createTheme({
   typography: {
     h2: {
@@ -81,58 +75,24 @@ const theme = createTheme({
   },
 });
 
-// function renderApp(auth) {
-//   ReactDOM.createRoot(document.getElementById("root")).render(
-//     <React.StrictMode>
-//       <ThemeProvider theme={theme}>
-//         <CssBaseline />
-//         <AuthContext.Provider value={auth}>
-//           <RouterProvider router={router} />
-//         </AuthContext.Provider>
-//       </ThemeProvider>
-//     </React.StrictMode>
-//   );
-// }
+// Authenticate, then render the app
 
-const keycloak = new Keycloak({
-  url: `${authServer}/auth`,
-  realm: "hbp",
-  clientId: authClientId,
-});
-const SCOPES = "openid team collab.drive group roles";
+function renderApp(auth) {
+  const params = new URL(document.location).searchParams;
+  const requestedCollabId = params.get("clb-collab-id");
 
-try {
-  const authenticated = await keycloak.init({
-    onLoad: "login-required",
-    //scope: SCOPES,
-  });
-  console.log(
-    `User is ${authenticated ? "authenticated" : "not authenticated"}`
+  ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthContext.Provider value={auth}>
+          <RequestedCollabContext.Provider value={requestedCollabId}>
+            <RouterProvider router={getRouter(auth)} />
+          </RequestedCollabContext.Provider>
+        </AuthContext.Provider>
+      </ThemeProvider>
+    </React.StrictMode>
   );
-  if (authenticated) {
-    console.log(keycloak.token);
-    console.log(keycloak.tokenParsed);
-    console.log(keycloak.refreshTokenParsed);
-  }
-} catch (error) {
-  console.error("Failed to initialize adapter:", error);
 }
 
-const params = new URL(document.location).searchParams;
-const requestedCollabId = params.get("clb-collab-id");
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthContext.Provider value={keycloak}>
-        <RequestedCollabContext.Provider value={requestedCollabId}>
-          <RouterProvider router={getRouter(keycloak)} />
-        </RequestedCollabContext.Provider>
-      </AuthContext.Provider>
-    </ThemeProvider>
-  </React.StrictMode>
-);
-
-//window.addEventListener("DOMContentLoaded", () => initAuth(renderApp));
-//window.addEventListener('DOMContentLoaded', () => renderApp(null));
+window.addEventListener("DOMContentLoaded", () => initAuth(renderApp));
