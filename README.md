@@ -1,29 +1,37 @@
-# Job Manager app (version 2) for the EBRAINS Neuromorphic Computing Service
+# Job Manager app (version 3) for the EBRAINS Neuromorphic Computing Service
 
 Available online at https://job-manager.hbpneuromorphic.eu and as an app in the EBRAINS Collaboratory.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with Vite.
 
 ## Available Scripts
 
-In the project directory, you can run:
+To run the development server:
 
-### `yarn start` or `npm start`
+### `npm run dev`
 
-Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+The page will reload if you make edits.
 
-### `yarn test` or `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ## Acknowledgments
 
-This application was developed in the Human Brain Project,
+The current version of the application was developed as part of the EBRAINS research infrastructure,
+funded from the European Union’s Horizon Europe Framework Programme for Research and Innovation
+under Specific Grant Agreement No. xyzxyz (EBRAINS 2.0).
+
+Previous versions were developed in the Human Brain Project,
 funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation
 under Specific Grant Agreements No. 720270, No. 785907 and No. 945539
 (Human Brain Project SGA1, SGA2 and SGA3).
+
+
+
+## Dev notes
+
+- This reimplementation is based on React Router
+- The goals are:
+    - more consistent behaviour when navigating between internal pages
+    - replace OIDC Implicit flow with Authorization Code flow
+    - upgrade MUI to v5

@@ -1,51 +1,35 @@
+function timeFormat(defaultFormatDate) {
+  let formattedDate =
+    String(defaultFormatDate).slice(0, 4) +
+    "/" +
+    String(defaultFormatDate).slice(5, 7) +
+    "/" +
+    String(defaultFormatDate).slice(8, 10) +
+    " " +
+    String(defaultFormatDate).slice(11, 19);
 
-
-
-export function timeFormat(defaultFormatDate)
-{
-let formattedDate = String(defaultFormatDate).slice(0,4)+"/"+String(defaultFormatDate).slice(5,7)+"/"+String(defaultFormatDate).slice(8,10)+" "+String(defaultFormatDate).slice(11,19);
-
-return formattedDate;
-
+  return formattedDate;
 }
 
-
-export function currentDate()
-{let currentdate = new Date();
-  return  currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/"
-    + currentdate.getFullYear() + " @ "
-    + currentdate.getHours() + ":"
-    + currentdate.getMinutes() + ":"
-    + currentdate.getSeconds();
-
+function parseArray(string) {
+  const parts = string.split(",");
+  return parts.map((item) => item.trim());
 }
 
-
-
-export function currentDateFileFormat()
-{let currentdate = new Date();
-  return  currentdate.getDate() + "_"
-    + (currentdate.getMonth()+1)  + "_"
-    + currentdate.getFullYear() + "_"
-    + currentdate.getHours() + "_"
-    + currentdate.getMinutes() + "_"
-    + currentdate.getSeconds();
-
-}
-
-export function isItemInArray(array, item) {
-  for (var i = 0; i < array.length; i++) {
-    var count=0;
-    for (var j = 0; j < item.length; j++) { 
-
-      if (array[i][j] === item[j]) {
-            count++;
-        }
-        if(count===item.length)
-        {return i; }
-      }
+function formatArray(arr) {
+  if (arr) {
+    return arr.join(", ");
+  } else {
+    return "";
   }
-
-  return -1;   // Not found
 }
+
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+function isAlmostEmpty(obj) {
+  return Object.keys(obj).length <= 1;
+}
+
+export { timeFormat, parseArray, formatArray, isEmpty, isAlmostEmpty };
