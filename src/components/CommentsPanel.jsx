@@ -39,7 +39,9 @@ function CommentsPanel(props) {
 
   const handleSubmit = (comment) => {
     const commentData = {
-      content: comment,
+      comment: {
+        content: comment,
+      },
     };
     submit(commentData, {
       method: "post",

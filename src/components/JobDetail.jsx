@@ -46,7 +46,7 @@ function JobDetail(props) {
         )}
       </Typography>
 
-      <FilesPanel label="Output files" dataset={job.output_data} />
+      <FilesPanel label="Output files" dataset={job.output_data} collab={collab} jobId={job.id} />
 
       <CodePanel content={job.code} />
 

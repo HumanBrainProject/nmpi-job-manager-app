@@ -146,6 +146,22 @@ async function createComment(jobId, commentData, auth) {
   }
 }
 
+async function changeRepository(collabId, jobId, targetRepository, auth) {
+  const url = jobQueueServer + "/jobs/" + jobId + "/output_data/";
+  let config = getRequestConfig(auth);
+  config.method = "PUT";
+  config.body = JSON.stringify({ repository: targetRepository, files: [] });
+  const response = await fetch(url, config);
+  if (response.ok) {
+    const updatedRepository = await response.json();
+    // update cache
+    cache.jobs[collabId][jobId].output_data = updatedRepository;
+    return "success";
+  } else {
+    throw new Error("changing data repository was not successful");
+  }
+}
+
 async function queryProjects(collab, auth) {
   if (!(collab in cache.projects)) {
     cache.projects[collab] = {};
@@ -242,6 +258,7 @@ export {
   getLog,
   getComments,
   createComment,
+  changeRepository,
   patchProject,
   createProject,
   deleteProject,

@@ -13,7 +13,7 @@ import RequestedCollabContext from "./RequestedCollabContext.js";
 
 import Home, { getLoader as collabLoader } from "./routes/home";
 import JobListRoute, { getLoader as jobListLoader, submitJob } from "./routes/jobs";
-import JobDetailRoute, { getLoader as jobLoader, submitComment } from "./routes/job-detail";
+import JobDetailRoute, { getLoader as jobLoader, actionOnJob } from "./routes/job-detail";
 import ProjectListRoute, { getLoader as projectListLoader } from "./routes/projects";
 import { updateProject } from "./routes/project-detail";
 
@@ -39,7 +39,7 @@ function getRouter(keycloak) {
       element: <JobDetailRoute />,
       errorElement: <ErrorPage />,
       loader: jobLoader(keycloak),
-      action: submitComment(keycloak),
+      action: actionOnJob(keycloak),
     },
     {
       path: "/:collabId/projects/",
