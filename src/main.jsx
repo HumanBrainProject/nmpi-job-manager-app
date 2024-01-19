@@ -16,6 +16,7 @@ import JobListRoute, { getLoader as jobListLoader, submitJob } from "./routes/jo
 import JobDetailRoute, { getLoader as jobLoader, actionOnJob } from "./routes/job-detail";
 import ProjectListRoute, { getLoader as projectListLoader } from "./routes/projects";
 import { updateProject } from "./routes/project-detail";
+import DriveRoute, { getLoader as driveContentLoader } from "./routes/drive";
 
 // Define routes
 
@@ -47,6 +48,12 @@ function getRouter(keycloak) {
       errorElement: <ErrorPage />,
       loader: projectListLoader(keycloak),
       action: updateProject(keycloak),
+    },
+    {
+      path: "/:collabId/drive/*",
+      element: <DriveRoute />,
+      errorElement: <ErrorPage />,
+      loader: driveContentLoader(keycloak),
     },
   ]);
 }
