@@ -30,7 +30,7 @@ under Specific Grant Agreements No. 720270, No. 785907 and No. 945539
 
 ## Dev notes
 
-- This reimplementation is based on React Router
+- This reimplementation is based on React Router v6.
 - The goals are:
     - more consistent behaviour when navigating between internal pages
     - replace OIDC Implicit flow with Authorization Code flow

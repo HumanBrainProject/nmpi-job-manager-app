@@ -1,9 +1,9 @@
 import React from "react";
-import { Await, defer, useLoaderData, useParams, Link } from "react-router-dom";
+import { Await, defer, useLoaderData, useParams } from "react-router-dom";
 
 import { Container } from "@mui/material";
 
-import { getJob, createComment } from "../datastore";
+import { getJob, createComment, changeRepository } from "../datastore";
 import Toolbar from "../components/Toolbar";
 import JobDetail from "../components/JobDetail";
 import ProgressIndicator from "../components/ProgressIndicator";
@@ -18,27 +18,37 @@ export function getLoader(auth) {
   return loader;
 }
 
-export function submitComment(auth) {
-  const wrappedSubmitComment = async ({ request, params }) => {
+function submitComment(request, jobId, commentData, auth) {
+  if (request.method === "POST") {
+    return createComment(jobId, commentData, auth);
+  } else {
+    throw new Error("unexpected request method");
+  }
+}
+
+function copyOutputData(request, collabId, jobId, targetRepository, auth) {
+  if (request.method === "PUT") {
+    return changeRepository(collabId, jobId, targetRepository, auth);
+  } else {
+    throw new Error("unexpected request method");
+  }
+}
+
+export function actionOnJob(auth) {
+  const wrappedActionOnJob = async ({ request, params }) => {
     const { collabId, jobId } = params;
     console.log(request);
-    const commentData = await request.json();
+    const actionData = await request.json();
 
-    console.log(`collab = ${collabId} job = ${jobId}`);
-    console.log(commentData);
-    // if (request.method === "PUT") {
-    //   throw new Error("Not yet implemented")
-    // } else
-    if (request.method === "POST") {
-      return createComment(jobId, commentData, auth);
-    } //else if (request.method === "DELETE") {
-    //   throw new Error("Not yet implemented")
-    // } else {
-    //   throw new Error("unexpected request method");
-    // }
+    if (actionData.comment) {
+      return submitComment(request, jobId, actionData.comment, auth);
+    }
+    if (actionData.targetRepository) {
+      return copyOutputData(request, collabId, jobId, actionData.targetRepository, auth);
+    }
     return "whatever";
   };
-  return wrappedSubmitComment;
+  return wrappedActionOnJob;
 }
 
 function JobDetailRoute() {
