@@ -1,8 +1,6 @@
 import React from "react";
 
-import { Link as RouterLink } from "react-router-dom";
-
-import { Breadcrumbs as MUIBreadcrumbs, Divider, Link } from "@mui/material";
+import { Breadcrumbs as MUIBreadcrumbs, Divider, IconButton, Link } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -18,7 +16,7 @@ import {
   Home as HomeIcon,
 } from "@mui/icons-material";
 
-function FileOrDir({ name, path, type, id, size, mtime, collab }) {
+function FileOrDir({ name, path, type, id, size, mtime, followLink }) {
   if (type === "dir") {
     let pathPart = "";
     if (path) {
@@ -30,7 +28,9 @@ function FileOrDir({ name, path, type, id, size, mtime, collab }) {
           <FolderIcon color="disabled" />
         </TableCell>
         <TableCell>
-          <RouterLink to={`/${collab}/drive/${pathPart}${name}`}>{name}</RouterLink>
+          <Link href="#" onClick={() => followLink(pathPart + name)}>
+            {name}
+          </Link>
         </TableCell>
         <TableCell>{size}</TableCell>
         <TableCell>{new Date(mtime * 1000).toLocaleString()}</TableCell>
@@ -53,18 +53,15 @@ function FileOrDir({ name, path, type, id, size, mtime, collab }) {
 
 function Breadcrumbs(props) {
   let pathParts = props.path.split("/");
-  let urls = pathParts.map((part, index) => {
-    return `${props.root}/${pathParts.slice(0, index + 1).join("/")}`;
+  let fullPaths = pathParts.map((part, index) => {
+    return `${pathParts.slice(0, index + 1).join("/")}`;
   });
-  urls[urls.length - 1] = "";
-  console.log(pathParts);
-  console.log(urls);
+  fullPaths[fullPaths.length - 1] = "";
   const links = pathParts.map((part, index) => {
-    const url = urls[index];
-    console.log(url, part, index);
-    if (url) {
+    const fullPath = fullPaths[index];
+    if (fullPath) {
       return (
-        <Link to={url} component={RouterLink}>
+        <Link href="#" onClick={() => props.onChangePath(fullPath)}>
           <Typography variant="body2">{part}</Typography>
         </Link>
       );
@@ -74,9 +71,9 @@ function Breadcrumbs(props) {
   });
   return (
     <MUIBreadcrumbs sx={{ padding: 1 }}>
-      <Link to={props.root + "/"} component={RouterLink}>
+      <IconButton onClick={() => props.onChangePath("")}>
         <HomeIcon size="small" color="disabled" />
-      </Link>
+      </IconButton>
       {...links}
     </MUIBreadcrumbs>
   );
@@ -84,8 +81,8 @@ function Breadcrumbs(props) {
 
 function FileBrowser(props) {
   return (
-    <Paper sx={{ marginTop: 2, padding: 1 }}>
-      <Breadcrumbs root={`/${props.collab}/drive`} path={props.path} />
+    <Paper sx={{ marginTop: 2, padding: 1, height: props.height }}>
+      <Breadcrumbs path={props.path} onChangePath={props.onChangePath} />
       <Divider />
       <TableContainer>
         <Table size="small" sx={{ minHeight: "2vh" }}>
@@ -111,7 +108,7 @@ function FileBrowser(props) {
           </TableHead>
           <TableBody>
             {props.contents.map((item) => (
-              <FileOrDir key={item.id} {...item} collab={props.collab} />
+              <FileOrDir key={item.id} {...item} followLink={props.onChangePath} />
             ))}
           </TableBody>
         </Table>

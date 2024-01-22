@@ -145,6 +145,7 @@ function Toolbar(props) {
       <CreateJobDialog
         open={newJobDialogOpen}
         onClose={handleCloseNewJobDialog}
+        collab={props.collab}
       />
     </Fragment>
   );

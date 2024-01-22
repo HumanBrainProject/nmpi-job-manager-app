@@ -29,16 +29,9 @@ function CreateJobDialog(props) {
 
   const getHardwareConfig = (hardwareName) => {
     if (hardwareName === "SpiNNaker") {
-      return (
-        <SpiNNakerConfig config={hardwareConfig} onChange={setHardwareConfig} />
-      );
+      return <SpiNNakerConfig config={hardwareConfig} onChange={setHardwareConfig} />;
     } else if (hardwareName === "BrainScaleS") {
-      return (
-        <BrainScaleSConfig
-          config={hardwareConfig}
-          onChange={setHardwareConfig}
-        />
-      );
+      return <BrainScaleSConfig config={hardwareConfig} onChange={setHardwareConfig} />;
     } else {
       return "";
     }
@@ -69,12 +62,7 @@ function CreateJobDialog(props) {
   };
 
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth={true}
-      maxWidth="lg"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg">
       <DialogTitle>New job</DialogTitle>
       <DialogContent>
         <DialogContentText></DialogContentText>
@@ -112,6 +100,7 @@ function CreateJobDialog(props) {
             initialTab={code.startsWith("http") ? "from-url" : "editor"}
             code={code}
             onChange={(value) => setCode(value)}
+            collab={props.collab}
           />
 
           {/* Command */}

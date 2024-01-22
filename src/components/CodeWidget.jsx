@@ -4,6 +4,8 @@ import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 import Editor from "@monaco-editor/react";
 
+import DriveBrowser from "./DriveBrowser.jsx";
+
 function validURL(value) {
   return value.startsWith("http"); // todo: use a regex
 }
@@ -13,9 +15,7 @@ function CodeWidget(props) {
   const [codeFromEditor, setCodeFromEditor] = useState(
     props.initialTab === "editor" ? props.code : ""
   );
-  const [codeURL, setCodeURL] = useState(
-    props.initialTab === "from-url" ? props.code : ""
-  );
+  const [codeURL, setCodeURL] = useState(props.initialTab === "from-url" ? props.code : "");
 
   const handleChangeTab = (event, newValue) => {
     setCurrentTab(newValue);
@@ -50,11 +50,8 @@ function CodeWidget(props) {
           sx={{ border: "thin lightgray solid" }}
         >
           <Tab label="Editor" value="editor" id="tab-code-editor" />
-          <Tab
-            label="From Git repository or zip archive"
-            value="from-url"
-            id="tab-code-url"
-          />
+          <Tab label="From Git repository or zip archive" value="from-url" id="tab-code-url" />
+          <Tab label="From Drive" value="drive" id="tab-drive" />
         </TabList>
         <TabPanel value="editor">
           <Editor
@@ -85,6 +82,10 @@ function CodeWidget(props) {
             value={codeURL}
             onChange={handleChangeCodeURL}
           />
+        </TabPanel>
+
+        <TabPanel value="drive">
+          <DriveBrowser collab={props.collab} height="40vh" />
         </TabPanel>
       </TabContext>
     </Box>
