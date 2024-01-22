@@ -1,14 +1,17 @@
+import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import {
   ArrowBack,
   Launch as LaunchIcon,
   LocationOn as LocationOnIcon,
   DeveloperBoard as DeveloperBoardIcon,
+  RestartAlt as RestartIcon,
 } from "@mui/icons-material";
 
 import { timeFormat, isEmpty } from "../utils";
+import JobCreationContext from "../JobCreationContext.js";
 import StatusChip from "./StatusChip";
 import Panel from "./Panel";
 import CodePanel from "./CodePanel";
@@ -19,23 +22,31 @@ import KeyValueTable from "./KeyValueTable";
 
 function JobDetail(props) {
   const { job, collab } = props;
-  console.log(job);
+  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
+    useContext(JobCreationContext);
+
+  const handleEditAndResubmit = () => {
+    setNewJobDialogOpen(true);
+    setCurrentJob(job);
+  };
+
   return (
     <Box sx={{ marginBottom: 6 }}>
       <Typography variant="h2" sx={{ mt: 3 }}>
-        <IconButton
-          component={RouterLink}
-          to={`/${collab}/jobs/`}
-          sx={{ mr: 1 }}
-        >
+        <IconButton component={RouterLink} to={`/${collab}/jobs/`} sx={{ mr: 1 }}>
           <ArrowBack />
         </IconButton>
         Job #{job.id} <StatusChip status={job.status} />
+        <Tooltip title="Create a new job based on this one">
+          <IconButton onClick={handleEditAndResubmit}>
+            <RestartIcon />
+          </IconButton>
+        </Tooltip>
       </Typography>
 
       <Typography variant="body2" sx={{ marginBottom: 3 }}>
-        Submitted on <b>{timeFormat(job.timestamp_submission)}</b> by{" "}
-        <b>{job.user_id}</b> to <b>{job.hardware_platform}</b>
+        Submitted on <b>{timeFormat(job.timestamp_submission)}</b> by <b>{job.user_id}</b> to{" "}
+        <b>{job.hardware_platform}</b>
         {job.timestamp_completion ? (
           <span>
             <br />
@@ -65,9 +76,7 @@ function JobDetail(props) {
         icon={<DeveloperBoardIcon color="disabled" sx={{ mr: 1 }} />}
         defaultExpanded={true}
       >
-        {job.hardware_config ? (
-          <KeyValueTable boldKeys data={job.hardware_config} />
-        ) : null}
+        {job.hardware_config ? <KeyValueTable boldKeys data={job.hardware_config} /> : null}
       </Panel>
 
       <Panel

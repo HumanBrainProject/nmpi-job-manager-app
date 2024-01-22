@@ -48,6 +48,8 @@ function DriveBrowser(props) {
     fetchData();
   }, [props, path]);
 
+  // todo: only show .py, .tar, .tar.gz, .tgz, .zip files
+
   return (
     <FileBrowser
       contents={contents}

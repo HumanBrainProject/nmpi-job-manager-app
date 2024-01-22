@@ -12,6 +12,7 @@ import {
 
 import CreateJobDialog from "./CreateJobDialog";
 import RequestedCollabContext from "../RequestedCollabContext";
+import JobCreationContext from "../JobCreationContext.js";
 
 function renderButtons(page, collab, createNewJob) {
   switch (page) {
@@ -97,9 +98,10 @@ function getHomeURL(requestedCollabId) {
 }
 
 function Toolbar(props) {
-  const [newJobDialogOpen, setNewJobDialogOpen] = useState(false);
   const submit = useSubmit();
   const requestedCollabId = useContext(RequestedCollabContext);
+  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
+    useContext(JobCreationContext);
 
   const handleOpenNewJobDialog = () => {
     setNewJobDialogOpen(true);
@@ -117,6 +119,7 @@ function Toolbar(props) {
       });
     }
     setNewJobDialogOpen(false);
+    setCurrentJob({});
   };
 
   return (

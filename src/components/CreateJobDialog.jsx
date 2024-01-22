@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Box,
   Button,
@@ -19,8 +19,12 @@ import { hw_options } from "../globals";
 import CodeWidget from "./CodeWidget";
 import BrainScaleSConfig from "./BrainScaleSConfig";
 import SpiNNakerConfig from "./SpiNNakerConfig";
+import JobCreationContext from "../JobCreationContext.js";
 
 function CreateJobDialog(props) {
+  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
+    useContext(JobCreationContext);
+
   const [hardware, setHardware] = useState("");
   const [code, setCode] = useState("");
   const [command, setCommand] = useState("");
@@ -61,6 +65,24 @@ function CreateJobDialog(props) {
     props.onClose(newJob);
   };
 
+  const getInitialTab = (code) => {
+    if (code.startsWith("http")) {
+      return "from-url";
+    } else if (code.startsWith("drive")) {
+      return "drive";
+    } else {
+      return "editor";
+    }
+  };
+
+  useEffect(() => {
+    setHardware(currentJob.hardware_platform || "");
+    setCode(currentJob.code || "");
+    setCommand(currentJob.command || "");
+    setHardwareConfig(currentJob.hardware_config || {});
+    setTags(currentJob.tags || []);
+  }, [currentJob]);
+
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg">
       <DialogTitle>New job</DialogTitle>
@@ -97,7 +119,7 @@ function CreateJobDialog(props) {
 
           {/* Code */}
           <CodeWidget
-            initialTab={code.startsWith("http") ? "from-url" : "editor"}
+            initialTab={getInitialTab(code)}
             code={code}
             onChange={(value) => setCode(value)}
             collab={props.collab}
