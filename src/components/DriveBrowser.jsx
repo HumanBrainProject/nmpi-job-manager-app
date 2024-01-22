@@ -43,14 +43,20 @@ function DriveBrowser(props) {
   useEffect(() => {
     async function fetchData() {
       const repo = await getCollabRepo(props.collab, auth);
-      console.log(repo); // todo: cache this
       setContents(await getRepoContents(repo.id, path, auth));
     }
     fetchData();
   }, [props, path]);
 
   return (
-    <FileBrowser contents={contents} path={path} onChangePath={setPath} height={props.height} />
+    <FileBrowser
+      contents={contents}
+      path={path}
+      onChangePath={setPath}
+      selected={props.value}
+      onSetSelected={props.onChange}
+      height={props.height}
+    />
   );
 }
 

@@ -16,7 +16,7 @@ import {
   Home as HomeIcon,
 } from "@mui/icons-material";
 
-function FileOrDir({ name, path, type, id, size, mtime, followLink }) {
+function FileOrDir({ name, path, type, id, size, mtime, followLink, selected, onSelect }) {
   if (type === "dir") {
     let pathPart = "";
     if (path) {
@@ -25,7 +25,9 @@ function FileOrDir({ name, path, type, id, size, mtime, followLink }) {
     return (
       <TableRow key={id}>
         <TableCell>
-          <FolderIcon color="disabled" />
+          <IconButton size="small" onClick={() => onSelect(pathPart + name)}>
+            <FolderIcon color={selected ? "primary" : "disabled"} />
+          </IconButton>
         </TableCell>
         <TableCell>
           <Link href="#" onClick={() => followLink(pathPart + name)}>
@@ -40,8 +42,9 @@ function FileOrDir({ name, path, type, id, size, mtime, followLink }) {
     return (
       <TableRow key={id}>
         <TableCell>
-          {" "}
-          <FileIcon color="disabled" />
+          <IconButton size="small" onClick={() => onSelect(path + "/" + name)}>
+            <FileIcon color={selected ? "primary" : "disabled"} />
+          </IconButton>
         </TableCell>
         <TableCell>{name}</TableCell>
         <TableCell>{size}</TableCell>
@@ -80,8 +83,16 @@ function Breadcrumbs(props) {
 }
 
 function FileBrowser(props) {
+  const buildPath = (parentName, itemName) => {
+    if (parentName) {
+      return `${parentName}/${itemName}`;
+    } else {
+      return itemName;
+    }
+  };
+
   return (
-    <Paper sx={{ marginTop: 2, padding: 1, height: props.height }}>
+    <Paper sx={{ marginTop: 2, padding: 1, height: props.height, overflowY: "auto" }}>
       <Breadcrumbs path={props.path} onChangePath={props.onChangePath} />
       <Divider />
       <TableContainer>
@@ -108,7 +119,13 @@ function FileBrowser(props) {
           </TableHead>
           <TableBody>
             {props.contents.map((item) => (
-              <FileOrDir key={item.id} {...item} followLink={props.onChangePath} />
+              <FileOrDir
+                key={item.id}
+                {...item}
+                followLink={props.onChangePath}
+                selected={buildPath(props.path, item.name) === props.selected}
+                onSelect={props.onSetSelected}
+              />
             ))}
           </TableBody>
         </Table>

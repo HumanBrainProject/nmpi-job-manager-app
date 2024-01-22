@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Tab, TextField } from "@mui/material";
+import { Box, Tab, TextField, Typography } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 import Editor from "@monaco-editor/react";
@@ -16,6 +16,7 @@ function CodeWidget(props) {
     props.initialTab === "editor" ? props.code : ""
   );
   const [codeURL, setCodeURL] = useState(props.initialTab === "from-url" ? props.code : "");
+  const [codeFromDrive, setCodeFromDrive] = useState("");
 
   const handleChangeTab = (event, newValue) => {
     setCurrentTab(newValue);
@@ -31,6 +32,11 @@ function CodeWidget(props) {
   const handleChangeEditorContent = (value) => {
     setCodeFromEditor(value);
     props.onChange(value);
+  };
+
+  const handleChangeDrivePath = (value) => {
+    setCodeFromDrive(value);
+    props.onChange(`drive://${props.collab}/${value}`);
   };
 
   return (
@@ -83,9 +89,16 @@ function CodeWidget(props) {
             onChange={handleChangeCodeURL}
           />
         </TabPanel>
-
         <TabPanel value="drive">
-          <DriveBrowser collab={props.collab} height="40vh" />
+          <DriveBrowser
+            collab={props.collab}
+            height="40vh"
+            value={codeFromDrive}
+            onChange={handleChangeDrivePath}
+          />
+          <Typography variant="caption" color="gray">
+            Click on the icon of the file or folder containing the code you would like to run.
+          </Typography>
         </TabPanel>
       </TabContext>
     </Box>
