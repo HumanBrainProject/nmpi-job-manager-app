@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, Fragment } from "react";
+import { Link, useRevalidator } from "react-router-dom";
 
 import {
   Button,
@@ -29,7 +29,7 @@ import {
 import StatusChip from "./StatusChip";
 
 import { DELTA_JOBS } from "../globals";
-import { timeFormat } from "../utils";
+import { jobIsIncomplete, timeFormat } from "../utils";
 
 function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
   function hasStatus(job) {
@@ -96,8 +96,21 @@ function JobList(props) {
   let [statusFilter, setStatusFilter] = useState("");
   let [hardwareFilter, setHardwareFilter] = useState("");
   let [tagFilter, setTagFilter] = useState("");
+  let revalidator = useRevalidator();
 
   useEffect(() => {
+    const incompleteJobs = props.jobs.filter((job) => jobIsIncomplete(job));
+    if (incompleteJobs.length > 0 && revalidator.state === "idle") {
+      console.log(
+        "There are submitted or running jobs, page will refresh every 5 seconds until all jobs are complete"
+      );
+      const intervalID = setInterval(() => {
+        if (revalidator.state === "idle") {
+          revalidator.revalidate();
+        }
+      }, 5000);
+      return () => clearInterval(intervalID);
+    }
     setFilteredJobs(filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter));
   }, [props.jobs, statusFilter, hardwareFilter, tagFilter]);
 

@@ -30,7 +30,6 @@ function JobDetail(props) {
       );
       const intervalID = setInterval(() => {
         if (revalidator.state === "idle") {
-          console.log("Refreshing page");
           revalidator.revalidate();
         }
       }, 5000);

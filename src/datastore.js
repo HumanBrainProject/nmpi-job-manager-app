@@ -58,6 +58,11 @@ async function queryJobs(collab, auth, requestedSize) {
   jobArray.sort((a, b) => {
     return b.id - a.id; // sort by descending order of job id
   });
+  // for incomplete jobs, check if they've completed
+  const incompleteJobs = jobArray.filter((job) => jobIsIncomplete(job));
+  for (const job of incompleteJobs) {
+    getJob(job.id, collab, auth);
+  }
   return jobArray.slice(0, size);
 }
 
