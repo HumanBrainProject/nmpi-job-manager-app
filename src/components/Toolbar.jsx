@@ -11,8 +11,7 @@ import {
 } from "@mui/material";
 
 import CreateJobDialog from "./CreateJobDialog";
-import RequestedCollabContext from "../RequestedCollabContext";
-import JobCreationContext from "../JobCreationContext.js";
+import { RequestedCollabContext, JobCreationContext } from "../context";
 
 function renderButtons(page, collab, createNewJob) {
   switch (page) {
@@ -100,11 +99,10 @@ function getHomeURL(requestedCollabId) {
 function Toolbar(props) {
   const submit = useSubmit();
   const requestedCollabId = useContext(RequestedCollabContext);
-  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
-    useContext(JobCreationContext);
+  const jobCreator = useContext(JobCreationContext);
 
   const handleOpenNewJobDialog = () => {
-    setNewJobDialogOpen(true);
+    jobCreator.setNewJobDialogOpen(true);
   };
 
   const handleCloseNewJobDialog = (newJob) => {
@@ -118,8 +116,8 @@ function Toolbar(props) {
         navigate: true,
       });
     }
-    setNewJobDialogOpen(false);
-    setCurrentJob({});
+    jobCreator.setNewJobDialogOpen(false);
+    jobCreator.setCurrentJob({});
   };
 
   return (
@@ -146,7 +144,7 @@ function Toolbar(props) {
         </MUIToolbar>
       </AppBar>
       <CreateJobDialog
-        open={newJobDialogOpen}
+        open={jobCreator.newJobDialogOpen}
         onClose={handleCloseNewJobDialog}
         collab={props.collab}
       />

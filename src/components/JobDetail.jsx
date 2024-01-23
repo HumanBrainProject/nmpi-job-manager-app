@@ -11,7 +11,7 @@ import {
 } from "@mui/icons-material";
 
 import { timeFormat, isEmpty } from "../utils";
-import JobCreationContext from "../JobCreationContext.js";
+import { JobCreationContext } from "../context.js";
 import StatusChip from "./StatusChip";
 import Panel from "./Panel";
 import CodePanel from "./CodePanel";
@@ -22,12 +22,11 @@ import KeyValueTable from "./KeyValueTable";
 
 function JobDetail(props) {
   const { job, collab } = props;
-  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
-    useContext(JobCreationContext);
+  const jobCreator = useContext(JobCreationContext);
 
   const handleEditAndResubmit = () => {
-    setNewJobDialogOpen(true);
-    setCurrentJob(job);
+    jobCreator.setNewJobDialogOpen(true);
+    jobCreator.setCurrentJob(job);
   };
 
   return (

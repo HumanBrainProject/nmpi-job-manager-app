@@ -1,5 +1,7 @@
 import { createContext } from "react";
 
+const AuthContext = createContext(null);
+
 const JobCreationContext = createContext({
   currentJob: {},
   setCurrentJob: () => {},
@@ -7,4 +9,6 @@ const JobCreationContext = createContext({
   setNewJobDialogOpen: () => {},
 });
 
-export default JobCreationContext;
+const RequestedCollabContext = createContext(null);
+
+export { AuthContext, JobCreationContext, RequestedCollabContext };

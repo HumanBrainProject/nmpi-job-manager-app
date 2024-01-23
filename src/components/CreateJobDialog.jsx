@@ -19,11 +19,10 @@ import { hw_options } from "../globals";
 import CodeWidget from "./CodeWidget";
 import BrainScaleSConfig from "./BrainScaleSConfig";
 import SpiNNakerConfig from "./SpiNNakerConfig";
-import JobCreationContext from "../JobCreationContext.js";
+import { JobCreationContext } from "../context.js";
 
 function CreateJobDialog(props) {
-  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
-    useContext(JobCreationContext);
+  const jobCreator = useContext(JobCreationContext);
 
   const [hardware, setHardware] = useState("");
   const [code, setCode] = useState("");
@@ -76,12 +75,13 @@ function CreateJobDialog(props) {
   };
 
   useEffect(() => {
+    const currentJob = jobCreator.currentJob;
     setHardware(currentJob.hardware_platform || "");
     setCode(currentJob.code || "");
     setCommand(currentJob.command || "");
     setHardwareConfig(currentJob.hardware_config || {});
     setTags(currentJob.tags || []);
-  }, [currentJob]);
+  }, [jobCreator.currentJob]);
 
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth={true} maxWidth="lg">

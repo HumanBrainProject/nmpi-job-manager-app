@@ -24,7 +24,7 @@ import StatusChip from "./StatusChip";
 
 import { DELTA_JOBS } from "../globals";
 import { timeFormat } from "../utils";
-import JobCreationContext from "../JobCreationContext.js";
+import { JobCreationContext } from "../context";
 
 function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
   function hasStatus(job) {
@@ -64,8 +64,7 @@ function JobList(props) {
   let [statusFilter, setStatusFilter] = useState("");
   let [hardwareFilter, setHardwareFilter] = useState("");
   let [tagFilter, setTagFilter] = useState("");
-  const { currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen } =
-    useContext(JobCreationContext);
+  const jobCreator = useContext(JobCreationContext);
 
   useEffect(() => {
     setFilteredJobs(filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter));
@@ -84,8 +83,8 @@ function JobList(props) {
   };
 
   const handleEditAndResubmit = (index) => {
-    setNewJobDialogOpen(true);
-    setCurrentJob(filteredJobs[index]);
+    jobCreator.setNewJobDialogOpen(true);
+    jobCreator.setCurrentJob(filteredJobs[index]);
   };
 
   return (

@@ -12,7 +12,7 @@ import {
 } from "@mui/icons-material";
 
 import { getLog } from "../datastore";
-import AuthContext from "../AuthContext.js";
+import { AuthContext } from "../context";
 
 function LogPanel(props) {
   const [expanded, setExpanded] = useState(false);

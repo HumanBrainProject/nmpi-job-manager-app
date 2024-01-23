@@ -6,11 +6,9 @@ import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 
-import initAuth from "./auth.js";
-import ErrorPage from "./components/ErrorPage.jsx";
-import AuthContext from "./AuthContext.js";
-import RequestedCollabContext from "./RequestedCollabContext.js";
-import JobCreationContext from "./JobCreationContext.js";
+import initAuth from "./auth";
+import ErrorPage from "./components/ErrorPage";
+import { JobCreationContext, RequestedCollabContext, AuthContext } from "./context";
 
 import Home, { getLoader as collabLoader } from "./routes/home";
 import JobListRoute, { getLoader as jobListLoader, submitJob } from "./routes/jobs";

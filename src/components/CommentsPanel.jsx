@@ -15,9 +15,9 @@ import {
 } from "@mui/icons-material";
 
 import { getComments } from "../datastore";
-import AuthContext from "../AuthContext.js";
-import Comment from "./Comment.jsx";
-import CommentForm from "./CommentForm.jsx";
+import { AuthContext } from "../context";
+import Comment from "./Comment";
+import CommentForm from "./CommentForm";
 
 function CommentsPanel(props) {
   const [expanded, setExpanded] = useState(false);
