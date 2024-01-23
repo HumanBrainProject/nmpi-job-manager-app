@@ -13,12 +13,9 @@ import ErrorInDataLoading from "../components/ErrorInDataLoading";
 export function getLoader(auth) {
   const loader = async ({ request, params }) => {
     const url = new URL(request.url);
-    const size = parseInt(
-      url.searchParams.get("size") || INITIAL_JOBS.toString()
-    );
-    const jobListPromise = queryJobs(params.collabId, auth, size);
+    const requestedSize = parseInt(url.searchParams.get("size") || INITIAL_JOBS.toString());
+    const jobListPromise = queryJobs(params.collabId, auth, requestedSize);
     const tagsPromise = queryTags(params.collabId, auth);
-    //console.log(jobListPromise, tagsPromise);
     return defer({ data: Promise.all([jobListPromise, tagsPromise]) });
   };
   return loader;

@@ -31,11 +31,15 @@ async function listCollabs(auth) {
   return cache.collabs;
 }
 
-async function queryJobs(collab, auth, size) {
+async function queryJobs(collab, auth, requestedSize) {
+  // size is the total number of jobs that should be returned
+  // always starting from index 0
   if (!(collab in cache.jobs)) {
     cache.jobs[collab] = {};
     cache.jobCursor[collab] = 0;
   }
+  const cacheSize = Object.keys(cache.jobs[collab]).length;
+  const size = Math.max(cacheSize, requestedSize);
   const cursor = cache.jobCursor[collab];
   const delta = size - cursor;
   if (delta > 0) {
