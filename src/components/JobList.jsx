@@ -18,7 +18,13 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { RestartAlt as RestartIcon } from "@mui/icons-material";
+import {
+  RestartAlt as RestartIcon,
+  Code as CodeIcon,
+  GitHub as GitHubIcon,
+  Archive as ArchiveIcon,
+  Folder as FolderIcon,
+} from "@mui/icons-material";
 
 import StatusChip from "./StatusChip";
 
@@ -47,6 +53,27 @@ function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
     filteredJobs = filteredJobs.filter(hasTag);
   }
   return filteredJobs;
+}
+
+function formatCode(code) {
+  const style = { display: "inline-flex", verticalAlign: "middle", color: "lightgray" };
+  let icon = <CodeIcon sx={style} />;
+  if (code.includes("github")) {
+    icon = <GitHubIcon sx={style} />;
+  } else if (code.startsWith("http")) {
+    icon = <ArchiveIcon sx={style} />;
+  } else if (code.startsWith("collab:")) {
+    icon = <FolderIcon sx={style} />;
+  } else if (code.startsWith("drive:")) {
+    icon = <FolderIcon sx={style} />;
+  }
+
+  return (
+    <span>
+      {icon}&nbsp;&nbsp;
+      <code>{code.trim().slice(0, 60).replaceAll("\n", "⏎")}</code>
+    </span>
+  );
 }
 
 function LinkedTableCell(props) {
@@ -196,7 +223,7 @@ function JobList(props) {
                   {job.hardware_platform}
                 </LinkedTableCell>
                 <LinkedTableCell align="left" to={`/${props.collab}/jobs/${job.id}`}>
-                  <code>{job.code.slice(0, 60)}</code>
+                  {formatCode(job.code)}
                 </LinkedTableCell>
                 <LinkedTableCell align="left" to={`/${props.collab}/jobs/${job.id}`}>
                   {timeFormat(job.timestamp_submission)}
