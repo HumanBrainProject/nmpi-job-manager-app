@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Tab, TextField, Typography } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
@@ -12,10 +12,8 @@ function validURL(value) {
 
 function CodeWidget(props) {
   const [currentTab, setCurrentTab] = useState(props.initialTab);
-  const [codeFromEditor, setCodeFromEditor] = useState(
-    props.initialTab === "editor" ? props.code : ""
-  );
-  const [codeURL, setCodeURL] = useState(props.initialTab === "from-url" ? props.code : "");
+  const [codeFromEditor, setCodeFromEditor] = useState("");
+  const [codeURL, setCodeURL] = useState("");
   const [codeFromDrive, setCodeFromDrive] = useState("");
 
   const handleChangeTab = (event, newValue) => {
@@ -38,6 +36,17 @@ function CodeWidget(props) {
     setCodeFromDrive(value);
     props.onChange(`drive://${props.collab}/${value}`);
   };
+
+  useEffect(() => {
+    if (props.initialTab === "editor") {
+      setCodeFromEditor(props.code || "");
+    } else if (props.initialTab === "from-url") {
+      setCodeURL(props.code || "");
+    } else if (props.initialTab === "drive") {
+      setCodeFromDrive(props.code || "");
+    }
+    setCurrentTab(props.initialTab);
+  }, [props]);
 
   return (
     <Box
@@ -64,7 +73,7 @@ function CodeWidget(props) {
             height="40vh"
             onChange={handleChangeEditorContent}
             defaultLanguage="python"
-            defaultValue={codeFromEditor}
+            value={codeFromEditor}
             options={{
               minimap: {
                 enabled: false,

@@ -1,9 +1,10 @@
-import { useEffect, useState, Fragment } from "react";
+import { useContext, useEffect, useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import {
   Button,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -15,12 +16,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
+import { RestartAlt as RestartIcon } from "@mui/icons-material";
 
 import StatusChip from "./StatusChip";
 
 import { DELTA_JOBS } from "../globals";
 import { timeFormat } from "../utils";
+import { JobCreationContext } from "../context";
 
 function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
   function hasStatus(job) {
@@ -60,11 +64,10 @@ function JobList(props) {
   let [statusFilter, setStatusFilter] = useState("");
   let [hardwareFilter, setHardwareFilter] = useState("");
   let [tagFilter, setTagFilter] = useState("");
+  const jobCreator = useContext(JobCreationContext);
 
   useEffect(() => {
-    setFilteredJobs(
-      filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter)
-    );
+    setFilteredJobs(filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter));
   }, [props.jobs, statusFilter, hardwareFilter, tagFilter]);
 
   const handleChangeToStatusFilter = (event) => {
@@ -77,6 +80,11 @@ function JobList(props) {
 
   const handleChangeToTagFilter = (event) => {
     setTagFilter(event.target.value);
+  };
+
+  const handleEditAndResubmit = (index) => {
+    jobCreator.setNewJobDialogOpen(true);
+    jobCreator.setCurrentJob(filteredJobs[index]);
   };
 
   return (
@@ -100,9 +108,7 @@ function JobList(props) {
         </FormControl>
 
         <FormControl sx={{ m: 1, minWidth: 250 }}>
-          <InputLabel id="hardware-filter-label">
-            Filter by hardware system
-          </InputLabel>
+          <InputLabel id="hardware-filter-label">Filter by hardware system</InputLabel>
           <Select
             labelId="hardware-filter-label"
             id="hardware-filter"
@@ -165,10 +171,11 @@ function JobList(props) {
               <TableCell align="center">
                 <b>Tags</b>
               </TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredJobs.map((job) => (
+            {filteredJobs.map((job, index) => (
               <TableRow
                 key={job.id}
                 sx={{
@@ -179,10 +186,7 @@ function JobList(props) {
                   },
                 }}
               >
-                <LinkedTableCell
-                  align="center"
-                  to={`/${props.collab}/jobs/${job.id}`}
-                >
+                <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
                   {job.id}
                 </LinkedTableCell>
                 <TableCell align="center">
@@ -192,20 +196,23 @@ function JobList(props) {
                 <TableCell align="left">
                   <code>{job.code.slice(0, 60)}</code>
                 </TableCell>
-                <TableCell align="left">
-                  {timeFormat(job.timestamp_submission)}
-                </TableCell>
+                <TableCell align="left">{timeFormat(job.timestamp_submission)}</TableCell>
                 <TableCell align="center">{job.user_id}</TableCell>
                 <TableCell align="center">{job.tags.join(", ")}</TableCell>
+                <TableCell>
+                  <Tooltip title="Create a new job based on this one">
+                    <IconButton onClick={() => handleEditAndResubmit(index)}>
+                      <RestartIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
               </TableRow>
             ))}
             <TableRow>
               <TableCell colSpan={7} align="center">
                 <Button
                   component={Link}
-                  to={`/${props.collab}/jobs/?size=${
-                    props.jobs.length + DELTA_JOBS
-                  }`}
+                  to={`/${props.collab}/jobs/?size=${props.jobs.length + DELTA_JOBS}`}
                 >
                   Load more...
                 </Button>

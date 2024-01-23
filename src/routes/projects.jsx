@@ -12,7 +12,6 @@ import ErrorInDataLoading from "../components/ErrorInDataLoading";
 export function getLoader(auth) {
   const loader = async ({ params }) => {
     const projectListPromise = queryProjects([params.collabId], auth);
-    console.log(projectListPromise);
     return defer({ projects: projectListPromise });
   };
   return loader;

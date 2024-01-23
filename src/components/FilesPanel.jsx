@@ -34,7 +34,6 @@ function CopyButtons(props) {
 }
 
 function FilesPanel(props) {
-  console.log(props);
   if (props.dataset) {
     return (
       <Panel

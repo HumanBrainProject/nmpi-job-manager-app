@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 
 import { driveServer } from "../globals";
-import AuthContext from "../AuthContext.js";
+import { AuthContext } from "../context";
 import FileBrowser from "./FileBrowser";
 
 function getRequestConfig(auth) {
@@ -47,6 +47,8 @@ function DriveBrowser(props) {
     }
     fetchData();
   }, [props, path]);
+
+  // todo: only show .py, .tar, .tar.gz, .tgz, .zip files
 
   return (
     <FileBrowser

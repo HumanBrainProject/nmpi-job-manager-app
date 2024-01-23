@@ -15,7 +15,7 @@ import ProgressIndicator from "../components/ProgressIndicator";
 import Introduction from "../components/Introduction";
 import CollabList from "../components/CollabList";
 import ErrorInDataLoading from "../components/ErrorInDataLoading";
-import RequestedCollabContext from "../RequestedCollabContext";
+import { RequestedCollabContext } from "../context";
 
 export function getLoader(auth) {
   const loader = async () => {
@@ -25,7 +25,6 @@ export function getLoader(auth) {
       return redirect(`/${requestedCollabId}/jobs/`);
     } else {
       const collabListPromise = listCollabs(auth);
-      console.log(collabListPromise);
       return defer({ collabs: collabListPromise });
     }
   };
