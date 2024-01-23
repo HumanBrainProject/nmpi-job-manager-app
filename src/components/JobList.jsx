@@ -189,16 +189,24 @@ function JobList(props) {
                 <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
                   {job.id}
                 </LinkedTableCell>
-                <TableCell align="center">
+                <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
                   <StatusChip status={job.status} />
-                </TableCell>
-                <TableCell align="center">{job.hardware_platform}</TableCell>
-                <TableCell align="left">
+                </LinkedTableCell>
+                <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
+                  {job.hardware_platform}
+                </LinkedTableCell>
+                <LinkedTableCell align="left" to={`/${props.collab}/jobs/${job.id}`}>
                   <code>{job.code.slice(0, 60)}</code>
-                </TableCell>
-                <TableCell align="left">{timeFormat(job.timestamp_submission)}</TableCell>
-                <TableCell align="center">{job.user_id}</TableCell>
-                <TableCell align="center">{job.tags.join(", ")}</TableCell>
+                </LinkedTableCell>
+                <LinkedTableCell align="left" to={`/${props.collab}/jobs/${job.id}`}>
+                  {timeFormat(job.timestamp_submission)}
+                </LinkedTableCell>
+                <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
+                  {job.user_id}
+                </LinkedTableCell>
+                <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
+                  {job.tags.join(", ")}
+                </LinkedTableCell>
                 <TableCell>
                   <Tooltip title="Create a new job based on this one">
                     <IconButton onClick={() => handleEditAndResubmit(index)}>
