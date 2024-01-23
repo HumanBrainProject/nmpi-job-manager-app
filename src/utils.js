@@ -17,8 +17,10 @@ function parseArray(string) {
 }
 
 function formatArray(arr) {
-  if (arr) {
+  if (Array.isArray(arr)) {
     return arr.join(", ");
+  } else if (arr) {
+    return String(arr);
   } else {
     return "";
   }
