@@ -1,5 +1,5 @@
 import { jobQueueServer } from "./globals";
-import { isEmpty, isAlmostEmpty } from "./utils";
+import { isEmpty, isAlmostEmpty, jobIsIncomplete } from "./utils";
 
 let cache = {
   jobs: {},
@@ -78,12 +78,17 @@ async function getJob(jobId, collab, auth) {
     cache.jobs[collab] = {};
     cache.jobCursor[collab] = 0;
   }
-  if (!cache.jobs[collab][jobId] || isEmpty(cache.jobs[collab][jobId])) {
+  if (
+    !cache.jobs[collab][jobId] ||
+    isEmpty(cache.jobs[collab][jobId]) ||
+    jobIsIncomplete(cache.jobs[collab][jobId])
+  ) {
     let url = jobQueueServer + "/jobs/" + jobId;
     const response = await fetch(url, getRequestConfig(auth));
     if (response.ok) {
       cache.jobs[collab][jobId] = await response.json();
     } else if (response.status === 401) {
+      console.log(response);
     }
   }
   return cache.jobs[collab][jobId];

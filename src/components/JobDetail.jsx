@@ -1,4 +1,5 @@
-import { Link as RouterLink } from "react-router-dom";
+import { useEffect } from "react";
+import { Link as RouterLink, useRevalidator } from "react-router-dom";
 
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import {
@@ -9,7 +10,7 @@ import {
   RestartAlt as RestartIcon,
 } from "@mui/icons-material";
 
-import { timeFormat, isEmpty } from "../utils";
+import { timeFormat, isEmpty, jobIsIncomplete } from "../utils";
 import StatusChip from "./StatusChip";
 import Panel from "./Panel";
 import CodePanel from "./CodePanel";
@@ -20,6 +21,22 @@ import KeyValueTable from "./KeyValueTable";
 
 function JobDetail(props) {
   const { job, collab } = props;
+  let revalidator = useRevalidator();
+
+  useEffect(() => {
+    if (jobIsIncomplete(job) && revalidator.state === "idle") {
+      console.log(
+        "Job is submitted or running, page will refresh every 5 seconds until the job is complete"
+      );
+      const intervalID = setInterval(() => {
+        if (revalidator.state === "idle") {
+          console.log("Refreshing page");
+          revalidator.revalidate();
+        }
+      }, 5000);
+      return () => clearInterval(intervalID);
+    }
+  }, [props]);
 
   return (
     <Box sx={{ marginBottom: 6 }}>
