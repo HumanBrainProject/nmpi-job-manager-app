@@ -68,17 +68,23 @@ function formatCode(code) {
     icon = <FolderIcon sx={style} />;
   }
 
+  const MAX_LENGTH = 60;
+
+  let codeSnippet = code.trim().replaceAll("\n", "⏎");
+  if (codeSnippet.length > MAX_LENGTH) {
+    codeSnippet = codeSnippet.slice(0, MAX_LENGTH) + "…";
+  }
   return (
     <span>
       {icon}&nbsp;&nbsp;
-      <code>{code.trim().slice(0, 60).replaceAll("\n", "⏎")}</code>
+      <code>{codeSnippet}</code>
     </span>
   );
 }
 
 function LinkedTableCell(props) {
   return (
-    <TableCell align={props.align}>
+    <TableCell align={props.align} sx={{ paddingLeft: "6px", paddingRight: "6px" }}>
       <Link to={props.to} style={{ textDecoration: "none", color: "inherit" }}>
         <div>{props.children}</div>
       </Link>

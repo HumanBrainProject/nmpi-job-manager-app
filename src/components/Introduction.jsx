@@ -20,42 +20,19 @@ function Introduction() {
       }}
     >
       <Container maxWidth="lg">
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="text.primary"
-          gutterBottom
-        >
+        <Typography component="h1" variant="h2" align="center" color="text.primary" gutterBottom>
           Neuromorphic computing in EBRAINS
         </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          color="text.secondary"
-          paragraph
-        >
-          This application allows you to submit compute jobs to the BrainScaleS
-          and SpiNNaker systems, to view the results of your jobs, and to manage
-          compute quotas.
+        <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          This app allows you to submit compute jobs to the BrainScaleS and SpiNNaker systems, to
+          view the results, and to manage compute quotas.
         </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          color="text.secondary"
-          paragraph
-        >
-          If you or your colleagues have already run neuromorphic jobs in
-          EBRAINS, you will see below a list of workspaces ("collabs") that
-          contain neuromorphic results. If this is your first time using the
-          EBRAINS neuromorphic systems, click on "Getting started".
+        <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          If you or your colleagues have already run neuromorphic jobs in EBRAINS, you will see
+          below a list of workspaces ("collabs") that contain neuromorphic results. If this is your
+          first time using the EBRAINS neuromorphic systems, click on "Getting started".
         </Typography>
-        <Stack
-          sx={{ pt: 4 }}
-          direction="row"
-          spacing={2}
-          justifyContent="center"
-        >
+        <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
           <Button
             variant="contained"
             href="https://www.ebrains.eu/modelling-simulation-and-computing/simulation/neuromorphic-computing-3"
