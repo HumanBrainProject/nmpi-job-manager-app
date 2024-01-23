@@ -30,7 +30,6 @@ import StatusChip from "./StatusChip";
 
 import { DELTA_JOBS } from "../globals";
 import { timeFormat } from "../utils";
-import { JobCreationContext } from "../context";
 
 function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
   function hasStatus(job) {
@@ -97,7 +96,6 @@ function JobList(props) {
   let [statusFilter, setStatusFilter] = useState("");
   let [hardwareFilter, setHardwareFilter] = useState("");
   let [tagFilter, setTagFilter] = useState("");
-  const jobCreator = useContext(JobCreationContext);
 
   useEffect(() => {
     setFilteredJobs(filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter));
@@ -113,11 +111,6 @@ function JobList(props) {
 
   const handleChangeToTagFilter = (event) => {
     setTagFilter(event.target.value);
-  };
-
-  const handleEditAndResubmit = (index) => {
-    jobCreator.setNewJobDialogOpen(true);
-    jobCreator.setCurrentJob(filteredJobs[index]);
   };
 
   return (
@@ -242,7 +235,7 @@ function JobList(props) {
                 </LinkedTableCell>
                 <TableCell>
                   <Tooltip title="Create a new job based on this one">
-                    <IconButton onClick={() => handleEditAndResubmit(index)}>
+                    <IconButton component={Link} to={`/${props.collab}/jobs/${job.id}/new`}>
                       <RestartIcon />
                     </IconButton>
                   </Tooltip>

@@ -25,7 +25,6 @@ export function submitJob(auth) {
   const wrappedSubmitJob = async ({ request, params }) => {
     const { collabId } = params;
     const jobData = await request.json();
-    console.log(jobData);
     if (request.method === "POST") {
       return createJob(collabId, jobData, auth);
     } else {
@@ -47,9 +46,7 @@ function JobListRoute(props) {
           <div id="job-list">
             <React.Suspense fallback={<ProgressIndicator />}>
               <Await resolve={data} errorElement={<ErrorInDataLoading />}>
-                {([jobs, tags]) => (
-                  <JobList jobs={jobs} tags={tags} collab={collabId} />
-                )}
+                {([jobs, tags]) => <JobList jobs={jobs} tags={tags} collab={collabId} />}
               </Await>
             </React.Suspense>
           </div>

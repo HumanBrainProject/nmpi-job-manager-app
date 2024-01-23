@@ -46,7 +46,6 @@ async function queryJobs(collab, auth, requestedSize) {
     const searchParams = new URLSearchParams();
     searchParams.append("collab", collab);
     const url = `${jobQueueServer}/jobs/?size=${delta}&from_index=${cursor}&${searchParams.toString()}`;
-    //console.log(url);
     const response = await fetch(url, getRequestConfig(auth));
     const jobs = await response.json();
 
@@ -59,7 +58,6 @@ async function queryJobs(collab, auth, requestedSize) {
   jobArray.sort((a, b) => {
     return b.id - a.id; // sort by descending order of job id
   });
-  //console.log(jobArray);
   return jobArray.slice(0, size);
 }
 
@@ -70,7 +68,6 @@ async function queryTags(collab, auth) {
     const url = jobQueueServer + "/tags/?" + searchParams.toString();
     const response = await fetch(url, getRequestConfig(auth));
     const tags = await response.json();
-    //console.log(tags);
     cache.tags[collab] = tags;
   }
   return cache.tags[collab];
@@ -83,19 +80,16 @@ async function getJob(jobId, collab, auth) {
   }
   if (!cache.jobs[collab][jobId] || isEmpty(cache.jobs[collab][jobId])) {
     let url = jobQueueServer + "/jobs/" + jobId;
-    //console.log("Getting job from " + url);
     const response = await fetch(url, getRequestConfig(auth));
     if (response.ok) {
       cache.jobs[collab][jobId] = await response.json();
     } else if (response.status === 401) {
     }
   }
-  //console.log(cache.jobs[collab][jobId]);
   return cache.jobs[collab][jobId];
 }
 
 async function createJob(collabId, jobData, auth) {
-  console.log(`collab = ${collabId}`);
   jobData.collab = collabId;
   const url = jobQueueServer + "/jobs/";
   let config = getRequestConfig(auth);
@@ -115,7 +109,6 @@ async function createJob(collabId, jobData, auth) {
 async function getLog(jobId, auth) {
   if (!(jobId in cache.logs)) {
     let url = jobQueueServer + "/jobs/" + jobId + "/log";
-    //console.log("Getting log from " + url);
     const response = await fetch(url, getRequestConfig(auth));
     const log = await response.text();
     cache.logs[jobId] = log;
@@ -126,7 +119,6 @@ async function getLog(jobId, auth) {
 async function getComments(jobId, auth) {
   if (!(jobId in cache.comments)) {
     const url = jobQueueServer + "/jobs/" + jobId + "/comments";
-    //console.log("Getting comments from " + url);
     const response = await fetch(url, getRequestConfig(auth));
     const comments = await response.json();
     cache.comments[jobId] = comments;
@@ -173,11 +165,9 @@ async function queryProjects(collab, auth) {
   if (isAlmostEmpty(cache.projects[collab])) {
     const searchParams = new URLSearchParams();
     searchParams.append("collab", collab);
-    const url =
-      jobQueueServer + "/projects/?size=100&" + searchParams.toString();
+    const url = jobQueueServer + "/projects/?size=100&" + searchParams.toString();
     const response = await fetch(url, getRequestConfig(auth));
     const projects = await response.json();
-    //console.log(projects);
     for (const index in projects) {
       cache.projects[collab][projects[index].id] = projects[index];
     }
@@ -196,8 +186,6 @@ async function queryProjects(collab, auth) {
 }
 
 async function patchProject(collabId, projectId, modifiedProject, auth) {
-  console.log(`collab = ${collabId} project = ${projectId}`);
-  console.log(modifiedProject);
   const url = jobQueueServer + "/projects/" + projectId;
   let config = getRequestConfig(auth);
   config.method = "PUT";
@@ -221,7 +209,6 @@ async function patchProject(collabId, projectId, modifiedProject, auth) {
 }
 
 async function createProject(collabId, newProject, auth) {
-  console.log(`collab = ${collabId}`);
   newProject.collab = collabId;
   const url = jobQueueServer + "/projects/";
   let config = getRequestConfig(auth);
@@ -239,7 +226,6 @@ async function createProject(collabId, newProject, auth) {
 }
 
 async function deleteProject(collabId, projectId, auth) {
-  console.log(`collab = ${collabId} project = ${projectId}`);
   const url = jobQueueServer + "/projects/" + projectId;
   let config = getRequestConfig(auth);
   config.method = "DELETE";

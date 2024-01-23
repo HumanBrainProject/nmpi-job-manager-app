@@ -1,5 +1,5 @@
-import { Fragment, useState, useContext } from "react";
-import { Link as RouterLink, useSubmit } from "react-router-dom";
+import { Fragment, useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import {
   AppBar,
@@ -10,10 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import CreateJobDialog from "./CreateJobDialog";
-import { RequestedCollabContext, JobCreationContext } from "../context";
+import { RequestedCollabContext } from "../context";
 
-function renderButtons(page, collab, createNewJob) {
+function renderButtons(page, collab) {
   switch (page) {
     case "jobs":
       return (
@@ -30,7 +29,12 @@ function renderButtons(page, collab, createNewJob) {
             >
               Quotas
             </Button>
-            <Button color="inherit" variant="outlined" onClick={createNewJob}>
+            <Button
+              color="inherit"
+              variant="outlined"
+              component={RouterLink}
+              to={`/${collab}/jobs/new`}
+            >
               New job
             </Button>
           </ButtonGroup>
@@ -59,8 +63,39 @@ function renderButtons(page, collab, createNewJob) {
             >
               Quotas
             </Button>
-            <Button color="inherit" variant="outlined" onClick={createNewJob}>
+            <Button
+              color="inherit"
+              variant="outlined"
+              component={RouterLink}
+              to={`/${collab}/jobs/new`}
+            >
               New job
+            </Button>
+          </ButtonGroup>
+        </Fragment>
+      );
+    case "create":
+      return (
+        <Fragment>
+          <Typography variant="body2" color="inherit" noWrap sx={{ mr: 1 }}>
+            {collab}
+          </Typography>
+          <ButtonGroup>
+            <Button
+              color="inherit"
+              variant="outlined"
+              component={RouterLink}
+              to={`/${collab}/projects/`}
+            >
+              Quotas
+            </Button>
+            <Button
+              color="inherit"
+              variant="outlined"
+              component={RouterLink}
+              to={`/${collab}/jobs/`}
+            >
+              Jobs
             </Button>
           </ButtonGroup>
         </Fragment>
@@ -97,28 +132,7 @@ function getHomeURL(requestedCollabId) {
 }
 
 function Toolbar(props) {
-  const submit = useSubmit();
   const requestedCollabId = useContext(RequestedCollabContext);
-  const jobCreator = useContext(JobCreationContext);
-
-  const handleOpenNewJobDialog = () => {
-    jobCreator.setNewJobDialogOpen(true);
-  };
-
-  const handleCloseNewJobDialog = (newJob) => {
-    if (newJob) {
-      newJob.collab = props.collab;
-      console.log(newJob);
-      submit(newJob, {
-        method: "post",
-        encType: "application/json",
-        action: `/${props.collab}/jobs/`,
-        navigate: true,
-      });
-    }
-    jobCreator.setNewJobDialogOpen(false);
-    jobCreator.setCurrentJob({});
-  };
 
   return (
     <Fragment>
@@ -140,14 +154,9 @@ function Toolbar(props) {
           >
             EBRAINS Neuromorphic Computing Service: Job Manager
           </Typography>
-          {renderButtons(props.page, props.collab, handleOpenNewJobDialog)}
+          {renderButtons(props.page, props.collab)}
         </MUIToolbar>
       </AppBar>
-      <CreateJobDialog
-        open={jobCreator.newJobDialogOpen}
-        onClose={handleCloseNewJobDialog}
-        collab={props.collab}
-      />
     </Fragment>
   );
 }

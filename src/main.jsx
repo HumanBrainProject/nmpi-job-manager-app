@@ -8,11 +8,12 @@ import { green } from "@mui/material/colors";
 
 import initAuth from "./auth";
 import ErrorPage from "./components/ErrorPage";
-import { JobCreationContext, RequestedCollabContext, AuthContext } from "./context";
+import { RequestedCollabContext, AuthContext } from "./context";
 
 import Home, { getLoader as collabLoader } from "./routes/home";
-import JobListRoute, { getLoader as jobListLoader, submitJob } from "./routes/jobs";
+import JobListRoute, { getLoader as jobListLoader } from "./routes/jobs";
 import JobDetailRoute, { getLoader as jobLoader, actionOnJob } from "./routes/job-detail";
+import { JobCreationRoute, JobEditAndResubmitRoute, submitJob } from "./routes/job-creation";
 import ProjectListRoute, { getLoader as projectListLoader } from "./routes/projects";
 import { updateProject } from "./routes/project-detail";
 
@@ -31,6 +32,11 @@ function getRouter(keycloak) {
       element: <JobListRoute />,
       errorElement: <ErrorPage />,
       loader: jobListLoader(keycloak),
+    },
+    {
+      path: "/:collabId/jobs/new",
+      element: <JobCreationRoute />,
+      errorElement: <ErrorPage />,
       action: submitJob(keycloak),
     },
     {
@@ -39,6 +45,12 @@ function getRouter(keycloak) {
       errorElement: <ErrorPage />,
       loader: jobLoader(keycloak),
       action: actionOnJob(keycloak),
+    },
+    {
+      path: "/:collabId/jobs/:jobId/new",
+      element: <JobEditAndResubmitRoute />,
+      errorElement: <ErrorPage />,
+      loader: jobLoader(keycloak),
     },
     {
       path: "/:collabId/projects/",
@@ -76,19 +88,6 @@ const theme = createTheme({
 
 // Authenticate, then render the app
 
-function App(props) {
-  const [newJobDialogOpen, setNewJobDialogOpen] = React.useState(false);
-  const [currentJob, setCurrentJob] = React.useState({});
-
-  return (
-    <JobCreationContext.Provider
-      value={{ currentJob, setCurrentJob, newJobDialogOpen, setNewJobDialogOpen }}
-    >
-      <RouterProvider router={props.router(props.auth)} />
-    </JobCreationContext.Provider>
-  );
-}
-
 function renderApp(auth) {
   const params = new URL(document.location).searchParams;
   const requestedCollabId = params.get("clb-collab-id");
@@ -99,7 +98,7 @@ function renderApp(auth) {
         <CssBaseline />
         <AuthContext.Provider value={auth}>
           <RequestedCollabContext.Provider value={requestedCollabId}>
-            <App router={getRouter} auth={auth} />
+            <RouterProvider router={getRouter(auth)} />
           </RequestedCollabContext.Provider>
         </AuthContext.Provider>
       </ThemeProvider>

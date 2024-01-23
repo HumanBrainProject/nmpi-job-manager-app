@@ -21,7 +21,6 @@ function ProjectList(props) {
 
   useEffect(() => {
     if (fetcher.data && selectedProject) {
-      console.log("RE-RENDER with updated data");
       fetcher.load();
     }
   }, [fetcher.data]);
@@ -39,7 +38,6 @@ function ProjectList(props) {
   };
 
   const handleCloseCreateDialog = (newProject) => {
-    console.log(newProject);
     if (newProject) {
       fetcher.submit(newProject, {
         method: "post",
@@ -53,7 +51,6 @@ function ProjectList(props) {
 
   const handleDelete = (index) => {
     const projectData = { id: props.projects[index].id };
-    console.log(projectData);
     fetcher.submit(projectData, {
       method: "delete",
       encType: "application/json",
@@ -72,13 +69,7 @@ function ProjectList(props) {
 
   return (
     <Container sx={{ py: 8 }} maxWidth="lg">
-      <Typography
-        component="h1"
-        variant="h2"
-        align="left"
-        color="text.primary"
-        gutterBottom
-      >
+      <Typography component="h1" variant="h2" align="left" color="text.primary" gutterBottom>
         Compute quota requests
       </Typography>
       <Grid container spacing={4}>

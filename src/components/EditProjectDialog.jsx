@@ -31,7 +31,6 @@ function EditProjectDialog({ project, open, onClose, mode }) {
       setTitle(project.title || "");
       setAbstract(project.abstract || "");
       if (project.description) {
-        console.log(project.description);
         const quotas = JSON.parse(project.description).requestedQuotas;
         if ("BrainScaleS" in quotas) {
           setBssQuota(quotas.BrainScaleS);
@@ -131,35 +130,15 @@ function EditProjectDialog({ project, open, onClose, mode }) {
               Select the hardware systems you wish to use.
             </Typography>
             <FormGroup>
-              <QuotaSelector
-                label="BrainScaleS"
-                quota={bssQuota}
-                setQuota={setBssQuota}
-              />
-              <QuotaSelector
-                label="BrainScaleS-2"
-                quota={bss2Quota}
-                setQuota={setBss2Quota}
-              />
-              <QuotaSelector
-                label="Spikey"
-                quota={spikeyQuota}
-                setQuota={setSpikeyQuota}
-              />
-              <QuotaSelector
-                label="SpiNNaker"
-                quota={spinnQuota}
-                setQuota={setSpinnQuota}
-              />
-              <QuotaSelector
-                label="Demo"
-                quota={demoQuota}
-                setQuota={setDemoQuota}
-              />
+              <QuotaSelector label="BrainScaleS" quota={bssQuota} setQuota={setBssQuota} />
+              <QuotaSelector label="BrainScaleS-2" quota={bss2Quota} setQuota={setBss2Quota} />
+              <QuotaSelector label="Spikey" quota={spikeyQuota} setQuota={setSpikeyQuota} />
+              <QuotaSelector label="SpiNNaker" quota={spinnQuota} setQuota={setSpinnQuota} />
+              <QuotaSelector label="Demo" quota={demoQuota} setQuota={setDemoQuota} />
             </FormGroup>
             <Typography variant="caption" color="grey">
-              The suggested quotas are for testing purposes, you may request
-              larger quotas if needed.
+              The suggested quotas are for testing purposes, you may request larger quotas if
+              needed.
             </Typography>
           </Box>
         </Box>

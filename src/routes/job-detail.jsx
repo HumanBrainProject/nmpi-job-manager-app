@@ -37,7 +37,6 @@ function copyOutputData(request, collabId, jobId, targetRepository, auth) {
 export function actionOnJob(auth) {
   const wrappedActionOnJob = async ({ request, params }) => {
     const { collabId, jobId } = params;
-    console.log(request);
     const actionData = await request.json();
 
     if (actionData.comment) {
@@ -62,10 +61,7 @@ function JobDetailRoute() {
         <Container maxWidth="xl">
           <div id="job">
             <React.Suspense fallback={<ProgressIndicator />}>
-              <Await
-                resolve={data.job}
-                errorElement={<p>Error loading job.</p>}
-              >
+              <Await resolve={data.job} errorElement={<p>Error loading job.</p>}>
                 {(job) => <JobDetail job={job} collab={collabId} />}
               </Await>
             </React.Suspense>
