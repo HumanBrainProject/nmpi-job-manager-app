@@ -153,7 +153,7 @@ async function createComment(jobId, commentData, auth) {
 }
 
 async function changeRepository(collabId, jobId, targetRepository, auth) {
-  const url = jobQueueServer + "/jobs/" + jobId + "/output_data/";
+  const url = jobQueueServer + "/jobs/" + jobId + "/output_data";
   let config = getRequestConfig(auth);
   config.method = "PUT";
   config.body = JSON.stringify({ repository: targetRepository, files: [] });
