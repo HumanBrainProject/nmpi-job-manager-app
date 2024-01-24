@@ -45,7 +45,10 @@ function FilesPanel(props) {
         <ul>
           {props.dataset.files.map((file) => (
             <li key={file.path}>
-              <a href={file.url}>{file.path}</a>&nbsp;
+              <a href={file.url} target="_blank">
+                {file.path}
+              </a>
+              &nbsp;
               {file.content_type} - {file.size} bytes - {file.hash}
             </li>
           ))}
