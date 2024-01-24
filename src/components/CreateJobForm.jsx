@@ -33,7 +33,7 @@ function CreateJobForm(props) {
       setHardwareConfig(props.initialData.hardware_config);
       setTags(props.initialData.tags);
     }
-  }, [props]);
+  }, [props.initialData]);
 
   const getHardwareConfig = (hardwareName) => {
     if (hardwareName === "SpiNNaker") {
