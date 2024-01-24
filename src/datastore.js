@@ -85,7 +85,7 @@ async function getJob(jobId, collab, auth) {
   }
   if (
     !cache.jobs[collab][jobId] ||
-    isEmpty(cache.jobs[collab][jobId]) ||
+    isAlmostEmpty(cache.jobs[collab][jobId]) ||
     jobIsIncomplete(cache.jobs[collab][jobId])
   ) {
     let url = jobQueueServer + "/jobs/" + jobId;
@@ -109,6 +109,9 @@ async function createJob(collabId, jobData, auth) {
   if (response.ok) {
     const createdJob = await response.json();
     // add to cache
+    if (!(collabId in cache.jobs)) {
+      cache.jobs[collabId] = {};
+    }
     cache.jobs[collabId][createdJob.id] = createdJob;
     return "success";
   } else {
