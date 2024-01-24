@@ -56,7 +56,7 @@ function CodeWidget(props) {
       setCodeFromDrive(getPathFromDriveURI(props.code) || "");
     }
     setCurrentTab(props.initialTab);
-  }, [props]);
+  }, [props.initialTab]);
 
   return (
     <Box
