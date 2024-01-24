@@ -1,22 +1,14 @@
 import { useState, useContext } from "react";
 
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import {
-  ExpandMore,
-  ArticleOutlined as ArticleOutlinedIcon,
-} from "@mui/icons-material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
+import { ExpandMore, ArticleOutlined as ArticleOutlinedIcon } from "@mui/icons-material";
 
 import { getLog } from "../datastore";
 import { AuthContext } from "../context";
 
 function LogPanel(props) {
   const [expanded, setExpanded] = useState(false);
-  const [log, setLog] = useState([]);
+  const [log, setLog] = useState("");
   const auth = useContext(AuthContext);
   const { jobId } = props;
 
@@ -25,8 +17,8 @@ function LogPanel(props) {
       setExpanded(isExpanded ? true : false);
     } else {
       getLog(jobId, auth).then((logContent) => {
-        const lines = logContent.split("\\n");
-        setLog(lines);
+        console.log(logContent[0]);
+        setLog(logContent.trim());
         setExpanded(isExpanded ? true : false);
       });
     }
@@ -46,14 +38,7 @@ function LogPanel(props) {
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="caption">
-          {log.length > 0
-            ? log.map((line, index) => (
-                <span key={index}>
-                  {line}
-                  <br />
-                </span>
-              ))
-            : "Log not available"}
+          {log.length > 0 ? <pre>{log}</pre> : "Log not available"}
         </Typography>
       </AccordionDetails>
     </Accordion>
