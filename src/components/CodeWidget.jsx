@@ -37,13 +37,23 @@ function CodeWidget(props) {
     props.onChange(`drive://${props.collab}/${value}`);
   };
 
+  const getPathFromDriveURI = (uri) => {
+    if (uri.startsWith("drive:")) {
+      const prefix = `drive://${props.collab}`;
+      return uri.substring(prefix.length + 1);
+    } else if (uri.length > 0) {
+      console.warn("Expected 'drive:' URL, got " + uri);
+    }
+    return uri;
+  };
+
   useEffect(() => {
     if (props.initialTab === "editor") {
       setCodeFromEditor(props.code || "");
     } else if (props.initialTab === "from-url") {
       setCodeURL(props.code || "");
     } else if (props.initialTab === "drive") {
-      setCodeFromDrive(props.code || "");
+      setCodeFromDrive(getPathFromDriveURI(props.code) || "");
     }
     setCurrentTab(props.initialTab);
   }, [props]);
