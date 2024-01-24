@@ -68,15 +68,19 @@ function JobDetail(props) {
 
       <CodePanel content={job.code} />
 
-      <Panel
-        label="Command"
-        icon={<LaunchIcon color="disabled" sx={{ mr: 1 }} />}
-        defaultExpanded={true}
-      >
-        <Typography variant="body2">
-          <code>{job.command}</code>
-        </Typography>
-      </Panel>
+      {job.command ? (
+        <Panel
+          label="Command"
+          icon={<LaunchIcon color="disabled" sx={{ mr: 1 }} />}
+          defaultExpanded={true}
+        >
+          <Typography variant="body2">
+            <code>{job.command}</code>
+          </Typography>
+        </Panel>
+      ) : (
+        ""
+      )}
 
       <Panel
         label="Hardware config"
