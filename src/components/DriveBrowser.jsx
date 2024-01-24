@@ -46,7 +46,7 @@ function DriveBrowser(props) {
       setContents(await getRepoContents(repo.id, path, auth));
     }
     fetchData();
-  }, [props, path]);
+  }, [props.collab, path]);
 
   // todo: only show .py, .tar, .tar.gz, .tgz, .zip files
 
