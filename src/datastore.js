@@ -163,6 +163,49 @@ async function createComment(jobId, commentData, auth) {
   }
 }
 
+async function deleteTag(collabId, jobId, tag, auth) {
+  const url = jobQueueServer + "/jobs/" + jobId + "/tags/";
+  const config = getRequestConfig(auth);
+  config.method = "DELETE";
+  config.body = JSON.stringify([tag]);
+  const response = await fetch(url, config);
+  if (response.ok) {
+    cache.jobs[collabId][jobId].tags = cache.jobs[collabId][jobId].tags.filter(
+      (item) => item !== tag
+    );
+    return "success";
+  } else {
+    console.error("Unable to remove tag");
+    return "failure";
+  }
+}
+
+async function addTag(collabId, jobId, tag, auth) {
+  const url = jobQueueServer + "/jobs/" + jobId + "/tags/";
+  const config = getRequestConfig(auth);
+  config.method = "POST";
+  config.body = JSON.stringify([tag]);
+  const response = await fetch(url, config);
+  if (response.ok) {
+    if (cache.jobs[collabId][jobId].tags) {
+      cache.jobs[collabId][jobId].tags.push(tag);
+    } else {
+      cache.jobs[collabId][jobId].tags = [tag];
+    }
+    if (cache.tags[collabId]) {
+      if (!cache.tags[collabId].includes(tag)) {
+        cache.tags[collabId].push(tag);
+      }
+    } else {
+      cache.tags[collabId] = [tag];
+    }
+    return "success";
+  } else {
+    console.error("Unable to add tag");
+    return "failure";
+  }
+}
+
 async function changeRepository(collabId, jobId, targetRepository, auth) {
   const url = jobQueueServer + "/jobs/" + jobId + "/output_data";
   let config = getRequestConfig(auth);
@@ -269,6 +312,8 @@ export {
   getLog,
   getComments,
   createComment,
+  deleteTag,
+  addTag,
   changeRepository,
   patchProject,
   createProject,

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link as RouterLink, useRevalidator } from "react-router-dom";
 
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
@@ -11,6 +11,8 @@ import {
 } from "@mui/icons-material";
 
 import { timeFormat, isEmpty, jobIsIncomplete } from "../utils";
+import { addTag, deleteTag } from "../datastore";
+import { AuthContext } from "../context";
 import StatusChip from "./StatusChip";
 import Panel from "./Panel";
 import CodePanel from "./CodePanel";
@@ -22,7 +24,8 @@ import TagDisplay from "./TagDisplay";
 
 function JobDetail(props) {
   const { job, collab } = props;
-  let revalidator = useRevalidator();
+  const revalidator = useRevalidator();
+  const auth = useContext(AuthContext);
 
   useEffect(() => {
     if (jobIsIncomplete(job) && revalidator.state === "idle") {
@@ -37,6 +40,22 @@ function JobDetail(props) {
       return () => clearInterval(intervalID);
     }
   }, [props]);
+
+  const handleDeleteTag = async (tag) => {
+    console.log(tag);
+    await deleteTag(collab, job.id, tag, auth);
+    if (revalidator.state === "idle") {
+      revalidator.revalidate();
+    }
+  };
+
+  const handleAddTag = async (tag) => {
+    console.log(tag);
+    await addTag(collab, job.id, tag, auth);
+    if (revalidator.state === "idle") {
+      revalidator.revalidate();
+    }
+  };
 
   return (
     <Box sx={{ marginBottom: 6 }}>
@@ -64,7 +83,7 @@ function JobDetail(props) {
           ""
         )}
       </Typography>
-      <TagDisplay tags={job.tags} />
+      <TagDisplay tags={job.tags} onDelete={handleDeleteTag} onAdd={handleAddTag} />
 
       <FilesPanel label="Output files" dataset={job.output_data} collab={collab} jobId={job.id} />
 
