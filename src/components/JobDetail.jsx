@@ -18,6 +18,7 @@ import FilesPanel from "./FilesPanel";
 import LogPanel from "./LogPanel";
 import CommentsPanel from "./CommentsPanel";
 import KeyValueTable from "./KeyValueTable";
+import TagDisplay from "./TagDisplay";
 
 function JobDetail(props) {
   const { job, collab } = props;
@@ -63,6 +64,7 @@ function JobDetail(props) {
           ""
         )}
       </Typography>
+      <TagDisplay tags={job.tags} />
 
       <FilesPanel label="Output files" dataset={job.output_data} collab={collab} jobId={job.id} />
 

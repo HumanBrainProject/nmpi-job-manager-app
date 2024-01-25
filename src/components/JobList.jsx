@@ -27,6 +27,7 @@ import {
 } from "@mui/icons-material";
 
 import StatusChip from "./StatusChip";
+import TagDisplay from "./TagDisplay";
 
 import { DELTA_JOBS } from "../globals";
 import { jobIsIncomplete, timeFormat } from "../utils";
@@ -244,7 +245,7 @@ function JobList(props) {
                   {job.user_id}
                 </LinkedTableCell>
                 <LinkedTableCell align="center" to={`/${props.collab}/jobs/${job.id}`}>
-                  {job.tags.join(", ")}
+                  <TagDisplay tags={job.tags} />
                 </LinkedTableCell>
                 <TableCell>
                   <Tooltip title="Create a new job based on this one">
