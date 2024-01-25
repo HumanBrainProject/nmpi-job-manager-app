@@ -30,7 +30,7 @@ function CreateJobForm(props) {
       setHardware(props.initialData.hardware_platform);
       setCode(props.initialData.code);
       setCommand(props.initialData.command);
-      setHardwareConfig(props.initialData.hardware_config);
+      setHardwareConfig(props.initialData.hardware_config || {});
       setTags(props.initialData.tags);
     }
   }, [props.initialData]);
