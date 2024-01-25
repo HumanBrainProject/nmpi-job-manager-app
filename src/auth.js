@@ -12,8 +12,18 @@ const AUTH_MESSAGE = "clb.authenticated";
 
 export default function initAuth(main) {
   console.log("DOM content is loaded, initialising Keycloak client...");
+  const isParent = window.opener == null;
+  const isIframe = window !== window.parent;
+  const isFramedApp = isIframe && isParent;
+
+  let config = {};
+  if (isFramedApp) {
+    config.flow = "implicit";
+    // with standard flow, we get a "Timeout when waiting for 3rd party check iframe message"
+    // error when embedded as a Collaboratory app
+  }
   keycloak
-    .init()
+    .init(config)
     .then(() => checkAuth(main))
     .catch(console.log);
 }
@@ -87,7 +97,7 @@ function checkAuth(main) {
 }
 
 function verifyMessage(event) {
-  console.log("Message receveived, verifying it...");
+  console.log("Message received, verifying it...");
 
   const receivedMessage = event.data;
   const messageOrigin = event.origin;
