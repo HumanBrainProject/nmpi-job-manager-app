@@ -13,5 +13,5 @@ export const hw_options = [
   "Demo",
 ];
 
-export const INITIAL_JOBS = 20;
-export const DELTA_JOBS = 20;
+export const INITIAL_JOBS = 10;
+export const DELTA_JOBS = 10;
