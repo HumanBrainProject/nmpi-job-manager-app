@@ -38,12 +38,15 @@ async function getRepoContents(repoId, path, auth) {
 function DriveBrowser(props) {
   const [contents, setContents] = useState([]);
   const [path, setPath] = useState("");
+  const [loading, setLoading] = useState(false);
   const auth = useContext(AuthContext);
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       const repo = await getCollabRepo(props.collab, auth);
       setContents(await getRepoContents(repo.id, path, auth));
+      setLoading(false);
     }
     fetchData();
   }, [props.collab, path]);
@@ -58,6 +61,7 @@ function DriveBrowser(props) {
       selected={props.value}
       onSetSelected={props.onChange}
       height={props.height}
+      loading={loading}
     />
   );
 }

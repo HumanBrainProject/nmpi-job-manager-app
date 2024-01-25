@@ -1,6 +1,12 @@
 import React from "react";
 
-import { Breadcrumbs as MUIBreadcrumbs, Divider, IconButton, Link } from "@mui/material";
+import {
+  Breadcrumbs as MUIBreadcrumbs,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Link,
+} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -91,47 +97,58 @@ function FileBrowser(props) {
     }
   };
 
-  return (
-    <Paper sx={{ marginTop: 2, padding: 1, height: props.height, overflowY: "auto" }}>
-      <Breadcrumbs path={props.path} onChangePath={props.onChangePath} />
-      <Divider />
-      <TableContainer>
-        <Table size="small" sx={{ minHeight: "2vh" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ width: "1em" }} />
-              <TableCell>
-                <Typography variant="overline" color="gray">
-                  Name
-                </Typography>
-              </TableCell>
-              <TableCell sx={{ width: "4em" }}>
-                <Typography variant="overline" color="gray">
-                  Size
-                </Typography>
-              </TableCell>
-              <TableCell sx={{ width: "16em" }}>
-                <Typography variant="overline" color="gray">
-                  Last Update
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.contents.map((item) => (
-              <FileOrDir
-                key={item.id}
-                {...item}
-                followLink={props.onChangePath}
-                selected={buildPath(props.path, item.name) === props.selected}
-                onSelect={props.onSetSelected}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-  );
+  if (props.loading) {
+    return (
+      <Paper sx={{ marginTop: 2, padding: 1, height: props.height, overflowY: "auto" }}>
+        <MUIBreadcrumbs sx={{ padding: 1 }}>
+          <CircularProgress size={30} />
+        </MUIBreadcrumbs>
+        <Divider />
+      </Paper>
+    );
+  } else {
+    return (
+      <Paper sx={{ marginTop: 2, padding: 1, height: props.height, overflowY: "auto" }}>
+        <Breadcrumbs path={props.path} onChangePath={props.onChangePath} />
+        <Divider />
+        <TableContainer>
+          <Table size="small" sx={{ minHeight: "2vh" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ width: "1em" }} />
+                <TableCell>
+                  <Typography variant="overline" color="gray">
+                    Name
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ width: "4em" }}>
+                  <Typography variant="overline" color="gray">
+                    Size
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ width: "16em" }}>
+                  <Typography variant="overline" color="gray">
+                    Last Update
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {props.contents.map((item) => (
+                <FileOrDir
+                  key={item.id}
+                  {...item}
+                  followLink={props.onChangePath}
+                  selected={buildPath(props.path, item.name) === props.selected}
+                  onSelect={props.onSetSelected}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    );
+  }
 }
 
 export default FileBrowser;
