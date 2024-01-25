@@ -1,13 +1,16 @@
+import { useState, useEffect } from "react";
 import { useSubmit } from "react-router-dom";
 
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { FolderOpen as FolderOpenIcon } from "@mui/icons-material";
 import Panel from "./Panel";
 
 function CopyButtons(props) {
   const submit = useSubmit();
+  const [copying, setCopying] = useState(false);
 
   const handleCopy = (destination) => {
+    setCopying(true);
     const repositoryData = {
       targetRepository: destination,
     };
@@ -19,15 +22,35 @@ function CopyButtons(props) {
     });
   };
 
+  useEffect(() => {
+    setCopying(false);
+  }, [props.currentRepository]);
+
+  let progressIndicator = "";
+  if (copying) {
+    progressIndicator = <CircularProgress size={20} />;
+  }
+
   if (props.currentRepository.includes("temporary")) {
     return (
       <Stack direction="row" spacing={1} sx={{ paddingTop: 2 }}>
-        <Button size="small" variant="contained" onClick={() => handleCopy("EBRAINS Drive")}>
+        <Button
+          size="small"
+          variant="contained"
+          disabled={copying}
+          onClick={() => handleCopy("EBRAINS Drive")}
+        >
           Copy to Drive
         </Button>
-        <Button size="small" variant="contained" onClick={() => handleCopy("EBRAINS Bucket")}>
+        <Button
+          size="small"
+          variant="contained"
+          disabled={copying}
+          onClick={() => handleCopy("EBRAINS Bucket")}
+        >
           Copy to Bucket
         </Button>
+        {progressIndicator}
       </Stack>
     );
   }
