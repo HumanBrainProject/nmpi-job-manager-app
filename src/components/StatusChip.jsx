@@ -5,6 +5,7 @@ function StatusChip(props) {
     finished: "success",
     error: "error",
     running: "warning",
+    validated: "info",
     submitted: "info",
   };
 

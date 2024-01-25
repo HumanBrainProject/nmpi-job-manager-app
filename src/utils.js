@@ -35,7 +35,7 @@ function isAlmostEmpty(obj) {
 }
 
 function jobIsIncomplete(job) {
-  return ["submitted", "running"].includes(job.status);
+  return ["submitted", "running", "validated"].includes(job.status);
 }
 
 export { timeFormat, parseArray, formatArray, isEmpty, isAlmostEmpty, jobIsIncomplete };
