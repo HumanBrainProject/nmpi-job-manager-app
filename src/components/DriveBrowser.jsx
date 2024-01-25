@@ -18,7 +18,7 @@ async function getCollabRepo(collabId, auth) {
   const url = driveServer + "/api2/repos/?type=group";
   const response = await fetch(url, getRequestConfig(auth));
   const repos = await response.json();
-  const repo = repos.filter((r) => r.name === collabId);
+  const repo = repos.filter((r) => r.group_name.startsWith(`collab-${collabId}-`));
   return repo[0];
 }
 
