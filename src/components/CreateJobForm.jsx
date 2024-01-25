@@ -45,6 +45,15 @@ function CreateJobForm(props) {
     }
   };
 
+  const handleSetCode = (value) => {
+    setCode(value);
+    if (value.endsWith(".py") && command.length === 0) {
+      const pathParts = value.split("/");
+      const codeFileName = pathParts[pathParts.length - 1];
+      setCommand(codeFileName);
+    }
+  };
+
   const handleTags = (event) => {
     let string = event.target.value;
     // split on comma, semi-colon
@@ -122,7 +131,7 @@ function CreateJobForm(props) {
       <CodeWidget
         initialTab={getInitialTab(code)}
         code={code}
-        onChange={(value) => setCode(value)}
+        onChange={(value) => handleSetCode(value)}
         collab={props.collab}
       />
 
