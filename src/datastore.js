@@ -115,7 +115,15 @@ async function createJob(collabId, jobData, auth) {
     cache.jobs[collabId][createdJob.id] = createdJob;
     return "success";
   } else {
-    throw new Error("job creation was not successful");
+    let errorDetails = "";
+    try {
+      const errors = await response.json();
+      errorDetails = errors.detail;
+    } catch (err) {
+      console.log("Unable to get error details");
+      console.log(err);
+    }
+    throw new Error("Job creation was not successful. " + errorDetails);
   }
 }
 
