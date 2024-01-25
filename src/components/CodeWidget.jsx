@@ -1,13 +1,42 @@
 import { useEffect, useState } from "react";
-import { Box, Tab, TextField, Typography } from "@mui/material";
+import { Box, IconButton, Tab, TextField, Tooltip, Typography } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
+
+import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from "@mui/icons-material";
 
 import Editor from "@monaco-editor/react";
 
 import DriveBrowser from "./DriveBrowser.jsx";
 
+const MINIMUM_EDITOR_HEIGHT = 40;
+const EDITOR_HEIGHT_INCREMENT = 40;
+
 function validURL(value) {
   return value.startsWith("http"); // todo: use a regex
+}
+
+function EditorSizeButtons({ currentHeight, setHeight }) {
+  let buttons = [
+    <Tooltip title="Increase editor size">
+      <IconButton onClick={() => setHeight(currentHeight + EDITOR_HEIGHT_INCREMENT)}>
+        <ExpandMoreIcon />
+      </IconButton>
+    </Tooltip>,
+  ];
+  if (currentHeight > MINIMUM_EDITOR_HEIGHT) {
+    buttons.unshift(
+      <Tooltip title="Decrease editor size">
+        <IconButton
+          onClick={() =>
+            setHeight(Math.max(currentHeight - EDITOR_HEIGHT_INCREMENT, MINIMUM_EDITOR_HEIGHT))
+          }
+        >
+          <ExpandLessIcon />
+        </IconButton>
+      </Tooltip>
+    );
+  }
+  return <Box sx={{ margin: 2, display: "flex", justifyContent: "right" }}>{buttons}</Box>;
 }
 
 function CodeWidget(props) {
@@ -15,6 +44,7 @@ function CodeWidget(props) {
   const [codeFromEditor, setCodeFromEditor] = useState("");
   const [codeURL, setCodeURL] = useState("");
   const [codeFromDrive, setCodeFromDrive] = useState("");
+  const [editorHeight, setEditorHeight] = useState(MINIMUM_EDITOR_HEIGHT);
 
   const handleChangeTab = (event, newValue) => {
     setCurrentTab(newValue);
@@ -80,7 +110,7 @@ function CodeWidget(props) {
         </TabList>
         <TabPanel value="editor">
           <Editor
-            height="40vh"
+            height={`${editorHeight}vh`}
             onChange={handleChangeEditorContent}
             defaultLanguage="python"
             value={codeFromEditor}
@@ -90,6 +120,7 @@ function CodeWidget(props) {
               },
             }}
           />
+          <EditorSizeButtons currentHeight={editorHeight} setHeight={setEditorHeight} />
         </TabPanel>
         <TabPanel value="from-url">
           <TextField
