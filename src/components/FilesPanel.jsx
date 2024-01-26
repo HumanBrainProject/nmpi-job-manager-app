@@ -1,9 +1,60 @@
 import { useState, useEffect } from "react";
 import { useSubmit } from "react-router-dom";
 
-import { Button, CircularProgress, Stack, Typography } from "@mui/material";
-import { FolderOpen as FolderOpenIcon } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Link,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+
+import {
+  FolderOpen as FolderOpenIcon,
+  InsertDriveFile as FileIcon,
+  Info as InfoIcon,
+} from "@mui/icons-material";
 import Panel from "./Panel";
+
+function removePrefixFromPath(prefix, path) {
+  return path.slice(prefix.length);
+}
+
+function formatContentType(contentType) {
+  if (contentType) {
+    return (
+      <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
+        {contentType}
+      </Typography>
+    );
+  } else {
+    return "";
+  }
+}
+
+function formatFileSize(size) {
+  if (size) {
+    if (size < 1024) {
+      return (
+        <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
+          {size} bytes
+        </Typography>
+      );
+    } else {
+      return (
+        <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
+          {(size / 1024).toFixed(1)} KiB
+        </Typography>
+      );
+    }
+  } else {
+    return "";
+  }
+}
 
 function CopyButtons(props) {
   const submit = useSubmit();
@@ -64,18 +115,28 @@ function FilesPanel(props) {
         icon={<FolderOpenIcon color="disabled" sx={{ mr: 1 }} />}
         defaultExpanded={true}
       >
-        <Typography variant="body2">{props.dataset.repository}</Typography>
-        <ul>
+        <Typography variant="body2" sx={{ paddingTop: 2, paddingBottom: 1 }}>
+          {props.dataset.repository}
+        </Typography>
+        <Stack direction="row" spacing={1}>
           {props.dataset.files.map((file) => (
-            <li key={file.path}>
-              <a href={file.url} target="_blank">
-                {file.path}
-              </a>
-              &nbsp;
-              {file.content_type} - {file.size} bytes - {file.hash}
-            </li>
+            <Card key={file.path} sx={{ paddingTop: 1, backgroundColor: "#f8f8f8" }}>
+              <CardContent sx={{ minHeight: "40px" }}>
+                <Stack direction="row" spacing={1}>
+                  <FileIcon color="disabled" />
+                  <Link href={file.url} target="_blank">
+                    {removePrefixFromPath(`/${props.collab}`, file.path)}
+                  </Link>
+                  {formatContentType(file.content_type)}
+                  {formatFileSize(file.size)}
+                  <Tooltip title={`digest: ${file.hash}`}>
+                    <InfoIcon color="info" />
+                  </Tooltip>
+                </Stack>
+              </CardContent>
+            </Card>
           ))}
-        </ul>
+        </Stack>
         <CopyButtons
           currentRepository={props.dataset.repository}
           collab={props.collab}
