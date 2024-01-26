@@ -7,18 +7,21 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Link,
+  IconButton,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 
 import {
+  Download as DownloadIcon,
   FolderOpen as FolderOpenIcon,
   InsertDriveFile as FileIcon,
-  Info as InfoIcon,
+  Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import Panel from "./Panel";
+import Preview from "./Preview";
+import { guessContentType } from "../utils";
 
 function removePrefixFromPath(prefix, path) {
   return path.slice(prefix.length);
@@ -27,7 +30,7 @@ function removePrefixFromPath(prefix, path) {
 function formatContentType(contentType) {
   if (contentType) {
     return (
-      <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
+      <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }} noWrap>
         {contentType}
       </Typography>
     );
@@ -38,21 +41,25 @@ function formatContentType(contentType) {
 
 function formatFileSize(size) {
   if (size) {
-    if (size < 1024) {
-      return (
-        <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
-          {size} bytes
-        </Typography>
-      );
-    } else {
-      return (
-        <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }}>
-          {(size / 1024).toFixed(1)} KiB
-        </Typography>
-      );
+    let text = `${size} bytes`;
+    if (size >= 1024) {
+      text = `${(size / 1024).toFixed(1)} KiB`;
     }
+    return (
+      <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }} noWrap>
+        {text}
+      </Typography>
+    );
   } else {
     return "";
+  }
+}
+
+function getContentType(contentType, url) {
+  if (contentType) {
+    return contentType;
+  } else {
+    return guessContentType(url);
   }
 }
 
@@ -108,6 +115,14 @@ function CopyButtons(props) {
 }
 
 function FilesPanel(props) {
+  const [previewTarget, setPreviewTarget] = useState("");
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+
+  const handleOpenPreview = (target) => {
+    setPreviewTarget(target);
+    setPreviewDialogOpen(true);
+  };
+
   if (props.dataset) {
     return (
       <Panel
@@ -118,20 +133,35 @@ function FilesPanel(props) {
         <Typography variant="body2" sx={{ paddingTop: 2, paddingBottom: 1 }}>
           {props.dataset.repository}
         </Typography>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
           {props.dataset.files.map((file) => (
             <Card key={file.path} sx={{ paddingTop: 1, backgroundColor: "#f8f8f8" }}>
-              <CardContent sx={{ minHeight: "40px" }}>
-                <Stack direction="row" spacing={1}>
+              <CardContent>
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                   <FileIcon color="disabled" />
-                  <Link href={file.url} target="_blank">
-                    {removePrefixFromPath(`/${props.collab}`, file.path)}
-                  </Link>
-                  {formatContentType(file.content_type)}
-                  {formatFileSize(file.size)}
+
                   <Tooltip title={`digest: ${file.hash}`}>
-                    <InfoIcon color="info" />
+                    <Typography variant="body2" color="primary" noWrap>
+                      {removePrefixFromPath(`/${props.collab}`, file.path)}
+                    </Typography>
                   </Tooltip>
+
+                  {formatFileSize(file.size)}
+
+                  <Tooltip title="Download">
+                    <IconButton href={file.url} target="_blank">
+                      <DownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {getContentType(file.content_type, file.url) ? (
+                    <Tooltip title="Preview">
+                      <IconButton onClick={() => handleOpenPreview(file)}>
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    ""
+                  )}
                 </Stack>
               </CardContent>
             </Card>
@@ -141,6 +171,13 @@ function FilesPanel(props) {
           currentRepository={props.dataset.repository}
           collab={props.collab}
           jobId={props.jobId}
+        />
+        <Preview
+          url={previewTarget.url}
+          size={previewTarget.size}
+          contentType={previewTarget.content_type}
+          open={previewDialogOpen}
+          onClose={() => setPreviewDialogOpen(false)}
         />
       </Panel>
     );

@@ -38,4 +38,33 @@ function jobIsIncomplete(job) {
   return ["submitted", "running", "validated"].includes(job.status);
 }
 
-export { timeFormat, parseArray, formatArray, isEmpty, isAlmostEmpty, jobIsIncomplete };
+const EXTENSION_CONTENT_TYPE_MAP = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  txt: "text/plain",
+  out: "text/plain",
+  err: "text/plain",
+  zip: "application/zip",
+  pdf: "application/pdf",
+};
+
+function guessContentType(url) {
+  const parts = url.split(".");
+  const extension = parts[parts.length - 1];
+  if (extension) {
+    return EXTENSION_CONTENT_TYPE_MAP[extension.toLowerCase()];
+  } else {
+    return null;
+  }
+}
+
+export {
+  timeFormat,
+  parseArray,
+  formatArray,
+  isEmpty,
+  isAlmostEmpty,
+  jobIsIncomplete,
+  guessContentType,
+};
