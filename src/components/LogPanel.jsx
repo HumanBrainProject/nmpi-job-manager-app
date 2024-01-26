@@ -38,7 +38,11 @@ function LogPanel(props) {
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="caption">
-          {log.length > 0 ? <pre>{log}</pre> : "Log not available"}
+          {log.length > 0 ? (
+            <pre style={{ overflow: "auto", paddingBottom: "12px" }}>{log}</pre>
+          ) : (
+            "Log not available"
+          )}
         </Typography>
       </AccordionDetails>
     </Accordion>
