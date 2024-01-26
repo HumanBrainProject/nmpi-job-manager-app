@@ -1,9 +1,10 @@
-import { useContext, useEffect } from "react";
-import { Link as RouterLink, useRevalidator } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link as RouterLink, useRevalidator, useNavigate } from "react-router-dom";
 
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import {
   ArrowBack,
+  Delete as DeleteIcon,
   Launch as LaunchIcon,
   LocationOn as LocationOnIcon,
   DeveloperBoard as DeveloperBoardIcon,
@@ -11,7 +12,7 @@ import {
 } from "@mui/icons-material";
 
 import { timeFormat, isEmpty, jobIsIncomplete } from "../utils";
-import { addTag, deleteTag } from "../datastore";
+import { addTag, deleteTag, hideJob } from "../datastore";
 import { AuthContext } from "../context";
 import StatusChip from "./StatusChip";
 import Panel from "./Panel";
@@ -21,11 +22,14 @@ import LogPanel from "./LogPanel";
 import CommentsPanel from "./CommentsPanel";
 import KeyValueTable from "./KeyValueTable";
 import TagDisplay from "./TagDisplay";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 function JobDetail(props) {
   const { job, collab } = props;
   const revalidator = useRevalidator();
   const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (jobIsIncomplete(job) && revalidator.state === "idle") {
@@ -57,6 +61,18 @@ function JobDetail(props) {
     }
   };
 
+  const handleRequestHideJob = () => {
+    setDialogOpen(true);
+  };
+
+  const handleConfirmHideJob = async (confirmed) => {
+    setDialogOpen(false);
+    if (confirmed) {
+      await hideJob(collab, job.id, auth);
+      navigate(`/${collab}/jobs/`);
+    }
+  };
+
   return (
     <Box sx={{ marginBottom: 6 }}>
       <Typography variant="h2" sx={{ mt: 3 }}>
@@ -64,9 +80,15 @@ function JobDetail(props) {
           <ArrowBack />
         </IconButton>
         Job #{job.id} <StatusChip status={job.status} />
+        &nbsp;
         <Tooltip title="Create a new job based on this one">
           <IconButton component={RouterLink} to={`/${collab}/jobs/${job.id}/new`}>
             <RestartIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete this job">
+          <IconButton onClick={handleRequestHideJob}>
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       </Typography>
@@ -124,6 +146,12 @@ function JobDetail(props) {
       <LogPanel jobId={job.id} />
 
       <CommentsPanel jobId={job.id} collab={collab} />
+
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={handleConfirmHideJob}
+        content="Are you sure you wish to delete this job?"
+      />
     </Box>
   );
 }

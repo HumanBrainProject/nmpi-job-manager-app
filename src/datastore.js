@@ -127,6 +127,20 @@ async function createJob(collabId, jobData, auth) {
   }
 }
 
+async function hideJob(collabId, jobId, auth) {
+  const url = jobQueueServer + "/jobs/" + jobId;
+  let config = getRequestConfig(auth);
+  config.method = "DELETE";
+  const response = await fetch(url, config);
+  if (response.ok) {
+    // remove from cache
+    delete cache.jobs[collabId][jobId];
+    return "success";
+  } else {
+    throw new Error("hiding job was not successful");
+  }
+}
+
 async function getLog(jobId, auth) {
   if (!(jobId in cache.logs)) {
     let url = jobQueueServer + "/jobs/" + jobId + "/log";
@@ -309,6 +323,7 @@ export {
   queryTags,
   getJob,
   createJob,
+  hideJob,
   getLog,
   getComments,
   createComment,
