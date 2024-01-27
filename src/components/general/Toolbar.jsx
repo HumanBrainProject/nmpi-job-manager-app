@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { RequestedCollabContext } from "../context";
+import { RequestedCollabContext } from "../../context";
 
 function renderButtons(page, collab) {
   switch (page) {

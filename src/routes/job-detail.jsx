@@ -4,9 +4,9 @@ import { Await, defer, useLoaderData, useParams } from "react-router-dom";
 import { Container } from "@mui/material";
 
 import { getJob, createComment, changeRepository } from "../datastore";
-import Toolbar from "../components/Toolbar";
-import JobDetail from "../components/JobDetail";
-import ProgressIndicator from "../components/ProgressIndicator";
+import Toolbar from "../components/general/Toolbar";
+import JobDetail from "../components/job-detail/JobDetail";
+import ProgressIndicator from "../components/general/ProgressIndicator";
 
 //import Navigation from "../components/Navigation";
 

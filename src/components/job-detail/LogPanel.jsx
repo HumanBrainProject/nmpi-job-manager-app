@@ -3,8 +3,8 @@ import { useState, useContext } from "react";
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import { ExpandMore, ArticleOutlined as ArticleOutlinedIcon } from "@mui/icons-material";
 
-import { getLog } from "../datastore";
-import { AuthContext } from "../context";
+import { getLog } from "../../datastore";
+import { AuthContext } from "../../context";
 
 function LogPanel(props) {
   const [expanded, setExpanded] = useState(false);

@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { hw_options } from "../globals.js";
+import { hw_options } from "../../globals.js";
 import CodeWidget from "./CodeWidget.jsx";
 import BrainScaleSConfig from "./BrainScaleSConfig.jsx";
 import SpiNNakerConfig from "./SpiNNakerConfig.jsx";

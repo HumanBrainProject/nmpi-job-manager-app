@@ -2,7 +2,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { Code as CodeIcon } from "@mui/icons-material";
 
-import Panel from "./Panel";
+import Panel from "../general/Panel";
 
 function CodePanel(props) {
   return (

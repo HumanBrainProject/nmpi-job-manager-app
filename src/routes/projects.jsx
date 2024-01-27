@@ -4,10 +4,10 @@ import { Await, defer, useLoaderData, useParams } from "react-router-dom";
 import { Container } from "@mui/material";
 
 import { queryProjects } from "../datastore";
-import ProjectList from "../components/ProjectList";
-import Toolbar from "../components/Toolbar";
-import ProgressIndicator from "../components/ProgressIndicator";
-import ErrorInDataLoading from "../components/ErrorInDataLoading";
+import ProjectList from "../components/projects/ProjectList";
+import Toolbar from "../components/general/Toolbar";
+import ProgressIndicator from "../components/general/ProgressIndicator";
+import ErrorInDataLoading from "../components/general/ErrorInDataLoading";
 
 export function getLoader(auth) {
   const loader = async ({ params }) => {

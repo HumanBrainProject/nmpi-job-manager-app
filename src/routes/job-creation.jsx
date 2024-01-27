@@ -4,9 +4,9 @@ import { Await, useLoaderData, useParams, redirect } from "react-router-dom";
 import { Container } from "@mui/material";
 
 import { createJob } from "../datastore";
-import Toolbar from "../components/Toolbar";
-import CreateJobForm from "../components/CreateJobForm";
-import ProgressIndicator from "../components/ProgressIndicator";
+import Toolbar from "../components/general/Toolbar";
+import CreateJobForm from "../components/job-creation/CreateJobForm";
+import ProgressIndicator from "../components/general/ProgressIndicator";
 
 function submitJob(auth) {
   const wrappedSubmitJob = async ({ request, params }) => {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Dialog, DialogContent, IconButton } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 
-import { guessContentType } from "../utils";
+import { guessContentType } from "../../utils";
 
 const MAX_TEXT_SIZE_FOR_DISPLAY = 10000;
 

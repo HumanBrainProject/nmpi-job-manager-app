@@ -18,9 +18,9 @@ import {
   InsertDriveFile as FileIcon,
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
-import Panel from "./Panel";
+import Panel from "../general/Panel";
 import Preview from "./Preview";
-import { guessContentType } from "../utils";
+import { guessContentType } from "../../utils";
 
 function removePrefixFromPath(prefix, path) {
   return path.slice(prefix.length);

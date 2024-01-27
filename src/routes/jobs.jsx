@@ -5,10 +5,10 @@ import { Container } from "@mui/material";
 
 import { queryJobs, queryTags, createJob } from "../datastore";
 import { INITIAL_JOBS } from "../globals";
-import JobList from "../components/JobList";
-import Toolbar from "../components/Toolbar";
-import ProgressIndicator from "../components/ProgressIndicator";
-import ErrorInDataLoading from "../components/ErrorInDataLoading";
+import JobList from "../components/jobs/JobList";
+import Toolbar from "../components/general/Toolbar";
+import ProgressIndicator from "../components/general/ProgressIndicator";
+import ErrorInDataLoading from "../components/general/ErrorInDataLoading";
 
 export function getLoader(auth) {
   const loader = async ({ request, params }) => {

@@ -11,18 +11,18 @@ import {
   RestartAlt as RestartIcon,
 } from "@mui/icons-material";
 
-import { timeFormat, isEmpty, jobIsIncomplete } from "../utils";
-import { addTag, deleteTag, hideJob } from "../datastore";
-import { AuthContext } from "../context";
-import StatusChip from "./StatusChip";
-import Panel from "./Panel";
+import { timeFormat, isEmpty, jobIsIncomplete } from "../../utils";
+import { addTag, deleteTag, hideJob } from "../../datastore";
+import { AuthContext } from "../../context";
+import StatusChip from "../general/StatusChip";
+import Panel from "../general/Panel";
 import CodePanel from "./CodePanel";
 import FilesPanel from "./FilesPanel";
 import LogPanel from "./LogPanel";
 import CommentsPanel from "./CommentsPanel";
-import KeyValueTable from "./KeyValueTable";
-import TagDisplay from "./TagDisplay";
-import ConfirmationDialog from "./ConfirmationDialog";
+import KeyValueTable from "../general/KeyValueTable";
+import TagDisplay from "../general/TagDisplay";
+import ConfirmationDialog from "../general/ConfirmationDialog";
 
 function JobDetail(props) {
   const { job, collab } = props;

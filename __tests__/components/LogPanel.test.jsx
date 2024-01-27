@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
 
-import LogPanel from "../../src/components/LogPanel";
+import LogPanel from "../../src/components/job-detail/LogPanel";
 import { getLog } from "../../src/datastore";
 
 function wait(time) {

@@ -4,11 +4,11 @@ import { Await, defer, useLoaderData, useNavigate, redirect } from "react-router
 import { Container } from "@mui/material";
 
 import { listCollabs } from "../datastore";
-import Toolbar from "../components/Toolbar";
-import ProgressIndicator from "../components/ProgressIndicator";
-import Introduction from "../components/Introduction";
-import CollabList from "../components/CollabList";
-import ErrorInDataLoading from "../components/ErrorInDataLoading";
+import Toolbar from "../components/general/Toolbar";
+import ProgressIndicator from "../components/general/ProgressIndicator";
+import Introduction from "../components/home/Introduction";
+import CollabList from "../components/home/CollabList";
+import ErrorInDataLoading from "../components/general/ErrorInDataLoading";
 import { RequestedCollabContext } from "../context";
 
 export function getLoader(auth) {

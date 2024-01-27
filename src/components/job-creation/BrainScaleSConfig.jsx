@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import { parseArray, formatArray } from "../utils";
+import { parseArray, formatArray } from "../../utils";
 
 function BrainScaleSConfig(props) {
   // SOFTWARE_VERSION str;

@@ -7,7 +7,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { green } from "@mui/material/colors";
 
 import initAuth from "./auth";
-import ErrorPage from "./components/ErrorPage";
+import ErrorPage from "./components/general/ErrorPage";
 import { RequestedCollabContext, AuthContext } from "./context";
 
 import Home, { getLoader as collabLoader } from "./routes/home";

@@ -26,11 +26,11 @@ import {
   Folder as FolderIcon,
 } from "@mui/icons-material";
 
-import StatusChip from "./StatusChip";
-import TagDisplay from "./TagDisplay";
+import StatusChip from "../general/StatusChip";
+import TagDisplay from "../general/TagDisplay";
 
-import { DELTA_JOBS } from "../globals";
-import { jobIsIncomplete, timeFormat } from "../utils";
+import { DELTA_JOBS } from "../../globals";
+import { jobIsIncomplete, timeFormat } from "../../utils";
 
 function filterJobs(jobs, statusFilter, hardwareFilter, tagFilter) {
   function hasStatus(job) {

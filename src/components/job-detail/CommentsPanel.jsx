@@ -6,8 +6,8 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/
 
 import { ExpandMore, ChatBubbleOutline as ChatBubbleOutlineIcon } from "@mui/icons-material";
 
-import { getComments } from "../datastore";
-import { AuthContext } from "../context";
+import { getComments } from "../../datastore";
+import { AuthContext } from "../../context";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 
-import { driveServer } from "../globals";
-import { AuthContext } from "../context";
+import { driveServer } from "../../globals";
+import { AuthContext } from "../../context";
 import FileBrowser from "./FileBrowser";
 
 function getRequestConfig(auth) {

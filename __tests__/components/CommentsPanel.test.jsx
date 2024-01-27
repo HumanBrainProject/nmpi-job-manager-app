@@ -2,7 +2,7 @@ import { describe, test } from "vitest";
 import { render } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 
-import CommentsPanel from "../../src/components/CommentsPanel";
+import CommentsPanel from "../../src/components/job-detail/CommentsPanel";
 
 describe("CommentsPanel", () => {
   test("placeholder", () => {

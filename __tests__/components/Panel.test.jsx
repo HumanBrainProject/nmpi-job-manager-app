@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
 import { render } from "@testing-library/react";
 
-import Panel from "../../src/components/Panel";
+import Panel from "../../src/components/general/Panel";
 
 describe("Panel", () => {
   test("placeholder", () => {
