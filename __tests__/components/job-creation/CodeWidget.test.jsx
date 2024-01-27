@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
 import { render } from "@testing-library/react";
 
-import CodeWidget from "../../src/components/job-creation/CodeWidget";
+import CodeWidget from "../../../src/components/job-creation/CodeWidget";
 
 describe("CodeWidget", () => {
   test("placeholder", () => {

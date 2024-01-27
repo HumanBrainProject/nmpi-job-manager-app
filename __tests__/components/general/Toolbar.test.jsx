@@ -5,7 +5,7 @@ import { render } from "@testing-library/react";
 
 import { BrowserRouter } from "react-router-dom";
 
-import Toolbar from "../../src/components/general/Toolbar";
+import Toolbar from "../../../src/components/general/Toolbar";
 
 describe("Toolbar", () => {
   test("placeholder", () => {

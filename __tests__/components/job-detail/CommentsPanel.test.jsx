@@ -2,13 +2,18 @@ import { describe, test } from "vitest";
 import { render } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 
-import ProjectListRoute from "../../src/routes/projects";
+import CommentsPanel from "../../../src/components/job-detail/CommentsPanel";
 
-describe("ProjectList", () => {
+describe("CommentsPanel", () => {
   test("placeholder", () => {
     const router = createMemoryRouter(
-      [{ path: "/:collabId/projects/", element: <ProjectListRoute />, loader: () => [] }],
-      { initialEntries: ["/fake-collab/projects/"] }
+      [
+        {
+          path: "/:collabId/jobs/:jobId",
+          element: <CommentsPanel jobId="99999" />,
+        },
+      ],
+      { initialEntries: ["/my-collab/jobs/99999"] }
     );
 
     render(<RouterProvider router={router} />);

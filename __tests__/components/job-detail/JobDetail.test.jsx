@@ -2,7 +2,7 @@ import { describe, test } from "vitest";
 import { render } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 
-import JobDetailRoute from "../../src/routes/job-detail";
+import JobDetailRoute from "../../../src/routes/job-detail";
 
 describe("JobDetail", () => {
   test("placeholder", () => {

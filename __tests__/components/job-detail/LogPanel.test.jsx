@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
 
-import LogPanel from "../../src/components/job-detail/LogPanel";
-import { getLog } from "../../src/datastore";
+import LogPanel from "../../../src/components/job-detail/LogPanel";
+import { getLog } from "../../../src/datastore";
 
 function wait(time) {
   return new Promise((resolve) => {
@@ -25,7 +25,7 @@ describe("LogPanel", () => {
   });
 
   test("should show the content on click", async () => {
-    vi.mock("../../src/datastore.js", () => {
+    vi.mock("../../../src/datastore.js", () => {
       const promise = new Promise((resolve) => {
         setTimeout(() => {
           resolve("This is the first line of the log.\nThis is the second line.");
