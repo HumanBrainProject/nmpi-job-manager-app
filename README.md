@@ -17,8 +17,8 @@ The page will reload if you make edits.
 ## Acknowledgments
 
 The current version of the application was developed as part of the EBRAINS research infrastructure,
-funded from the European Union’s Horizon Europe Framework Programme for Research and Innovation
-under Specific Grant Agreement No. xyzxyz (EBRAINS 2.0).
+funded from the European Union’s Horizon Europe Programme under Specific Grant Agreement No. 101147319
+(EBRAINS 2.0 Project).
 
 Previous versions were developed in the Human Brain Project,
 funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation
