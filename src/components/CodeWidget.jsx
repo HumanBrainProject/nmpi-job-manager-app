@@ -17,7 +17,7 @@ function validURL(value) {
 
 function EditorSizeButtons({ currentHeight, setHeight }) {
   let buttons = [
-    <Tooltip title="Increase editor size">
+    <Tooltip key="larger-editor-button" title="Increase editor size">
       <IconButton onClick={() => setHeight(currentHeight + EDITOR_HEIGHT_INCREMENT)}>
         <ExpandMoreIcon />
       </IconButton>
@@ -25,7 +25,7 @@ function EditorSizeButtons({ currentHeight, setHeight }) {
   ];
   if (currentHeight > MINIMUM_EDITOR_HEIGHT) {
     buttons.unshift(
-      <Tooltip title="Decrease editor size">
+      <Tooltip key="smaller-editor-button" title="Decrease editor size">
         <IconButton
           onClick={() =>
             setHeight(Math.max(currentHeight - EDITOR_HEIGHT_INCREMENT, MINIMUM_EDITOR_HEIGHT))

@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
 
-import CreateJobDialog from "../../src/components/CreateJobDialog";
+import CreateJobForm from "../../src/components/CreateJobForm";
 
-describe("CreateJobDialog", () => {
+describe("CreateJobForm", () => {
   test("placeholder", () => {});
 });

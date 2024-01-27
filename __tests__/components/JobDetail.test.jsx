@@ -1,9 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 
-import { BrowserRouter } from "react-router-dom";
-
-import JobDetail from "../../src/components/JobDetail";
+import JobDetailRoute from "../../src/routes/job-detail";
 
 describe("JobDetail", () => {
   test("placeholder", () => {
@@ -29,12 +28,12 @@ describe("JobDetail", () => {
         key4: "value4",
       },
     };
-    // Because JobDetail contains a RouterLink we need
-    // to wrap it in a Router
-    render(
-      <BrowserRouter>
-        <JobDetail job={job} collab="my-collab" />
-      </BrowserRouter>
+
+    const router = createMemoryRouter(
+      [{ path: "/:collabId/jobs/:jobId", element: <JobDetailRoute />, loader: () => job }],
+      { initialEntries: ["/my-collab/jobs/1234"] }
     );
+
+    render(<RouterProvider router={router} />);
   });
 });

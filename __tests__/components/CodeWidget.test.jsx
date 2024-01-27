@@ -9,6 +9,6 @@ describe("CodeWidget", () => {
     const onChange = (value) => {
       return value;
     };
-    render(<CodeWidget code={code} onChange={onChange} />);
+    render(<CodeWidget code={code} onChange={onChange} initialTab="editor" />);
   });
 });
