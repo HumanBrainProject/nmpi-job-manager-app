@@ -77,7 +77,7 @@ function Preview(props) {
     if (props.url && props.open) {
       fetchData(props.url, props.content_type, props.size);
     }
-  }, [props.url]);
+  }, [props.url, props.content_type, props.open, props.size]);
 
   const handleClose = () => {
     props.onClose();

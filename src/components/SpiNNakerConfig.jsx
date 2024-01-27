@@ -64,7 +64,7 @@ function SpiNNakerConfig(props) {
         variant="outlined"
         value={formatArray(props.config.extra_pip_installs)}
         onChange={(event) => handleChange("extra_pip_installs", event.target.value)}
-        onBlur={(event) => removeEmptyItems("extra_pip_installs")}
+        onBlur={() => removeEmptyItems("extra_pip_installs")}
       />
       <TextField
         id="spinn-config-extra_git_repositories"
@@ -74,7 +74,7 @@ function SpiNNakerConfig(props) {
         variant="outlined"
         value={formatArray(props.config.extra_git_repositories)}
         onChange={(event) => handleChange("extra_git_repositories", event.target.value)}
-        onBlur={(event) => removeEmptyItems("extra_git_repositories")}
+        onBlur={() => removeEmptyItems("extra_git_repositories")}
       />
       <TextField
         id="spinn-config-extra_makes"
@@ -84,7 +84,7 @@ function SpiNNakerConfig(props) {
         variant="outlined"
         value={formatArray(props.config.extra_makes)}
         onChange={(event) => handleChange("extra_makes", event.target.value)}
-        onBlur={(event) => removeEmptyItems("extra_makes")}
+        onBlur={() => removeEmptyItems("extra_makes")}
       />
       <TextField
         id="spinn-config-extra-python-setups"
@@ -94,7 +94,7 @@ function SpiNNakerConfig(props) {
         variant="outlined"
         value={formatArray(props.config.extra_python_setups)}
         onChange={(event) => handleChange("extra_python_setups", event.target.value)}
-        onBlur={(event) => removeEmptyItems("extra_python_setups")}
+        onBlur={() => removeEmptyItems("extra_python_setups")}
       />
       <TextField
         id="spinn-config-pyNN_version"

@@ -25,7 +25,7 @@ export function getLoader(auth) {
   return loader;
 }
 
-function Home(props) {
+function Home() {
   const data = useLoaderData();
   const navigate = useNavigate();
   const requestedCollabId = useContext(RequestedCollabContext);
@@ -34,7 +34,7 @@ function Home(props) {
     if (requestedCollabId) {
       navigate(`/${requestedCollabId}/jobs/`);
     }
-  }, [requestedCollabId]);
+  }, [requestedCollabId, navigate]);
 
   return (
     <div>

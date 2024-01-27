@@ -4,7 +4,6 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
 
 function Introduction() {
   {
@@ -29,8 +28,9 @@ function Introduction() {
         </Typography>
         <Typography variant="h6" align="center" color="text.secondary" paragraph>
           If you or your colleagues have already run neuromorphic jobs in EBRAINS, you will see
-          below a list of workspaces ("collabs") that contain neuromorphic results. If this is your
-          first time using the EBRAINS neuromorphic systems, click on "Getting started".
+          below a list of workspaces (&ldquo;collabs&rdquo;) that contain neuromorphic results. If
+          this is your first time using the EBRAINS neuromorphic systems, click on &ldquo;Getting
+          started&rdquo;.
         </Typography>
         <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
           <Button

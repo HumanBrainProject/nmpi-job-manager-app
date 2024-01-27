@@ -13,7 +13,7 @@ function submitJob(auth) {
     const { collabId } = params;
     const jobData = await request.json();
     if (request.method === "POST") {
-      const response = await createJob(collabId, jobData, auth);
+      await createJob(collabId, jobData, auth);
       return redirect(`/${collabId}/jobs/`);
     } else {
       throw new Error("unexpected request method");
@@ -22,7 +22,7 @@ function submitJob(auth) {
   return wrappedSubmitJob;
 }
 
-function JobCreationRoute(props) {
+function JobCreationRoute() {
   let { collabId } = useParams();
 
   return (

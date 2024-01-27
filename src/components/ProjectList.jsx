@@ -22,7 +22,7 @@ function ProjectList(props) {
     if (fetcher.data && selectedProject) {
       fetcher.load();
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, fetcher, selectedProject]);
 
   const handleCloseEditDialog = (projectUpdate) => {
     if (projectUpdate) {

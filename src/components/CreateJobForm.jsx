@@ -65,7 +65,7 @@ function CreateJobForm(props) {
     setTags(tags.map((item) => item.trim()).filter((item) => item.length > 0));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = () => {
     const newJob = {
       hardware_platform: hardware,
       code: code,

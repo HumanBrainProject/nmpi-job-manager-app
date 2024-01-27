@@ -59,7 +59,7 @@ function BrainScaleSConfig(props) {
         variant="outlined"
         value={formatArray(props.config.HICANN)}
         onChange={(event) => handleChange("HICANN", event.target.value)}
-        onBlur={(event) => removeEmptyItems("HICANN")}
+        onBlur={() => removeEmptyItems("HICANN")}
       />
       <TextField
         id="bss-config-fpga"

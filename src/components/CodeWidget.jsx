@@ -15,6 +15,16 @@ function validURL(value) {
   return value.startsWith("http"); // todo: use a regex
 }
 
+function getPathFromDriveURI(uri, collab) {
+  if (uri.startsWith("drive:")) {
+    const prefix = `drive://${collab}`;
+    return uri.substring(prefix.length + 1);
+  } else if (uri.length > 0) {
+    console.warn("Expected 'drive:' URL, got " + uri);
+  }
+  return uri;
+}
+
 function EditorSizeButtons({ currentHeight, setHeight }) {
   let buttons = [
     <Tooltip key="larger-editor-button" title="Increase editor size">
@@ -67,26 +77,16 @@ function CodeWidget(props) {
     props.onChange(`drive://${props.collab}/${value}`);
   };
 
-  const getPathFromDriveURI = (uri) => {
-    if (uri.startsWith("drive:")) {
-      const prefix = `drive://${props.collab}`;
-      return uri.substring(prefix.length + 1);
-    } else if (uri.length > 0) {
-      console.warn("Expected 'drive:' URL, got " + uri);
-    }
-    return uri;
-  };
-
   useEffect(() => {
     if (props.initialTab === "editor") {
       setCodeFromEditor(props.code || "");
     } else if (props.initialTab === "from-url") {
       setCodeURL(props.code || "");
     } else if (props.initialTab === "drive") {
-      setCodeFromDrive(getPathFromDriveURI(props.code) || "");
+      setCodeFromDrive(getPathFromDriveURI(props.code, props.collab) || "");
     }
     setCurrentTab(props.initialTab);
-  }, [props.initialTab, props.code]);
+  }, [props.initialTab, props.code, props.collab]);
 
   return (
     <Box

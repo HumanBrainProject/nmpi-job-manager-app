@@ -49,7 +49,7 @@ function DriveBrowser(props) {
       setLoading(false);
     }
     fetchData();
-  }, [props.collab, path]);
+  }, [props.collab, path, auth]);
 
   // todo: only show .py, .tar, .tar.gz, .tgz, .zip files
 

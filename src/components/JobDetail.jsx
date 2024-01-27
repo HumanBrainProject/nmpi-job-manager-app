@@ -43,7 +43,7 @@ function JobDetail(props) {
       }, 5000);
       return () => clearInterval(intervalID);
     }
-  }, [props]);
+  }, [props, job, revalidator]);
 
   const handleDeleteTag = async (tag) => {
     console.log(tag);
