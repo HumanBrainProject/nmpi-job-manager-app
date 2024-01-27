@@ -70,12 +70,16 @@ function Breadcrumbs(props) {
     const fullPath = fullPaths[index];
     if (fullPath) {
       return (
-        <Link href="#" onClick={() => props.onChangePath(fullPath)}>
+        <Link href="#" onClick={() => props.onChangePath(fullPath)} key={index}>
           <Typography variant="body2">{part}</Typography>
         </Link>
       );
     } else {
-      return <Typography variant="body2">{part}</Typography>;
+      return (
+        <Typography variant="body2" key={index}>
+          {part}
+        </Typography>
+      );
     }
   });
   return (
@@ -83,7 +87,7 @@ function Breadcrumbs(props) {
       <IconButton onClick={() => props.onChangePath("")}>
         <HomeIcon size="small" color="disabled" />
       </IconButton>
-      {...links}
+      {links}
     </MUIBreadcrumbs>
   );
 }

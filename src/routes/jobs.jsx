@@ -34,7 +34,7 @@ export function submitJob(auth) {
   return wrappedSubmitJob;
 }
 
-function JobListRoute(props) {
+function JobListRoute() {
   const { data } = useLoaderData();
   let { collabId } = useParams();
 

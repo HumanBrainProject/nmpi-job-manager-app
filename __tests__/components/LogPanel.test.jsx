@@ -5,7 +5,7 @@ import LogPanel from "../../src/components/LogPanel";
 import { getLog } from "../../src/datastore";
 
 function wait(time) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve("finished");
     }, time);
@@ -26,7 +26,7 @@ describe("LogPanel", () => {
 
   test("should show the content on click", async () => {
     vi.mock("../../src/datastore.js", () => {
-      const promise = new Promise((resolve, reject) => {
+      const promise = new Promise((resolve) => {
         setTimeout(() => {
           resolve("This is the first line of the log.\nThis is the second line.");
         }, 100);

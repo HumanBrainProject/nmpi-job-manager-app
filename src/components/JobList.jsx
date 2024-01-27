@@ -113,7 +113,7 @@ function JobList(props) {
       return () => clearInterval(intervalID);
     }
     setFilteredJobs(filterJobs(props.jobs, statusFilter, hardwareFilter, tagFilter));
-  }, [props.jobs, statusFilter, hardwareFilter, tagFilter]);
+  }, [props.jobs, statusFilter, hardwareFilter, tagFilter, revalidator]);
 
   const handleChangeToStatusFilter = (event) => {
     setStatusFilter(event.target.value);
@@ -215,7 +215,7 @@ function JobList(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredJobs.map((job, index) => (
+            {filteredJobs.map((job) => (
               <TableRow
                 key={job.id}
                 sx={{

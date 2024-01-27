@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { Fragment } from "react";
 
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
@@ -49,7 +49,7 @@ function QuotaField(props) {
 }
 
 function QuotaSelector(props) {
-  const toggleQuota = (event) => {
+  const toggleQuota = () => {
     if (props.quota) {
       props.setQuota(0);
     } else {

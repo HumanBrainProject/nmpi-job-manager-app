@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSubmit } from "react-router-dom";
 
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -25,18 +24,6 @@ import { guessContentType } from "../utils";
 
 function removePrefixFromPath(prefix, path) {
   return path.slice(prefix.length);
-}
-
-function formatContentType(contentType) {
-  if (contentType) {
-    return (
-      <Typography variant="body2" color="gray" sx={{ lineHeight: "24px" }} noWrap>
-        {contentType}
-      </Typography>
-    );
-  } else {
-    return "";
-  }
 }
 
 function formatFileSize(size) {

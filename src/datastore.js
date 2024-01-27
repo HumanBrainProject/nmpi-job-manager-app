@@ -1,5 +1,5 @@
 import { jobQueueServer } from "./globals";
-import { isEmpty, isAlmostEmpty, jobIsIncomplete } from "./utils";
+import { isAlmostEmpty, jobIsIncomplete } from "./utils";
 
 let cache = {
   jobs: {},

@@ -17,7 +17,7 @@ export function getLoader(auth) {
   return loader;
 }
 
-function ProjectListRoute(props) {
+function ProjectListRoute() {
   const data = useLoaderData();
   let { collabId } = useParams();
 

@@ -56,7 +56,9 @@ function CommentsPanel(props) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {comments.length > 0 ? comments.map((comment) => <Comment {...comment} />) : "No comments"}
+        {comments.length > 0
+          ? comments.map((comment) => <Comment key={comment.comment_id} {...comment} />)
+          : "No comments"}
         <CommentForm job={jobId} onSubmit={handleSubmit} />
       </AccordionDetails>
     </Accordion>
