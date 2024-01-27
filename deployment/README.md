@@ -10,7 +10,6 @@ and to stop it:
 
 $ docker-compose -f deployment/docker-compose.dev.yml stop
 
-
 ## Production
 
 To build the image for deployment in production:

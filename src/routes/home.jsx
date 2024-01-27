@@ -1,11 +1,5 @@
 import { Suspense, useContext, useEffect } from "react";
-import {
-  Await,
-  defer,
-  useLoaderData,
-  useNavigate,
-  redirect,
-} from "react-router-dom";
+import { Await, defer, useLoaderData, useNavigate, redirect } from "react-router-dom";
 
 import { Container } from "@mui/material";
 
@@ -50,10 +44,7 @@ function Home(props) {
           <div id="home">
             <Introduction />
             <Suspense fallback={<ProgressIndicator />}>
-              <Await
-                resolve={data.collabs}
-                errorElement={<ErrorInDataLoading />}
-              >
+              <Await resolve={data.collabs} errorElement={<ErrorInDataLoading />}>
                 {(collabs) => <CollabList collabs={collabs} />}
               </Await>
             </Suspense>

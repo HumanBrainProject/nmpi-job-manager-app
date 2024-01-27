@@ -24,36 +24,17 @@ function ErrorInDataLoading() {
       }}
     >
       <Container maxWidth="lg">
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="red"
-          gutterBottom
-        >
+        <Typography component="h1" variant="h2" align="center" color="red" gutterBottom>
           Error loading data
         </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          color="text.secondary"
-          paragraph
-        >
-          Unfortunately we are unable to access the EBRAINS neuromorphic job
-          queue. Please try again later.
+        <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          Unfortunately we are unable to access the EBRAINS neuromorphic job queue. Please try again
+          later.
           <br />
-          Interactive access to BrainScaleS and SpiNNaker may still be possible
-          - see the{" "}
-          <Link href="https://electronicvisions.github.io/hbp-sp9-guidebook">
-            Documentation
-          </Link>
+          Interactive access to BrainScaleS and SpiNNaker may still be possible - see the{" "}
+          <Link href="https://electronicvisions.github.io/hbp-sp9-guidebook">Documentation</Link>
         </Typography>
-        <Typography
-          variant="body2"
-          align="center"
-          color="text.secondary"
-          paragraph
-        >
+        <Typography variant="body2" align="center" color="text.secondary" paragraph>
           Error detail: {error.message}
         </Typography>
       </Container>

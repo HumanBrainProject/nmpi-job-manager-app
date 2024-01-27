@@ -18,25 +18,15 @@ function displayQuota(quota) {
   const decimalPlaces = Math.ceil(Math.max(0, -Math.log10(quota.limit / 10)));
   return (
     <div key={quota.resource_uri}>
-      <b>{quota.platform}</b>: {quota.usage.toFixed(decimalPlaces)}/
-      {quota.limit} {quota.units}
+      <b>{quota.platform}</b>: {quota.usage.toFixed(decimalPlaces)}/{quota.limit} {quota.units}
       <br />
     </div>
   );
 }
 
-function ProjectCard({
-  project,
-  index,
-  handleSubmit,
-  handleEdit,
-  handleDelete,
-}) {
+function ProjectCard({ project, index, handleSubmit, handleEdit, handleDelete }) {
   return (
-    <Card
-      key={index}
-      sx={{ height: "100%", display: "flex", flexDirection: "column" }}
-    >
+    <Card key={index} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardContent sx={{ flexGrow: 1 }}>
         <Chip
           label={project.status}

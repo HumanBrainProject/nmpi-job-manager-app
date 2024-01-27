@@ -28,13 +28,8 @@ function ProjectListRoute(props) {
         <Container maxWidth="xl">
           <div id="project-list">
             <React.Suspense fallback={<ProgressIndicator />}>
-              <Await
-                resolve={data.projects}
-                errorElement={<ErrorInDataLoading />}
-              >
-                {(projects) => (
-                  <ProjectList projects={projects} collab={collabId} />
-                )}
+              <Await resolve={data.projects} errorElement={<ErrorInDataLoading />}>
+                {(projects) => <ProjectList projects={projects} collab={collabId} />}
               </Await>
             </React.Suspense>
           </div>

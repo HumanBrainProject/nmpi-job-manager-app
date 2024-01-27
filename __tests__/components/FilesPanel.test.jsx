@@ -1,11 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import {
-  render,
-  screen,
-  getByRole,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
 
 import FilesPanel from "../../src/components/FilesPanel";
 

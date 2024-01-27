@@ -45,9 +45,7 @@ function SpiNNakerConfig(props) {
         fullWidth
         variant="outlined"
         value={props.config.spynnaker_version || ""}
-        onChange={(event) =>
-          handleChange("spynnaker_version", event.target.value)
-        }
+        onChange={(event) => handleChange("spynnaker_version", event.target.value)}
       />
       <TextField
         id="spinn-config-spinnaker-tools-version"
@@ -56,9 +54,7 @@ function SpiNNakerConfig(props) {
         fullWidth
         variant="outlined"
         value={props.config.spinnaker_tools_version || ""}
-        onChange={(event) =>
-          handleChange("spinnaker_tools_version", event.target.value)
-        }
+        onChange={(event) => handleChange("spinnaker_tools_version", event.target.value)}
       />
       <TextField
         id="spinn-config-extra-pip-installs"
@@ -67,9 +63,7 @@ function SpiNNakerConfig(props) {
         fullWidth
         variant="outlined"
         value={formatArray(props.config.extra_pip_installs)}
-        onChange={(event) =>
-          handleChange("extra_pip_installs", event.target.value)
-        }
+        onChange={(event) => handleChange("extra_pip_installs", event.target.value)}
         onBlur={(event) => removeEmptyItems("extra_pip_installs")}
       />
       <TextField
@@ -79,9 +73,7 @@ function SpiNNakerConfig(props) {
         fullWidth
         variant="outlined"
         value={formatArray(props.config.extra_git_repositories)}
-        onChange={(event) =>
-          handleChange("extra_git_repositories", event.target.value)
-        }
+        onChange={(event) => handleChange("extra_git_repositories", event.target.value)}
         onBlur={(event) => removeEmptyItems("extra_git_repositories")}
       />
       <TextField
@@ -101,9 +93,7 @@ function SpiNNakerConfig(props) {
         fullWidth
         variant="outlined"
         value={formatArray(props.config.extra_python_setups)}
-        onChange={(event) =>
-          handleChange("extra_python_setups", event.target.value)
-        }
+        onChange={(event) => handleChange("extra_python_setups", event.target.value)}
         onBlur={(event) => removeEmptyItems("extra_python_setups")}
       />
       <TextField

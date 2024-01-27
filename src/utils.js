@@ -45,8 +45,8 @@ const EXTENSION_CONTENT_TYPE_MAP = {
   txt: "text/plain",
   out: "text/plain",
   err: "text/plain",
-  zip: "application/zip",
-  pdf: "application/pdf",
+  //zip: "application/zip",
+  //pdf: "application/pdf",
 };
 
 function guessContentType(url) {

@@ -39,9 +39,7 @@ function QuotaField(props) {
           }}
         />
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="body2">
-            {RESOURCE_USAGE_UNITS[props.label]}
-          </Typography>
+          <Typography variant="body2">{RESOURCE_USAGE_UNITS[props.label]}</Typography>
         </Box>
       </Fragment>
     );

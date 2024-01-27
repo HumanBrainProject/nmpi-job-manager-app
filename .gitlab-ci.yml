@@ -1,4 +1,3 @@
-
 stages:
   - build
 
@@ -14,7 +13,6 @@ build_image_production:
     - docker push docker-registry.ebrains.eu/neuromorphic/nmpi_job_manager:prod
   tags:
     - shell-runner
-
 
 build_image_staging:
   stage: build

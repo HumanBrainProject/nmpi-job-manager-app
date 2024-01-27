@@ -1,14 +1,13 @@
-version: '3.7'
+version: "3.7"
 
 services:
-
   nmpi-job-manager-app-dev:
     build:
       context: ..
       dockerfile: deployment/Dockerfile.dev
     volumes:
-      - '..:/app'
-      - '/app/node_modules'
+      - "..:/app"
+      - "/app/node_modules"
     ports:
       - 3001:3000
     environment:

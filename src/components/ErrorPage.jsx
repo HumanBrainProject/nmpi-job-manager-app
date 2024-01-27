@@ -28,37 +28,19 @@ export default function ErrorPage() {
             }}
           >
             <Container maxWidth="lg">
-              <Typography
-                component="h1"
-                variant="h2"
-                align="center"
-                color="red"
-                gutterBottom
-              >
+              <Typography component="h1" variant="h2" align="center" color="red" gutterBottom>
                 Unexpected error
               </Typography>
-              <Typography
-                variant="h6"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                The application has encountered an unexpected error. Please try
-                again later.
+              <Typography variant="h6" align="center" color="text.secondary" paragraph>
+                The application has encountered an unexpected error. Please try again later.
                 <br />
-                Interactive access to BrainScaleS and SpiNNaker may still be
-                possible - see the{" "}
+                Interactive access to BrainScaleS and SpiNNaker may still be possible - see the{" "}
                 <Link href="https://electronicvisions.github.io/hbp-sp9-guidebook">
                   Documentation
                 </Link>
                 .
               </Typography>
-              <Typography
-                variant="body2"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
+              <Typography variant="body2" align="center" color="text.secondary" paragraph>
                 Error detail: {error.statusText || error.message}
               </Typography>
             </Container>

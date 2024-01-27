@@ -1,11 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import {
-  render,
-  screen,
-  getByRole,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, getByRole, fireEvent, waitFor } from "@testing-library/react";
 
 import LogPanel from "../../src/components/LogPanel";
 import { getLog } from "../../src/datastore";
@@ -34,9 +28,7 @@ describe("LogPanel", () => {
     vi.mock("../../src/datastore.js", () => {
       const promise = new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve(
-            "This is the first line of the log.\nThis is the second line."
-          );
+          resolve("This is the first line of the log.\nThis is the second line.");
         }, 100);
       });
       return {
@@ -56,9 +48,7 @@ describe("LogPanel", () => {
     await waitFor(() => expect(getLog).toHaveBeenCalledTimes(1));
     await waitFor(() => wait(200));
     expect(
-      getByRole(screen.getByTitle("log panel"), "button").getAttribute(
-        "aria-expanded"
-      )
+      getByRole(screen.getByTitle("log panel"), "button").getAttribute("aria-expanded")
     ).toEqual("true");
   });
 });

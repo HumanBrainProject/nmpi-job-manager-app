@@ -9,9 +9,7 @@ function StatusChip(props) {
     submitted: "info",
   };
 
-  return (
-    <Chip label={props.status} size="small" color={colours[props.status]} />
-  );
+  return <Chip label={props.status} size="small" color={colours[props.status]} />;
 }
 
 export default StatusChip;

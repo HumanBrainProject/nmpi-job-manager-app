@@ -2,17 +2,9 @@ import { useState, useContext } from "react";
 
 import { useSubmit } from "react-router-dom";
 
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 
-import {
-  ExpandMore,
-  ChatBubbleOutline as ChatBubbleOutlineIcon,
-} from "@mui/icons-material";
+import { ExpandMore, ChatBubbleOutline as ChatBubbleOutlineIcon } from "@mui/icons-material";
 
 import { getComments } from "../datastore";
 import { AuthContext } from "../context";
@@ -64,9 +56,7 @@ function CommentsPanel(props) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {comments.length > 0
-          ? comments.map((comment) => <Comment {...comment} />)
-          : "No comments"}
+        {comments.length > 0 ? comments.map((comment) => <Comment {...comment} />) : "No comments"}
         <CommentForm job={jobId} onSubmit={handleSubmit} />
       </AccordionDetails>
     </Accordion>

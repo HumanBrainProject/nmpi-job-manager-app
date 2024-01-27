@@ -14,9 +14,7 @@ function BrainScaleSConfig(props) {
   const handleChange = (configKey, value) => {
     const config = { ...props.config };
     if (expectsIntegerArray.includes(configKey)) {
-      config[configKey] = parseArray(value).map(
-        (item) => parseInt(item.trim()) || null
-      );
+      config[configKey] = parseArray(value).map((item) => parseInt(item.trim()) || null);
     } else if (expectsInteger.includes(configKey)) {
       config[configKey] = parseInt(value) || null;
     } else {
@@ -42,9 +40,7 @@ function BrainScaleSConfig(props) {
         fullWidth
         variant="outlined"
         value={props.config.SOFTWARE_VERSION || ""}
-        onChange={(event) =>
-          handleChange("SOFTWARE_VERSION", event.target.value)
-        }
+        onChange={(event) => handleChange("SOFTWARE_VERSION", event.target.value)}
       />
       <TextField
         id="bss-config-wafer-module"

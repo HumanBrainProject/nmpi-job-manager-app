@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 
 function Panel(props) {

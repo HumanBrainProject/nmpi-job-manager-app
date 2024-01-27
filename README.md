@@ -14,7 +14,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.
 
-
 ## Acknowledgments
 
 The current version of the application was developed as part of the EBRAINS research infrastructure,
@@ -26,12 +25,10 @@ funded from the European Union’s Horizon 2020 Framework Programme for Research
 under Specific Grant Agreements No. 720270, No. 785907 and No. 945539
 (Human Brain Project SGA1, SGA2 and SGA3).
 
-
-
 ## Dev notes
 
 - This reimplementation is based on React Router v6.
 - The goals are:
-    - more consistent behaviour when navigating between internal pages
-    - replace OIDC Implicit flow with Authorization Code flow
-    - upgrade MUI to v5
+  - more consistent behaviour when navigating between internal pages
+  - replace OIDC Implicit flow with Authorization Code flow
+  - upgrade MUI to v5

@@ -1,12 +1,5 @@
 import { isValidElement } from "react";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableRow,
-  TableContainer,
-  TableCell,
-} from "@mui/material";
+import { Paper, Table, TableBody, TableRow, TableContainer, TableCell } from "@mui/material";
 
 function KeyValueTable(props) {
   let formatKey = (key) => {
