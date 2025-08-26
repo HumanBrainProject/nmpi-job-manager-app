@@ -76,7 +76,7 @@ function CopyButtons(props) {
     progressIndicator = <CircularProgress size={20} />;
   }
 
-  if (props.currentRepository.includes("temporary")) {
+  if (props.currentRepository.includes("temporary") && !props.collab.startsWith("private-")) {
     return (
       <Stack direction="row" spacing={1} sx={{ paddingTop: 2 }}>
         <Button
