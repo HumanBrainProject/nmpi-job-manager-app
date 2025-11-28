@@ -8,8 +8,9 @@ import { green } from "@mui/material/colors";
 
 import initAuth from "./auth";
 import ErrorPage from "./components/general/ErrorPage";
-import { RequestedCollabContext, AuthContext } from "./context";
+import { RequestedCollabContext, AuthContext, StatusContext } from "./context";
 
+import { serverInfo } from "./datastore";
 import Home, { getLoader as collabLoader } from "./routes/home";
 import JobListRoute, { getLoader as jobListLoader } from "./routes/jobs";
 import JobDetailRoute, { getLoader as jobLoader, actionOnJob } from "./routes/job-detail";
@@ -88,19 +89,24 @@ const theme = createTheme({
 
 // Authenticate, then render the app
 
-function renderApp(auth) {
+async function renderApp(auth) {
   const params = new URL(document.location).searchParams;
   const requestedCollabId = params.get("clb-collab-id");
+  const about = await serverInfo();
+  console.log(about);
+  const status = about.status;
 
   ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthContext.Provider value={auth}>
-          <RequestedCollabContext.Provider value={requestedCollabId}>
-            <RouterProvider router={getRouter(auth)} />
-          </RequestedCollabContext.Provider>
-        </AuthContext.Provider>
+        <StatusContext.Provider value={status}>
+          <AuthContext.Provider value={auth}>
+            <RequestedCollabContext.Provider value={requestedCollabId}>
+              <RouterProvider router={getRouter(auth)} />
+            </RequestedCollabContext.Provider>
+          </AuthContext.Provider>
+        </StatusContext.Provider>
       </ThemeProvider>
     </React.StrictMode>
   );

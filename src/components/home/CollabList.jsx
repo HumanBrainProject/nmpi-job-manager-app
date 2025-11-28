@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import {
@@ -14,8 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 import { Send as SendIcon } from "@mui/icons-material";
+import { StatusContext } from "../../context";
 
 function CollabList(props) {
+  const serverStatus = useContext(StatusContext);
+  const readOnly = serverStatus.includes("read-only");
+  const serverDown = serverStatus.includes("down");
+
   return (
     <Container sx={{ py: 8 }} maxWidth="lg">
       <Grid container spacing={4}>
@@ -29,19 +34,20 @@ function CollabList(props) {
               </CardContent>
               <CardActions>
                 <IconButton
+                  disabled={readOnly || serverDown}
                   size="small"
                   sx={{ marginLeft: 2 }}
                   component={RouterLink}
                   to={`${collab}/jobs/new`}
                 >
                   <Tooltip title="New job">
-                    <SendIcon color="primary" />
+                    <SendIcon color={readOnly || serverDown ? "disabled" : "primary"} />
                   </Tooltip>
                 </IconButton>
-                <Button size="small" component={RouterLink} to={`${collab}/jobs/`}>
+                <Button size="small" component={RouterLink} to={`${collab}/jobs/`} disabled={serverDown}>
                   Jobs
                 </Button>
-                <Button size="small" component={RouterLink} to={`${collab}/projects/`}>
+                <Button size="small" component={RouterLink} to={`${collab}/projects/`} disabled={serverDown}>
                   Quotas
                 </Button>
                 <Button

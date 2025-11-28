@@ -2,6 +2,7 @@ import { jobQueueServer } from "./globals";
 import { isAlmostEmpty, jobIsIncomplete } from "./utils";
 
 let cache = {
+  about: null,
   jobs: {},
   collabs: [],
   projects: {},
@@ -20,6 +21,14 @@ function getRequestConfig(auth) {
     },
   };
   return config;
+}
+
+async function serverInfo() {
+  if (!cache.about) {
+    const response = await fetch(jobQueueServer + "/");
+    cache.about = await response.json();
+  }
+  return cache.about;
 }
 
 async function listCollabs(auth) {
@@ -318,6 +327,7 @@ async function deleteProject(collabId, projectId, auth) {
 }
 
 export {
+  serverInfo,
   listCollabs,
   queryJobs,
   queryTags,

@@ -9,7 +9,8 @@ import ProgressIndicator from "../components/general/ProgressIndicator";
 import Introduction from "../components/home/Introduction";
 import CollabList from "../components/home/CollabList";
 import ErrorInDataLoading from "../components/general/ErrorInDataLoading";
-import { RequestedCollabContext } from "../context";
+import { RequestedCollabContext, StatusContext } from "../context";
+import StatusWarning from "../components/general/StatusWarning";
 
 export function getLoader(auth) {
   const loader = async () => {
@@ -29,6 +30,7 @@ function Home() {
   const data = useLoaderData();
   const navigate = useNavigate();
   const requestedCollabId = useContext(RequestedCollabContext);
+  const serverStatus = useContext(StatusContext);
 
   useEffect(() => {
     if (requestedCollabId) {
@@ -43,6 +45,7 @@ function Home() {
         <Container maxWidth="xl">
           <div id="home">
             <Introduction />
+            {serverStatus != "ok" ? <StatusWarning status={serverStatus} /> : ""}
             <Suspense fallback={<ProgressIndicator />}>
               <Await resolve={data.collabs} errorElement={<ErrorInDataLoading />}>
                 {(collabs) => <CollabList collabs={collabs} />}

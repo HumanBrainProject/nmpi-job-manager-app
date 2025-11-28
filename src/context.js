@@ -4,4 +4,6 @@ const AuthContext = createContext(null);
 
 const RequestedCollabContext = createContext(null);
 
-export { AuthContext, RequestedCollabContext };
+const StatusContext = createContext("ok");
+
+export { AuthContext, RequestedCollabContext, StatusContext };
