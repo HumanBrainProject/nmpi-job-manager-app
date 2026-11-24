@@ -1,0 +1,50 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "EBRAINS Neuromorphic Job Manager",
+  "description": "Web app for submitting PyNN simulation jobs to the SpiNNaker and BrainScaleS neuromorphic computing systems through the EBRAINS Neuromorphic Computing Job Queue API, following their progress, and retrieving the results. It also lets users request computing quotas, and administrators review those requests.",
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0002-4793-7541",
+      "givenName": "Andrew P.",
+      "familyName": "Davison",
+      "affiliation": { "@type": "Organization", "@id": "https://ror.org/02feahw73", "name": "CNRS" }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Hassen",
+      "familyName": "Aguili",
+      "affiliation": { "@type": "Organization", "@id": "https://ror.org/02feahw73", "name": "CNRS" }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Matthieu",
+      "familyName": "Senoville",
+      "affiliation": { "@type": "Organization", "@id": "https://ror.org/02feahw73", "name": "CNRS" }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Jonathan",
+      "familyName": "Duperrier",
+      "affiliation": { "@type": "Organization", "@id": "https://ror.org/02feahw73", "name": "CNRS" }
+    }
+  ],
+  "license": ["https://spdx.org/licenses/Apache-2.0"],
+  "version": "3.4.0",
+  "dateModified": "2026-06-25",
+  "codeRepository": "https://github.com/HumanBrainProject/nmpi-job-manager-app",
+  "downloadUrl": "https://github.com/HumanBrainProject/nmpi-job-manager-app/archive/refs/tags/v3.4.0.zip",
+  "relatedLink": ["https://electronicvisions.github.io/hbp-sp9-guidebook"],
+  "softwareHelp": ["https://ebrains.eu/support"],
+  "releaseNotes": "- Moved to TypeScript, and upgraded to React 19 and MUI 6\n- New administration section, for reviewing resource (quota) requests and granting quotas, replacing the former standalone administration app\n- Expanded test suite\n\nSee https://github.com/HumanBrainProject/nmpi-job-manager-app/blob/master/CHANGELOG.md",
+  "programmingLanguage": ["TypeScript"],
+  "softwareRequirements": ["React 19", "MUI 6", "React Router 6", "keycloak-js 26"],
+  "developmentStatus": "active",
+  "continuousIntegration": "https://github.com/HumanBrainProject/nmpi-job-manager-app/actions",
+  "issueTracker": "https://github.com/HumanBrainProject/nmpi-job-manager-app/issues",
+  "funder": { "@type": "Organization", "name": "European Commission" },
+  "funding": "EBRAINS 2.0: A Research Infrastructure to Advance Neuroscience and Brain Health",
+  "keywords": ["neuromorphic computing", "SpiNNaker", "BrainScaleS", "PyNN", "web app"],
+  "isPartOf": "https://search.kg.ebrains.eu/instances/7b73d422-9dae-405b-a613-457a62231e22"
+}
